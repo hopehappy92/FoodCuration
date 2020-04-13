@@ -10,64 +10,65 @@ import pandas as pd
 import urllib
 import io
 import zipfile
-from api.models import Review
+from api.models import Review, CustomUser, Store
 from django_pandas.io import read_frame
 
-# tmpFile = urllib.request.urlopen('https://www.librec.net/datasets/filmtrust.zip')
-# tmpFile = zipfile.ZipFile(io.BytesIO(tmpFile.read()))
-# dataset = pd.read_table(io.BytesIO(tmpFile.read('ratings.txt')), sep = ' ', names = ['uid', 'iid', 'rating'])
-# tmpFile.close()
-# dataset.head()
-# print(dataset.head())
-# 희소행렬 형태로 데이터가 저장되어 있음. sparse
-#    uid  iid  rating
-# 0    1    1     2.0
-# 1    1    2     4.0
-# 2    1    3     3.5
-# 3    1    4     3.0
-# 4    1    5     4.0
+import pickle
 
-# 모든 데이터가 아니라 관계 있는 데이터만 가져온다.
-# 어떤 유저가 작성한 리뷰에 해당하는 매장
+with open('svdpp.p', 'rb') as file:    # james.p 파일을 바이너리 읽기 모드(rb)로 열기
+    alg2 = pickle.load(file)
 # user_id = 68632
-user_id = 115682
-df = pd.DataFrame(list(Review.objects.filter(user_id=user_id).values("store")))
+user_id = 7
+df = pd.DataFrame(columns=("user_id", "store_id", "score"))
+# 내 리뷰 가져오기
+for review in CustomUser.objects.get(id=user_id).review_set.all():
+    # 이 리뷰의 매장 번호에 해당하는 매장의 리뷰들 가져오기
+    # print(review.store_id)
+    for review in Store.objects.get(id=review.store_id).review_set.all():
+        # 이 리뷰 작성자들의 모든 리뷰 가져오기
+        for review in CustomUser.objects.get(id=review.user_id).review_set.all():
+            df.loc[review.id] = [review.user_id, review.store_id, review.score]
 print(df)
-stores = df['store'].unique()
-# 그 매장에 리뷰들 전부 다
-df2 = pd.DataFrame(columns=("user_id", "store_id", "score"))
-reviews = []
-idx = 0
-for store in stores:
-    for review in Review.objects.filter(store_id=store).values("user", "store", "score"):
-        df2.loc[idx] = list(review.values())
-        idx += 1
-# df2 = pd.DataFrame(list(reviews))
-print(df2)
+
+
 reader = surprise.Reader()
-data = surprise.Dataset.load_from_df(df2, reader)
+data = surprise.Dataset.load_from_df(df, reader)
 alg = surprise.SVDpp()
 output = alg.fit(data.build_full_trainset())
 
-print(df2["store_id"])
-for store_id in df2["store_id"].unique():
+print(df["store_id"])
+cnt = 0
+for store_id in df["store_id"].unique():
     print(store_id, alg.predict(uid=user_id, iid=store_id).est)
-pred = alg2.predict(uid='68632', iid='15')
-score = pred2.est
-print(score2)
+    print(user_id, store_id)
+    a = Review.objects.filter(user=user_id).filter(store=store_id)
+    if a:
+        print(store_id, a[0].score)
+        cnt += 1
+        if cnt > 10:
+            break
+    print("---")
 
+with open('svdpp.p', 'wb') as file:    # james.p 파일을 바이너리 쓰기 모드(wb)로 열기
+    pickle.dump(alg, file)
+
+print(dir(alg))
+print(alg)
+
+print(Review.objects.filter(user_id=user_id).values('store', 'score'))
+
+print(alg2.predict(uid=7, iid=248259).est)
 # 50번 유저에 대해서 50번 유저가 보지 않은 모든 영화에 대한 점수 예측값을 구한다.
 # 이미 시청한 영화는 추천 X
 # iids = dataset['iid'].unique()
-# iids50 = dataset.loc[dataset['uid'] == 50, 'iid']
+# # iids50 = dataset.loc[dataset['uid'] == 50, 'iid']
 
-store_ids = dataset2['store_id'].unique()
-store_ids50 = dataset2.loc[dataset2['user_id'] == 68632, 'store_id']
+# store_ids = dataset2['store_id'].unique()
+# store_ids50 = dataset2.loc[dataset2['user_id'] == 68632, 'store_id']
 
 # 모든 영화 iids에서 50번 유저가 본 영화 iids50을 제외한 결과가 iids_to_pred이다
 # iids_to_pred = np.setdiff1d(iids, iids50)
 
-store_ids_to_pred = np.setdiff1d(store_ids, store_ids50)
 
 # 테스트셋을 해당 유저, 영화들 임의평점 4로 입력한 후 예측한 결과를 본다.
 # testset = [[50, iid, 4.] for iid in iids_to_pred]
@@ -75,14 +76,6 @@ store_ids_to_pred = np.setdiff1d(store_ids, store_ids50)
 # print(predictions[0])
 
 # print(predictions)
-
-testset2 = [[68632, store_id, 0.] for store_id in store_ids_to_pred]
-predictions2 = alg2.test(testset2)
-predictions2.sort(key = lambda x: x[3], reverse=True)
-print(predictions2)
-print(predictions2[0])
-print(predictions2[-1])
-
 # pred_ratings = np.array([pred.est for pred in predictions])
 # i_max = pred_ratings.argmax()
 # iid = iids_to_pred[i_max]
