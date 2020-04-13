@@ -116,7 +116,7 @@ print('#### Top 10 음식점####')
 for top_store in top_store_preds:
     print(top_store)
 
-
+# 학습중.....
 
 # algo = SVD(n_factors=50, random_state=0)
 # algo.fit(trainset)
