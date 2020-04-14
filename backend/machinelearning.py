@@ -26,7 +26,7 @@ request = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
 request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
 qs1= pd.DataFrame(data=request_store)
 qs3= Review.objects.all()
-
+print(qs3)
 ten_review_store_list= []
 human_list = []
 for user in request:
@@ -104,10 +104,10 @@ def recomm_store(algo, user_id, unvisited_store, top_n=10):
     top_store_ids = [ int(pred.iid) for pred in top_predictions]
     top_store_rating = [pred.est for pred in top_predictions]
 
-    top_sotre_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
+    top_store_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
 
 
-    return top_sotre_preds
+    return top_store_preds
 
 unvisited_store = get_uneaten(ratings, store_list, 235)
 
