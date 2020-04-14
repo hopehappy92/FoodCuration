@@ -20,6 +20,8 @@ with open('svdpp.p', 'rb') as file:    # james.p 파일을 바이너리 읽기 �
 # user_id = 68632
 user_id = 7
 df = pd.DataFrame(columns=("user_id", "store_id", "score"))
+# a = Review.objects.all()
+# df = pd.DataFrame(list(a.values("user_id", "store_id", "score")))
 # 내 리뷰 가져오기
 for review in CustomUser.objects.get(id=user_id).review_set.all():
     # 이 리뷰의 매장 번호에 해당하는 매장의 리뷰들 가져오기
@@ -31,10 +33,12 @@ for review in CustomUser.objects.get(id=user_id).review_set.all():
 print(df)
 
 
+print("---------------")
 reader = surprise.Reader()
 data = surprise.Dataset.load_from_df(df, reader)
 alg = surprise.SVDpp()
 output = alg.fit(data.build_full_trainset())
+print("---------------")
 
 print(df["store_id"])
 cnt = 0
@@ -58,6 +62,12 @@ print(alg)
 print(Review.objects.filter(user_id=user_id).values('store', 'score'))
 
 print(alg2.predict(uid=7, iid=248259).est)
+print(alg2.predict(uid=7, iid=248259).est)
+print(alg2.predict(uid=7, iid=248259).est)
+print(alg2.predict(uid=7, iid=248259).est)
+print(alg2.estimate(u=7, i=248259))
+print(alg2.estimate(u=7, i=248259))
+print(alg2.estimate(u=7, i=248259))
 # 50번 유저에 대해서 50번 유저가 보지 않은 모든 영화에 대한 점수 예측값을 구한다.
 # 이미 시청한 영화는 추천 X
 # iids = dataset['iid'].unique()
