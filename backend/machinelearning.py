@@ -3,14 +3,16 @@ import django
 import json
 import numpy as np
 import pandas as pd
-import surprise
+import surprise 
 import requests
 from math import sqrt
 from surprise.model_selection import cross_validate
 
+from surprise import KNNBaseline
 from surprise import SVD, Dataset, accuracy, Reader
 from surprise.model_selection import train_test_split
 from surprise.dataset import DatasetAutoFolds
+from surprise.model_selection import GridSearchCV
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
@@ -47,37 +49,25 @@ ratings_df = pd.DataFrame(selected_review_list)
 ratings_df = ratings_df[['user', 'store', 'score']]
 print(ratings_df)
 
+
 # reader => 범위 설정  & 학습 부분
 reader = Reader(rating_scale=(1, 5))
 review_data = surprise.Dataset.load_from_df(df=ratings_df, reader=reader)
 trainset = review_data.build_full_trainset()
 
+knn_gs = cross_validate(KNNBaseline(), review_data, cv=5, n_jobs=5, verbose=False)
+param_grid = {'k': [10, 20, 30, 40, 50, 60]}
+knn_gs = GridSearchCV(KNNBaseline, param_grid, measures=['rmse', 'mae'], cv=5, n_jobs=5)
+knn_gs.fit(review_data)
+print(knn_gs.cv_results)
+print(knn_gs.cv_results['mean_test_rmse'])
+print(knn_gs.cv_results['mean_test_mae'])
 print('학습 시작')
 # 피어슨 유사도로 학습
 sim_options = {'name': 'pearson', 'user_based': True}
-algo = surprise.KNNBaseline(k=15, sim_options=sim_options)
+algo = surprise.KNNBaseline(k=30, sim_options=sim_options)
 predictions = algo.fit(trainset)
 print('학습 완료')
-# 1위: 469245번 유저 461번 리뷰
-# 2위: 243883번 유저 389번 리뷰
-# 3위: 328775번 유저 380번 리뷰
-# 4위: 391794번 유저 362번 리뷰
-# 5위: 74999번 유저 352번 리뷰
-# 6위: 179719번 유저 317번 리뷰
-# 7위: 724982번 유저 285번 리뷰
-# 8위: 103304번 유저 282번 리뷰
-# 9위: 728009번 유저 271번 리뷰
-# 10위: 390564번 유저 268번 리뷰
-# 11위: 180519번 유저 257번 리뷰
-# 12위: 485567번 유저 249번 리뷰
-# 13위: 218901번 유저 243번 리뷰
-# 14위: 32143번 유저 240번 리뷰
-# 15위: 884890번 유저 233번 리뷰
-# 16위: 151946번 유저 227번 리뷰
-# 17위: 745537번 유저 220번 리뷰
-# 18위: 213301번 유저 217번 리뷰
-# 19위: 9852번 유저 214번 리뷰
-# 20위: 350771번 유저 213번 리뷰
 
 # 안가본 식당
 def get_uneaten(ratings, store_list, user_id):
@@ -102,7 +92,6 @@ def recomm_store(algo, user_id, unvisited_store, top_n=35):
     # print(top_predictions)
     top_store_ids = [ int(pred.iid) for pred in top_predictions]
     top_store_rating = [pred.est for pred in top_predictions]
-
     top_sotre_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
 
 
