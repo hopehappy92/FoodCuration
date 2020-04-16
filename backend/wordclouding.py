@@ -59,61 +59,61 @@ from konlpy.tag import Okt
 
 
 ################################# pandas ###############################
-# from math import log
+from math import log
 
-# docs = [
-#   '먹고 싶은 사과',
-#   '먹고 싶은 바나나',
-#   '길고 노란 바나나 바나나',
-#   '저는 과일이 좋아요'
-# ] 
-# vocab = list(set(w for doc in docs for w in doc.split()))
-# vocab.sort()
-# print(vocab)
+docs = [
+  '먹고 싶은 사과',
+  '먹고 싶은 바나나',
+  '길고 노란 바나나 바나나',
+  '저는 과일이 좋아요'
+] 
+vocab = list(set(w for doc in docs for w in doc.split()))
+vocab.sort()
+print(vocab)
 
-# N = len(docs) # 총 문서의 수
+N = len(docs) # 총 문서의 수
 
-# def tf(t, d):
-#   return d.count(t)
+def tf(t, d):
+  return d.count(t)
 
-# def idf(t):
-#   df = 0
-#   for doc in docs:
-#       df += t in doc
-#   return log(N/(df + 1))
+def idf(t):
+  df = 0
+  for doc in docs:
+      df += t in doc
+  return log(N/(df + 1))
 
-# def tfidf(t, d):
-#   return tf(t,d)* idf(t)
+def tfidf(t, d):
+  return tf(t,d)* idf(t)
 
-# result = []
-# for i in range(N): # 각 문서에 대해서 아래 명령을 수행
-#   result.append([])
-#   d = docs[i]
-#   for j in range(len(vocab)):
-#     t = vocab[j]        
-#     result[-1].append(tf(t, d))
+result = []
+for i in range(N): # 각 문서에 대해서 아래 명령을 수행
+  result.append([])
+  d = docs[i]
+  for j in range(len(vocab)):
+    t = vocab[j]        
+    result[-1].append(tf(t, d))
 
-# tf_ = pd.DataFrame(result, columns = vocab)
-# print(tf_)
+tf_ = pd.DataFrame(result, columns = vocab)
+print(tf_)
 
-# result = []
-# for j in range(len(vocab)):
-#   t = vocab[j]
-#   result.append(idf(t))
+result = []
+for j in range(len(vocab)):
+  t = vocab[j]
+  result.append(idf(t))
 
-# idf_ = pd.DataFrame(result, index = vocab, columns = ["IDF"])
-# print(idf_)
+idf_ = pd.DataFrame(result, index = vocab, columns = ["IDF"])
+print(idf_)
 
-# result = []
-# for i in range(N):
-#   result.append([])
-#   d = docs[i]
-#   for j in range(len(vocab)):
-#     t = vocab[j]
-#     result[-1].append(tfidf(t,d))
+result = []
+for i in range(N):
+  result.append([])
+  d = docs[i]
+  for j in range(len(vocab)):
+    t = vocab[j]
+    result[-1].append(tfidf(t,d))
 
-# tfidf_ = pd.DataFrame(result, columns = vocab)
-# print(tfidf_)
+tfidf_ = pd.DataFrame(result, columns = vocab)
+print(tfidf_)
 ##################################################################################
 
 ####################################### scikit-learn ####################################
@@ -176,38 +176,38 @@ from konlpy.tag import Okt
 # print(result)
 
 ########################## stop_word 적용 ################################
-a = open('text/text.txt', 'r', encoding='utf-8')
-b = open('text/stopword.txt', 'r', encoding='utf-8')
-text = a.read()
-stopwordtext = b.read()
-stop_words = stopwordtext.split('\n')
+# a = open('text/text.txt', 'r', encoding='utf-8')
+# b = open('text/stopword.txt', 'r', encoding='utf-8')
+# text = a.read()
+# stopwordtext = b.read()
+# stop_words = stopwordtext.split('\n')
 
-def get_noun(text):
-  okt = Okt()
-  noun = okt.nouns(text)
-  result = [] 
-  for w in noun: 
-      if w not in stop_words: 
-          result.append(w)
-  for i,v in enumerate(result):
-    if len(v) < 2:
-      result.pop(i)
-  count = Counter(result)
-  noun_list = count.most_common(1000)
-  return noun_list
+# def get_noun(text):
+#   okt = Okt()
+#   noun = okt.nouns(text)
+#   result = [] 
+#   for w in noun: 
+#       if w not in stop_words: 
+#           result.append(w)
+#   for i,v in enumerate(result):
+#     if len(v) < 2:
+#       result.pop(i)
+#   count = Counter(result)
+#   noun_list = count.most_common(1000)
+#   return noun_list
 
-text_sort = get_noun(text)
-print(text_sort) 
+# text_sort = get_noun(text)
+# print(text_sort) 
 
-wordcloud = WordCloud(
-    font_path="C:\\Windows\\Fonts\\HMKMMAG.TTF",
-    background_color = 'white', #배경색
-    width = 800, 
-    height = 600
-  ).generate_from_frequencies(dict(text_sort))
+# wordcloud = WordCloud(
+#     font_path="C:\\Windows\\Fonts\\HMKMMAG.TTF",
+#     background_color = 'white', #배경색
+#     width = 800, 
+#     height = 600
+#   ).generate_from_frequencies(dict(text_sort))
 
-plt.figure(figsize = (15, 10)) # (가로인치, 세로인치) 
-plt.axis("off") # 축눈금 제거
-plt.imshow(wordcloud) # 이미지가 표시되도록 
-plt.show() # 최종 출력문
+# plt.figure(figsize = (15, 10)) # (가로인치, 세로인치) 
+# plt.axis("off") # 축눈금 제거
+# plt.imshow(wordcloud) # 이미지가 표시되도록 
+# plt.show() # 최종 출력문
 ################################################################
