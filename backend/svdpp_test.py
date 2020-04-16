@@ -36,7 +36,7 @@ print(df)
 print("---------------")
 reader = surprise.Reader()
 data = surprise.Dataset.load_from_df(df, reader)
-alg = surprise.SVDpp()
+alg = surprise.KNNBasic()
 output = alg.fit(data.build_full_trainset())
 print("---------------")
 
