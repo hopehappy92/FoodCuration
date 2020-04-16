@@ -58,7 +58,7 @@ from konlpy.tag import Okt
 
 
 
-### pandas
+################################# pandas ###############################
 # from math import log
 
 # docs = [
@@ -114,9 +114,9 @@ from konlpy.tag import Okt
 
 # tfidf_ = pd.DataFrame(result, columns = vocab)
 # print(tfidf_)
+##################################################################################
 
-
-### scikit-learn
+####################################### scikit-learn ####################################
 # from sklearn.feature_extraction.text import CountVectorizer
 # corpus = [
 #     'you know I want your love',
@@ -137,22 +137,24 @@ from konlpy.tag import Okt
 # print(tfidfv.transform(corpus).toarray())
 # print(tfidfv.vocabulary_)
 # print(sorted(tfidfv.vocabulary_.items())) # 단어사전 정렬
+######################################################################################
 
 
-### konlpy // Okt
+############################# konlpy // Okt ###########################################
 # from konlpy.tag import Okt  
 # okt=Okt()  
 # print(okt.morphs("열심히 코딩한 당신, 연휴에는 여행을 가봐요"))
 # print(okt.pos("열심히 코딩한 당신, 연휴에는 여행을 가봐요"))  
 # print(okt.nouns("열심히 코딩한 당신, 연휴에는 여행을 가봐요"))  
+########################################################################################
 
-### konlpy // Kkma
+########################### konlpy // Kkma ##################################################
 # from konlpy.tag import Kkma  
 # kkma=Kkma()  
 # print(kkma.morphs("열심히 코딩한 당신, 연휴에는 여행을 가봐요"))
 # print(kkma.pos("열심히 코딩한 당신, 연휴에는 여행을 가봐요"))  
 # print(kkma.nouns("열심히 코딩한 당신, 연휴에는 여행을 가봐요"))  
-
+##############################################################################################
 
 # from nltk.corpus import stopwords 
 # from nltk.tokenize import word_tokenize 
