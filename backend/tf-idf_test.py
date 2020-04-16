@@ -48,6 +48,7 @@ for store in Store.objects.filter(review_count__gte=10).values("id"):
 df = pd.DataFrame(Review.objects.all().values("user", "store", "score", "content"))
 df = df[df["store"].isin(storeset)]
 # print(df)
+# print(len(df))
 
 df_classify = dict()
 # for i in range(len(df)):
@@ -180,8 +181,8 @@ for store in df_classify.keys():
             value = 15
           bad_words.append((voca[idx], value))
           # bad_words += (str(voca[idx]) + " ")
-  print("good_words : ", good_words) 
-  print("bad_words : ", bad_words)
+  # print("good_words : ", good_words) 
+  # print("bad_words : ", bad_words)
 
   ############ 보여줄 경우에 사용 ##########
   # if good_words:
@@ -211,22 +212,25 @@ for store in df_classify.keys():
   #   plt.show() 
 
   ############# 저장할 경우에 사용 ###############
-  if good_words:
-    good_wordcloud = WordCloud(
-      font_path="C:\\Windows\\Fonts\\HMKMMAG.TTF",  #한글 폰트 적용, 안하면 깨짐
-      background_color = 'white', #배경색
-      width = 800, 
-      height = 600
-    ).generate_from_frequencies(dict(good_words))
-    good_wordcloud.to_file('wordcloudimg/{}_good.png'.format(store))
+  # if good_words:
+  #   good_wordcloud = WordCloud(
+  #     font_path="C:\\Windows\\Fonts\\HMKMMAG.TTF",  #한글 폰트 적용, 안하면 깨짐
+  #     background_color = 'white', #배경색
+  #     width = 800, 
+  #     height = 600
+  #   ).generate_from_frequencies(dict(good_words))
+  #   good_wordcloud.to_file('wordcloudimg/{}_good.png'.format(store))
     
-  if bad_words:
-    bad_wordcloud = WordCloud(
-      font_path="C:\\Windows\\Fonts\\HMKMMAG.TTF",
-      background_color = 'white',
-      width = 800, 
-      height = 600
-    ).generate_from_frequencies(dict(bad_words))
-    bad_wordcloud.to_file('wordcloudimg/{}_bad.png'.format(store))
+  # if bad_words:
+  #   bad_wordcloud = WordCloud(
+  #     font_path="C:\\Windows\\Fonts\\HMKMMAG.TTF",
+  #     background_color = 'white',
+  #     width = 800, 
+  #     height = 600
+  #   ).generate_from_frequencies(dict(bad_words))
+  #   bad_wordcloud.to_file('wordcloudimg/{}_bad.png'.format(store))
   ################################################################
+
+  store_tag_sort = sorted(good_words, key=lambda x: x[1], reverse=True)[:10]
+  print(store_tag_sort)
 ###########################################################################
