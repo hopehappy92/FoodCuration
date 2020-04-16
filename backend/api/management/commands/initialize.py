@@ -3,6 +3,7 @@ import pandas as pd
 from django.core.management.base import BaseCommand
 from backend import settings
 from api import models
+import pickle
 
 
 class Command(BaseCommand):
@@ -118,6 +119,26 @@ class Command(BaseCommand):
             for review in reviews.itertuples()
         ]
         models.Review.objects.bulk_create(reviews_bulk)
+        print("[+] Done")
+
+        print("[*] Initializing Algorithm...")
+        models.Algorithm.objects.create(alg_name="svdpp")
+        print("[+] Done")
+        
+        print("[*] Initializing learning dataframe...")
+        userset = set()
+        for user in models.CustomUser.objects.filter(review_count__gte=10).values("id"):
+            userset.add(user['id'])
+        # 리뷰가 열개 이상인 매장
+        storeset = set()
+        for store in models.Store.objects.filter(review_count__gte=10).values("id"):
+            storeset.add(store['id'])
+        df = pd.DataFrame(models.Review.objects.all().values("user", "store", "score"))
+        df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
+        
+        with open('learning_dataframe.p', 'wb') as f:
+            pickle.dump(df, f)
+
         print("[+] Done")
 
     def handle(self, *args, **kwargs):
