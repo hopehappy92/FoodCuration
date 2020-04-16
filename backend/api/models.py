@@ -54,8 +54,8 @@ class Review(models.Model):
     content = models.TextField()
     reg_time = models.DateTimeField()
 
-    def __str__(self):
-        return self.content
+    # def __str__(self):
+    #     return self.content
 
 
 class UserLikeStore(models.Model):
