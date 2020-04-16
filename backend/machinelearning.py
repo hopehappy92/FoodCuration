@@ -3,14 +3,16 @@ import django
 import json
 import numpy as np
 import pandas as pd
-import surprise
+import surprise 
 import requests
 from math import sqrt
 from surprise.model_selection import cross_validate
 
+from surprise import KNNBaseline
 from surprise import SVD, Dataset, accuracy, Reader
 from surprise.model_selection import train_test_split
 from surprise.dataset import DatasetAutoFolds
+from surprise.model_selection import GridSearchCV
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
@@ -22,181 +24,84 @@ from api.models import CustomUser # 유저 1.8만개
 # review가 10개 이상인 식당만 불러옴
 request_store = requests.get("http://i02d106.p.ssafy.io:8765/api/store/10").json()
 # review가 10개 이상인 유저만 불러옴
-request = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
+request_user = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
+# 모든 review 다 불러옴
 request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
-qs1= pd.DataFrame(data=request_store)
-qs3= Review.objects.all()
 
-ten_review_store_list= []
-human_list = []
-for user in request:
-    human_list.append(user['id'])
-print(len(request))
+ten_review_store_df = pd.DataFrame(data=request_store)
+ten_review_user_df = pd.DataFrame(data=request_user)
+all_user_df = pd.DataFrame(data=request_all_review)
+print('데이터 불러오기 완료')
+ten_review_store_list = set()
+ten_review_user_list = set()
 for store in request_store:
-    ten_review_store_list.append(store['id'])
+    ten_review_store_list.add(store['id'])
+for user in request_user:
+    ten_review_user_list.add(user['id'])
 
-review_list = list(qs3.values())
-store_list = []
-for dic in review_list:
-    if('score' in dic.keys() and 'user_id' in dic.keys() and 'store_id' in dic.keys()):
-        if(dic['user_id'] in human_list and dic['store_id'] in ten_review_store_list):
-            store_list.append(dic['store_id'])
-store_list = list(dict.fromkeys(store_list))
-print(len(store_list))
-# print(store_list[0])
-# print(store_list[1])
+selected_review_list = list()
+for dic in request_all_review:
+    if('score' in dic.keys() and 'user' in dic.keys() and 'store' in dic.keys()):
+        if(dic['user'] in ten_review_user_list and dic['store'] in ten_review_store_list):
+            selected_review_list.append(dic)
 
-#리스트로 바꾼 다음 데이터프레임으로 변환
-stores = qs1
-review = pd.DataFrame(list(qs3.values()))
-ratings = review[['user_id', 'store_id', 'score']]
-print(ratings.iloc[0])
-print(ratings.iloc[1])
+ratings_df = pd.DataFrame(selected_review_list)
+ratings_df = ratings_df[['user', 'store', 'score']]
+print(ratings_df)
+
 
 # reader => 범위 설정  & 학습 부분
 reader = Reader(rating_scale=(1, 5))
-review_data = DatasetAutoFolds(df=ratings, reader=reader)
+review_data = surprise.Dataset.load_from_df(df=ratings_df, reader=reader)
 trainset = review_data.build_full_trainset()
 
+knn_gs = cross_validate(KNNBaseline(), review_data, cv=5, n_jobs=5, verbose=False)
+param_grid = {'k': [10, 20, 30, 40, 50, 60]}
+knn_gs = GridSearchCV(KNNBaseline, param_grid, measures=['rmse', 'mae'], cv=5, n_jobs=5)
+knn_gs.fit(review_data)
+print(knn_gs.cv_results)
+print(knn_gs.cv_results['mean_test_rmse'])
+print(knn_gs.cv_results['mean_test_mae'])
+print('학습 시작')
 # 피어슨 유사도로 학습
 sim_options = {'name': 'pearson', 'user_based': True}
-algo = surprise.KNNBaseline(k=15, sim_options=sim_options)
+algo = surprise.KNNBaseline(k=30, sim_options=sim_options)
 predictions = algo.fit(trainset)
-
-# rmse = accuracy.rmse(predictions, verbose=True)
-# print(rmse)
-# param_grid = {'n_epochs' : [20, 40, 60], 'n_factors': [50, 100, 200]}
-
-# gs = GridSearchCV(SVD, param_grid, measures=['rmse', 'mae'], cv=3)
-# gs.fit(data)
-
-# print(gs.best_score['rmse'])
-# print(gs.best_params['rmse'])
+print('학습 완료')
 
 # 안가본 식당
 def get_uneaten(ratings, store_list, user_id):
-    eaten_store = ratings[ratings['user_id'] == user_id]['store_id'].tolist()
+    eaten_store = ratings[ratings['user'] == user_id]['store'].tolist()
     uneaten_store = [store for store in store_list if store not in eaten_store]
     print('평점 매긴 식당 수 : ', len(eaten_store), '추천 대상 식당 수 : ', len(uneaten_store), '전체 식당 수 : ', len(store_list)  )
 
     return uneaten_store
 
+
+
 # 추천 식당 정렬해서 리턴
-def recomm_store(algo, user_id, unvisited_store, top_n=10):
+def recomm_store(algo, user_id, unvisited_store, top_n=35):
     predicitons = []
-    
-    
-    predicitons = [algo.predict(str(user_id), str(kk), r_ui=4, verbose=True) for kk in unvisited_store]
-    pre1 = algo.predict(str(user_id), str(86))
-    pre2 = algo.predict(str(user_id), str(149))
-    print(123)
-    print(pre1)
-    print(pre2)
-    # print(predicitons[0])
-    # print(predicitons[1])
+    predicitons = [algo.predict(user_id, kk) for kk in unvisited_store]
     def sortkey_est(pred):
         return pred.est
     
-    predicitons.sort(key=sortkey_est, reverse=False)
+    predicitons.sort(key=sortkey_est, reverse=True)
 
     top_predictions = predicitons[:top_n]
-
+    # print(top_predictions)
     top_store_ids = [ int(pred.iid) for pred in top_predictions]
     top_store_rating = [pred.est for pred in top_predictions]
-
     top_sotre_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
 
 
     return top_sotre_preds
 
-unvisited_store = get_uneaten(ratings, store_list, 235)
+unvisited_store = get_uneaten(ratings_df, ten_review_store_list, 243883)
 
-top_store_preds = recomm_store(algo, 235, unvisited_store, top_n=10)
+top_store_preds = recomm_store(algo, 243883, unvisited_store, top_n=35)
 print('#### Top 10 음식점####')
 for top_store in top_store_preds:
     print(top_store)
 
-
-
-# algo = SVD(n_factors=50, random_state=0)
-# algo.fit(trainset)
-
-# predicitons = algo.test(testset)
-# print('type : ', type(predicitons), ' size : ', len(predicitons))
-# print('prediction 결과의 최초 5개 추출')
-# print(predicitons[:5])
-
-
-# print([(pred.uid, pred.iid, pred.est) for pred in predicitons[:3]])
-
-# print(accuracy.rmse(predicitons))
-
-# from surprise.model_selection import cross_validate
-
-# algo1 = SVD(random_state=0)
-# cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
-
-# GridSearchCV 이용
-# from surprise.model_selection import GridSearchCV
-# param_grid = {'n_epochs' : [20, 40, 60], 'n_factors': [50, 100, 200]}
-
-# gs = GridSearchCV(SVD, param_grid, measures=['rmse', 'mae'], cv=3)
-# gs.fit(data)
-
-# print(gs.best_score['rmse'])
-# print(gs.best_params['rmse'])
-
-# from surprise.model_selection import cross_validate
-# cross_validate(algo, data)
-
-
-# data_folds = DatasetAutoFolds(df=review ,reader=reader)
-# full_trainset = data_folds.build_full_trainset()
-
-
-
-
-
-
-
-# user_id = 390564
-# uid = str(390564)
-# iid = str(1)
-
-# def get_uneaten(review, stores, user_id):
-#     eaten_stores = review[review['user_id'] == user_id]['store_id'].tolist()
-
-#     total_stores = stores['id'].tolist()
-
-#     uneaten_store = [store for store in total_stores if store not in eaten_stores]
-#     print('평점 매긴 음식점 수: ', len(eaten_stores))
-
-#     return uneaten_store
-
-
-
-# def recomm_store(algo, user_id, unvisited_store, top_n=1000):
-#     predicitons = [algo.predict(str(user_id), str(store_id)) for store_id in unvisited_store]
-#     def sortkey_est(pred):
-#         return pred.est
-    
-#     predicitons.sort(key=sortkey_est, reverse=True)
-#     print(len(predicitons))
-#     top_predictions = predicitons[449000:450000]
-
-#     top_store_ids = [ int(pred.iid) for pred in top_predictions]
-#     top_store_rating = [pred.est for pred in top_predictions]
-#     # top_store_titles = stores[stores.store_id.isin(top_store_ids)]['title']
-
-#     top_sotre_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
-
-#     return top_sotre_preds
-
-# unvisited_store = get_uneaten(review, stores, 390564)
-# print(len(stores))
-# print(len(unvisited_store))
-
-# top_store_preds = recomm_store(algo, 390564, unvisited_store, top_n=1000)
-# print('#### Top 10 음식점####')
-# for top_store in top_store_preds:
-#     print(top_store)
+print('결과 툭')
