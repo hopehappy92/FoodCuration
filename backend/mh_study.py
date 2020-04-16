@@ -9,6 +9,7 @@ import pickle
 #     "개인기업구분": str,
 #     "성별": str,
 #     "연령": str,
+#     "매출년월일": str,
 #     "가맹점_시도명": str,
 #     "가맹점_시군구명": str,
 #     "가맹점_읍면동명": str,
@@ -21,6 +22,7 @@ import pickle
 #     "개인기업구분": str,
 #     "성별": str,
 #     "연령": str,
+#     "매출년월일": str,
 #     "가맹점_시도명": str,
 #     "가맹점_시군구명": str,
 #     "가맹점_읍면동명": str,
@@ -53,19 +55,21 @@ import pickle
 # with open('df_all.p', 'wb') as file:
 #     pickle.dump(df_all, file)
 
-# 읽기
+# # 읽기
 with open('df_all.p', 'rb') as file:
     df_all = pickle.load(file)
-
+df_all["date"] = pd.to_datetime(df_all["date"])
+print(df_all)
 # 한식 데이터만 필터링
 df_2104_type = df_all[df_all["type_code"] == 2104]
 
-# 날짜별 그룹화, all_payment와 customers의 합
+# 일별 그룹화, all_payment와 customers의 합
 df_2104_type = df_2104_type[["date", "all_payment", "customers"]]
 df_2104_sum_by_date = df_2104_type.groupby(["date"]).sum()
-# df_2104_sum_by_date["avg_payment"] = df_2104_sum_by_date["all_payment"]/df_2104_sum_by_date["customers"]
+df_2104_sum_by_date["avg_payment"] = df_2104_sum_by_date["all_payment"]/df_2104_sum_by_date["customers"]
 
-df_2104_sum_by_date["week"] = df_2104_sum_by_date.reset_index().index//7
-df_2104_sum_by_week = df_2104_sum_by_date.groupby(["week"]).sum()
-print(df_2104_sum_by_week)
+# 주별
+# df_2104_sum_by_date["week"] = df_2104_sum_by_date.reset_index().index//7
+# df_2104_sum_by_week = df_2104_sum_by_date.groupby(["week"]).sum()
 
+print(df_2104_sum_by_date)
