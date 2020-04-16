@@ -569,6 +569,33 @@ const actions = {
     }));
     commit("setStoreSearchList", stores)
   },
+  async editReview({
+    commit
+  }, params) {
+    await api.editReview(params)
+      .then(res => {
+        // console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  },
+  async writeReview({
+    commit
+  }, params) {
+    await api.writeReview(params)
+      .then(res => {
+        // console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  // async deleteReview({
+  //   commit
+  // }, params) {
+  //   await api.deleteReview(params)
+  // }
 };
 
 // mutations
