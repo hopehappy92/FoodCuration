@@ -186,8 +186,9 @@ class StoreReviewSet(viewsets.ModelViewSet):
         store = models.Store.objects.get(id=review.store_id)
         review.delete()
         user.review_count -= 1
+        user.save()
         store.review_count -= 1
-
+        store.save()
         return Response("삭제 성공")
 
 
@@ -361,7 +362,6 @@ class like_store(mixins.CreateModelMixin, viewsets.GenericViewSet):
 @api_view(['GET'])
 def review_list(self):
     serializer = serializers.ReviewSerializer2(models.Review.objects.all(), many=True)
-    # print(serializer.data)
     return Response(serializer.data)
 
 
@@ -453,5 +453,5 @@ def user_based_cf(self, user_id):
         arr.append([store, alg.predict(uid=user_id, iid=store).est])
         arr2.append(store)
     arr.sort(key = lambda x: x[1], reverse=True)
-    print(sorted(arr[:15]))
-    return Response(arr2[:15])
+    print(arr[:15])
+    return Response([store for store, score in arr[:15]])
