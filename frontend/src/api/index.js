@@ -18,7 +18,7 @@ export default {
   },
   register(params) {
     // console.log(params)
-    return http.post(`${regiUrl}/registration/`, params)
+    return http.post(`${apiUrl}/registration/`, params)
   },
   login(params) {
     return http.post(`${apiUrl}/login/`, params)
