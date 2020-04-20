@@ -28,7 +28,7 @@ export default [{
     view: "Mypage",
     name: "mypage",
     meta: {
-      authRequired: true
+      authRequired: true,
     }
   },
   {

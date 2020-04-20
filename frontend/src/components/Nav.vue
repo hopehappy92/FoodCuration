@@ -7,7 +7,7 @@
       </div>
       <div class="nav_innder_middle">
         <input type="text" placeholder="  맛집을 찾아드립니다">
-        <i class="fas fa-search" />
+        <i class="fas fa-search" @click="goSearchPage()" />
       </div>
       <div v-if="islogined == false">
         <ul class="nav_inner_right">
@@ -64,6 +64,9 @@ export default {
     },
     goHome() {
       router.push("/");
+    },
+    goSearchPage() {
+      router.push("/search")
     }
   },
   mounted() {
