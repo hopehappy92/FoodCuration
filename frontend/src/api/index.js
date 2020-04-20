@@ -32,5 +32,14 @@ export default {
   },
   getStoresByLocation(params) {
     return http.post(`${apiUrl}/search_store`, params)
+  },
+  editReview(params) {
+    return http.put(`${apiUrl}/store_reviews/${params.id}`, params)
+  },
+  getStoreReview(params) {
+    return http.get(`${apiUrl}/get_store_reviews_by_store_id/${params}`, params)
+  },
+  writeReview(params) {
+    return http.post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, params)
   }
 };
