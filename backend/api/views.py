@@ -22,11 +22,36 @@ import heapq
 import requests
 from bs4 import BeautifulSoup
 
+
+# 메서드 정리
+# class UserViewSet(viewsets.ViewSet):
+#     """
+#     Example empty viewset demonstrating the standard
+#     actions that will be handled by a router class.
+
+#     If you're using format suffixes, make sure to also include
+#     the `format=None` keyword argument for each action.
+#     """
+
+#     def list(self, request):
+#         pass
+#     def create(self, request):
+#         pass
+#     def retrieve(self, request, pk=None):
+#         pass
+#     def update(self, request, pk=None):
+#         pass
+#     def partial_update(self, request, pk=None):
+#         pass
+#     def destroy(self, request, pk=None):
+#         pass
+
+
 # 이미지 크롤링이 필요한 매장 id
 get_image_dict = dict()
 
 # 자동으로 크롤링 시작할 get_image_dict 길이
-start_crawling_length = 10
+start_crawling_length = 1000
 
 def check_image(serializer):
     global get_image_dict
@@ -57,15 +82,12 @@ def crawling():
                     StoreImage.objects.create(store_id=store_id, url=img.get('src'))
                     cnt += 1
                 except:
-                    pass            
+                    pass
             if cnt > 3:
                 del get_image_dict[store_id]
                 break
     
     df = pd.DataFrame(StoreImage.objects.all().values("store_id", "url"))
-    print(df)
-    # df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
-    
     with open('store_image.p', 'wb') as f:
         pickle.dump(df, f)
 
@@ -104,39 +126,7 @@ class CustomLoginView(LoginView):
 
 # from IPython import embed
 
-# 메서드 정리
-# class UserViewSet(viewsets.ViewSet):
-#     """
-#     Example empty viewset demonstrating the standard
-#     actions that will be handled by a router class.
 
-#     If you're using format suffixes, make sure to also include
-#     the `format=None` keyword argument for each action.
-#     """
-
-#     def list(self, request):
-#         pass
-#     def create(self, request):
-#         pass
-#     def retrieve(self, request, pk=None):
-#         pass
-#     def update(self, request, pk=None):
-#         pass
-#     def partial_update(self, request, pk=None):
-#         pass
-#     def destroy(self, request, pk=None):
-#         pass
-
-
-# @api_view(['GET'])
-# @permission_classes((IsAuthenticated, ))
-# @authentication_classes((JSONWebTokenAuthentication,))
-# def stores(request):
-#     print(request.META.get('HTTP_AUTHORIZATION'))
-#     print(request.user.is_authenticated)
-#     stores = models.Store.objects.all().order_by('id')[:5]
-#     store_list = serializers.StoreSerializer(stores, many=True)
-#     return Response(data = store_list.data)
 
 
 class SmallPagination(PageNumberPagination):
