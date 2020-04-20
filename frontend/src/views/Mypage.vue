@@ -50,7 +50,7 @@ import MypageSidebar from "../components/MypageSidebar"
 import MypageHeader from "../components/MypageHeader"
 import MypageCard from "../components/MypageCard"
 import { mapState, mapActions } from "vuex";
-
+import router from "../router"
 
 export default {
   components: {
@@ -157,14 +157,23 @@ export default {
     // console.log("mypage ", params)
     await this.getUserReview(params)
     this.loading = false
+  },
+  created() {
+    // if (this.$route.params.userId != localStorage.getItem("pk")) {
+    //   router.push("/wrongid")
+    // }
   }
 }
 </script>
 
 <style scoped>
 #mypage {
-  background-color: rgba(0,0,0,0.8);
+  /* background-color: rgba(0,0,0,0.8); */
+  background-image: url("../../public/images/mypage_bg.jpg");
   height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 #mypageform {
   height: 100%;

@@ -29,6 +29,7 @@
 <script>
 import router from "@/router";
 import axios from "axios";
+import { mapState, mapActions } from "vuex";
 import updateReview from "@/components/updateReview";
 export default {
   components: {
@@ -45,7 +46,7 @@ export default {
       reviewCnt: 0
     };
   },
-  mounted(res) {
+  mounted() {
     axios
       .get(
         `http://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
@@ -70,7 +71,14 @@ export default {
       });
   },
   methods: {
-    reRoad(res) {
+    // ...mapActions("data", ["getStoreReview"]),
+    // reRoad() {
+    //   setTimeout(() => {
+    //     this.getStoreReview(this.$route.params.storeId);
+    //     this.reviews = this.res.data.reverse();
+    //   }, 500);
+    // },
+    reRoad() {
       setTimeout(() => {
         axios
           .get(

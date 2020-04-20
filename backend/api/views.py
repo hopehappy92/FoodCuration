@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from api import models, serializers
 from django.http import HttpResponse
 from rest_framework import viewsets, mixins
+from rest_framework.schemas import AutoSchema
 from rest_framework.decorators import api_view, action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -9,11 +10,21 @@ from rest_framework.response import Response
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import CustomUser, Store, UserLikeStore
+from .models import CustomUser, Store, UserLikeStore, Algorithm, Review
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 import datetime
 from rest_auth.views import LoginView
+import pandas as pd
+import pickle
+import surprise
+
+with open('svdpp.p', 'rb') as file:
+    svdpp = pickle.load(file)
+with open('knn.p', 'rb') as file:
+    knn = pickle.load(file)
+with open('learning_dataframe.p', 'rb') as file:
+    learning_dataframe = pickle.load(file)
 
 def go_to_myhome(request):
     return redirect("http://localhost:8080/")
@@ -175,8 +186,9 @@ class StoreReviewSet(viewsets.ModelViewSet):
         store = models.Store.objects.get(id=review.store_id)
         review.delete()
         user.review_count -= 1
+        user.save()
         store.review_count -= 1
-
+        store.save()
         return Response("삭제 성공")
 
 
@@ -184,7 +196,6 @@ class StoreReviewSet(viewsets.ModelViewSet):
 def store_reviews(self, store_id):
     serializer = serializers.ReviewSerializer(models.Review.objects.filter(store_id=store_id), many=True)
     return Response(serializer.data)
-
 
 
 @api_view(['POST'])
@@ -351,5 +362,96 @@ class like_store(mixins.CreateModelMixin, viewsets.GenericViewSet):
 @api_view(['GET'])
 def review_list(self):
     serializer = serializers.ReviewSerializer2(models.Review.objects.all(), many=True)
-    # print(serializer.data)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def algorithm_check(self):
+    return Response(Algorithm.objects.get(id=1).alg_name)
+
+
+@api_view(['PUT'])
+def algorithm_change(self):
+    """
+    put
+    {
+        "algorithm": "0" # algorithm_list_index. svdpp
+    }
+
+    algorithm_list = {
+        0: "svdpp",
+        1: "knn",
+    }
+    """
+    algorithm_list = ["svdpp", "knn"]
+    algorithm = Algorithm.objects.get(id=1)
+    algorithm.alg_name = algorithm_list[int(self.data["algorithm"])]
+    algorithm.save()
+    return Response(Algorithm.objects.get(id=1).alg_name)
+
+
+@api_view(['GET'])
+def update_learning_dataframe(self):
+    global learning_dataframe
+    userset = set()
+    for user in CustomUser.objects.filter(review_count__gte=10).values("id"):
+        userset.add(user['id'])
+    # 리뷰가 열개 이상인 매장
+    storeset = set()
+    for store in Store.objects.filter(review_count__gte=10).values("id"):
+        storeset.add(store['id'])
+    df = pd.DataFrame(Review.objects.all().values("user", "store", "score"))
+    df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
+    
+    with open('learning_dataframe.p', 'wb') as f:
+        pickle.dump(df, f)
+    learning_dataframe = df
+    return Response("갱신 완료")
+
+
+@api_view(['GET'])
+def relearning_current_model(self):
+    global svdpp, knn
+    alg_name = Algorithm.objects.get(id=1).alg_name
+    reader = surprise.Reader(rating_scale=(1, 5))
+    with open('learning_dataframe.p', 'rb') as file:
+        df = pickle.load(file)
+    data = surprise.Dataset.load_from_df(df, reader)
+    trainset = data.build_full_trainset()
+    if alg_name == 'svdpp':
+        alg = surprise.SVDpp()
+        output = alg.fit(trainset)
+        svdpp = alg
+        with open('svdpp.p', 'wb') as file:
+            pickle.dump(alg, file)
+    elif alg_name == 'knn':
+        sim_options = {'name': 'pearson', 'user_based': True}
+        alg = surprise.KNNBaseline(k=30, sim_options=sim_options)
+        output = alg.fit(trainset)
+        knn = alg
+        with open('knn.p', 'wb') as file:
+            pickle.dump(alg, file)
+    else:
+        return Response("알고리즘 식별 불가")
+    
+    return Response("{} 갱신 완료".format(alg_name))
+
+
+@api_view(['GET'])
+def user_based_cf(self, user_id):
+    alg_name = Algorithm.objects.get(id=1).alg_name
+    df = learning_dataframe[learning_dataframe["user"] != user_id]
+    stores = df["store"]
+    arr = []
+    arr2 = []
+    if alg_name == 'svdpp':
+        alg = svdpp
+    elif alg_name == 'knn':
+        alg = knn
+    
+    for store in stores.unique():
+        arr.append([store, alg.predict(uid=user_id, iid=store).est])
+        arr2.append(store)
+    arr.sort(key = lambda x: x[1], reverse=True)
+    print(arr[:15])
+    return Response([store for store, score in arr[:15]])

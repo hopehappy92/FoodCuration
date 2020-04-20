@@ -6,14 +6,14 @@
         <span>Food Curation</span>
       </div>
       <div class="nav_innder_middle">
-        <input type="text" placeholder="  맛집을 찾아드립니다" />
-        <i class="fas fa-search" />
+        <input type="text" placeholder="  맛집을 찾아드립니다">
+        <i class="fas fa-search" @click="goSearchPage()" />
       </div>
       <div v-if="islogined == false">
         <ul class="nav_inner_right">
           <li>
             <login>
-              <button class="nav_menu" slot="click">로그인</button>
+              <button slot="click" class="nav_menu">로그인</button>
             </login>
           </li>
           <li>
@@ -64,6 +64,9 @@ export default {
     },
     goHome() {
       router.push("/");
+    },
+    goSearchPage() {
+      router.push("/search")
     }
   },
   mounted() {
