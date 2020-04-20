@@ -555,7 +555,10 @@ const actions = {
   async searchByLocation({
     commit
   }, params) {
+    console.log(params)
     const resp = await api.getStoresByLocation(params);
+    console.log('123131231')
+    console.log(resp)
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,
