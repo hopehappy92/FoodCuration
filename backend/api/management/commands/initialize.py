@@ -32,8 +32,9 @@ class Command(BaseCommand):
         dataframes = self._load_dataframes()
 
         # 데이터 중 빈 값들을 0.0으로 입력해 줍니다.
-        dataframes["stores"] = dataframes["stores"].fillna(0.0)
-        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0.0).astype(int)
+        dataframes["stores"]["latitude"] = dataframes["stores"]["latitude"].fillna(0.0)
+        dataframes["stores"]["longitude"] = dataframes["stores"]["longitude"].fillna(0.0)
+        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0).astype(int)
         
         print("[*] Delete all data...")
         # DB에 저장된 정보를 모두 지워 초기화해 줍니다.
