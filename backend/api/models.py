@@ -25,11 +25,10 @@ class Store(models.Model):
     area = models.CharField(max_length=100, null=True)
     tel = models.CharField(max_length=30, null=True)
     address = models.CharField(max_length=100, null=True)
-    latitude = models.FloatField(max_length=10, null=True)
-    longitude = models.FloatField(max_length=10, null=True)
+    latitude = models.FloatField(max_length=10, default=0.0)
+    longitude = models.FloatField(max_length=10, default=0.0)
     category = models.CharField(max_length=200, null=True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_stores", blank=True)
-    location = models.IntegerField()
     review_count = models.IntegerField(default=0)
     tag = models.CharField(max_length=200, null=True)
     @property
