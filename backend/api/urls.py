@@ -47,6 +47,11 @@ urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('search_store', views.search_store, name="search_store"),
     path('go_to_myhome/', views.go_to_myhome, name="go_to_myhome"),
+    path('algorithm_check/', views.algorithm_check, name="algorithm_check"),
+    path('algorithm_change/', views.algorithm_change, name="algorithm_change"),
+    path('update_learning_dataframe', views.update_learning_dataframe, name="update_learning_dataframe"),
+    path('relearning_current_model', views.relearning_current_model, name="relearning_current_model"),
+    path('user_based_cf/<int:user_id>', views.user_based_cf, name="user_based_cf"),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
     path('token/refresh/', refresh_jwt_token),
@@ -57,4 +62,6 @@ urlpatterns = [
     path('reset-password/confirm/<uidb64>[0-9A-Za-z]+)-<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset-password/complete/', PasswordResetCompleteView.as_view(),name='password_reset_complete'),
     path('accounts/', include('allauth.urls')),
+    path('crawling_check', views.crawling_check, name="crawling_check"),
+    path('crawling_start', views.crawling_start, name="crawling_start"),
 ]

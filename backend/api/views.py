@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from api import models, serializers
 from django.http import HttpResponse
 from rest_framework import viewsets, mixins
+from rest_framework.schemas import AutoSchema
 from rest_framework.decorators import api_view, action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -9,26 +10,18 @@ from rest_framework.response import Response
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import CustomUser, Store, UserLikeStore
+from .models import CustomUser, Store, UserLikeStore, Algorithm, Review, StoreImage
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 import datetime
 from rest_auth.views import LoginView
+import pandas as pd
+import pickle
+import surprise
+import heapq
+import requests
+from bs4 import BeautifulSoup
 
-def go_to_myhome(request):
-    return redirect("http://localhost:8080/")
-
-class CustomLoginView(LoginView):
-    def get_response(self):
-        user = get_object_or_404(CustomUser, username=self.user)
-        # print(self.user)
-        orginal_response = super().get_response()
-        mydata = {"gender": user.gender, "age": user.age, "review_count": user.review_count, "status": "success"}
-        orginal_response.data["user"].update(mydata)
-        return orginal_response
-
-
-# from IPython import embed
 
 # 메서드 정리
 # class UserViewSet(viewsets.ViewSet):
@@ -54,15 +47,86 @@ class CustomLoginView(LoginView):
 #         pass
 
 
-# @api_view(['GET'])
-# @permission_classes((IsAuthenticated, ))
-# @authentication_classes((JSONWebTokenAuthentication,))
-# def stores(request):
-#     print(request.META.get('HTTP_AUTHORIZATION'))
-#     print(request.user.is_authenticated)
-#     stores = models.Store.objects.all().order_by('id')[:5]
-#     store_list = serializers.StoreSerializer(stores, many=True)
-#     return Response(data = store_list.data)
+# 이미지 크롤링이 필요한 매장 id
+get_image_dict = dict()
+
+# 자동으로 크롤링 시작할 get_image_dict 길이
+start_crawling_length = 1000
+
+def check_image(serializer):
+    global get_image_dict
+    for data in serializer.data:
+        if not data["images"]:
+            if get_image_dict.get(data["id"]):
+                get_image_dict[data["id"]] += 1
+            else:
+                get_image_dict[data["id"]] = 1
+    if len(get_image_dict) > start_crawling_length:
+        crawling()
+
+def crawling():
+    global get_image_dict
+    Q = []
+    for key, value in get_image_dict.items():
+        heapq.heappush(Q, [-value, key])
+    while Q:
+        _, store_id = heapq.heappop(Q)
+        store = Store.objects.get(id=store_id)
+        soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969#imgrc=RakknToj3buHrM".format(store.store_name, store.area)).text, 'html.parser')
+        # print(soup.select('td a img'))
+        cnt = 0
+        for img in soup.select('td a img'):
+            # print(img.get('src')[5])
+            if img.get('src')[:5] == 'http:':
+                try:
+                    StoreImage.objects.create(store_id=store_id, url=img.get('src'))
+                    cnt += 1
+                except:
+                    pass
+            if cnt > 3:
+                del get_image_dict[store_id]
+                break
+    
+    df = pd.DataFrame(StoreImage.objects.all().values("store_id", "url"))
+    with open('store_image.p', 'wb') as f:
+        pickle.dump(df, f)
+
+
+@api_view(['GET'])
+def crawling_check(self):
+    global get_image_dict
+    return Response(get_image_dict)
+
+
+@api_view(['GET'])
+def crawling_start(self):
+    crawling()
+    return Response(get_image_dict)
+
+
+with open('svdpp.p', 'rb') as file:
+    svdpp = pickle.load(file)
+with open('knn.p', 'rb') as file:
+    knn = pickle.load(file)
+with open('learning_dataframe.p', 'rb') as file:
+    learning_dataframe = pickle.load(file)
+
+def go_to_myhome(request):
+    return redirect("http://localhost:8080/")
+
+class CustomLoginView(LoginView):
+    def get_response(self):
+        user = get_object_or_404(CustomUser, username=self.user)
+        # print(self.user)
+        orginal_response = super().get_response()
+        mydata = {"gender": user.gender, "age": user.age, "review_count": user.review_count, "status": "success"}
+        orginal_response.data["user"].update(mydata)
+        return orginal_response
+
+
+# from IPython import embed
+
+
 
 
 class SmallPagination(PageNumberPagination):
@@ -175,8 +239,9 @@ class StoreReviewSet(viewsets.ModelViewSet):
         store = models.Store.objects.get(id=review.store_id)
         review.delete()
         user.review_count -= 1
+        user.save()
         store.review_count -= 1
-
+        store.save()
         return Response("삭제 성공")
 
 
@@ -184,7 +249,6 @@ class StoreReviewSet(viewsets.ModelViewSet):
 def store_reviews(self, store_id):
     serializer = serializers.ReviewSerializer(models.Review.objects.filter(store_id=store_id), many=True)
     return Response(serializer.data)
-
 
 
 @api_view(['POST'])
@@ -288,6 +352,20 @@ class StoreDetailViewSet(viewsets.ModelViewSet):
             models.Store.objects.all().filter(store_name__contains=name).order_by("id")
         )
         return queryset
+    
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            check_image(serializer)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        check_image(serializer)
+        return Response(serializer.data)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -351,5 +429,96 @@ class like_store(mixins.CreateModelMixin, viewsets.GenericViewSet):
 @api_view(['GET'])
 def review_list(self):
     serializer = serializers.ReviewSerializer2(models.Review.objects.all(), many=True)
-    # print(serializer.data)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def algorithm_check(self):
+    return Response(Algorithm.objects.get(id=1).alg_name)
+
+
+@api_view(['PUT'])
+def algorithm_change(self):
+    """
+    put
+    {
+        "algorithm": "0" # algorithm_list_index. svdpp
+    }
+
+    algorithm_list = {
+        0: "svdpp",
+        1: "knn",
+    }
+    """
+    algorithm_list = ["svdpp", "knn"]
+    algorithm = Algorithm.objects.get(id=1)
+    algorithm.alg_name = algorithm_list[int(self.data["algorithm"])]
+    algorithm.save()
+    return Response(Algorithm.objects.get(id=1).alg_name)
+
+
+@api_view(['GET'])
+def update_learning_dataframe(self):
+    global learning_dataframe
+    userset = set()
+    for user in CustomUser.objects.filter(review_count__gte=10).values("id"):
+        userset.add(user['id'])
+    # 리뷰가 열개 이상인 매장
+    storeset = set()
+    for store in Store.objects.filter(review_count__gte=10).values("id"):
+        storeset.add(store['id'])
+    df = pd.DataFrame(Review.objects.all().values("user", "store", "score"))
+    df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
+    
+    with open('learning_dataframe.p', 'wb') as f:
+        pickle.dump(df, f)
+    learning_dataframe = df
+    return Response("갱신 완료")
+
+
+@api_view(['GET'])
+def relearning_current_model(self):
+    global svdpp, knn
+    alg_name = Algorithm.objects.get(id=1).alg_name
+    reader = surprise.Reader(rating_scale=(1, 5))
+    with open('learning_dataframe.p', 'rb') as file:
+        df = pickle.load(file)
+    data = surprise.Dataset.load_from_df(df, reader)
+    trainset = data.build_full_trainset()
+    if alg_name == 'svdpp':
+        alg = surprise.SVDpp()
+        output = alg.fit(trainset)
+        svdpp = alg
+        with open('svdpp.p', 'wb') as file:
+            pickle.dump(alg, file)
+    elif alg_name == 'knn':
+        sim_options = {'name': 'pearson', 'user_based': True}
+        alg = surprise.KNNBaseline(k=30, sim_options=sim_options)
+        output = alg.fit(trainset)
+        knn = alg
+        with open('knn.p', 'wb') as file:
+            pickle.dump(alg, file)
+    else:
+        return Response("알고리즘 식별 불가")
+    
+    return Response("{} 갱신 완료".format(alg_name))
+
+
+@api_view(['GET'])
+def user_based_cf(self, user_id):
+    alg_name = Algorithm.objects.get(id=1).alg_name
+    df = learning_dataframe[learning_dataframe["user"] != user_id]
+    stores = df["store"]
+    arr = []
+    arr2 = []
+    if alg_name == 'svdpp':
+        alg = svdpp
+    elif alg_name == 'knn':
+        alg = knn
+    
+    for store in stores.unique():
+        arr.append([store, alg.predict(uid=user_id, iid=store).est])
+        arr2.append(store)
+    arr.sort(key = lambda x: x[1], reverse=True)
+    print(arr[:15])
+    return Response([store for store, score in arr[:15]])

@@ -3,6 +3,7 @@ import pandas as pd
 from django.core.management.base import BaseCommand
 from backend import settings
 from api import models
+import pickle
 
 
 class Command(BaseCommand):
@@ -29,10 +30,12 @@ class Command(BaseCommand):
         print("[*] Loading data...")
         # dataframe pkl 파일을 읽어오는 _load_dataframes함수를 실행합니다.
         dataframes = self._load_dataframes()
+        store_images = pd.read_pickle('store_image.p')
 
         # 데이터 중 빈 값들을 0.0으로 입력해 줍니다.
-        dataframes["stores"] = dataframes["stores"].fillna(0.0)
-        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0.0).astype(int)
+        dataframes["stores"]["latitude"] = dataframes["stores"]["latitude"].fillna(0.0)
+        dataframes["stores"]["longitude"] = dataframes["stores"]["longitude"].fillna(0.0)
+        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0).astype(int)
         
         print("[*] Delete all data...")
         # DB에 저장된 정보를 모두 지워 초기화해 줍니다.
@@ -40,6 +43,8 @@ class Command(BaseCommand):
         models.CustomUser.objects.all().delete()
         models.Review.objects.all().delete()
         models.Menu.objects.all().delete()
+        models.StoreImage.objects.all().delete()
+        models.UserLikeStore.objects.all().delete()
         print("[+] Done")
 
         print("[*] Initializing stores...")
@@ -119,6 +124,40 @@ class Command(BaseCommand):
         ]
         models.Review.objects.bulk_create(reviews_bulk)
         print("[+] Done")
+
+        print("[*] Initializing Algorithm...")
+        models.Algorithm.objects.create(alg_name="svdpp")
+        print("[+] Done")
+        
+        print("[*] Initializing learning dataframe...")
+        userset = set()
+        for user in models.CustomUser.objects.filter(review_count__gte=10).values("id"):
+            userset.add(user['id'])
+        # 리뷰가 열개 이상인 매장
+        storeset = set()
+        for store in models.Store.objects.filter(review_count__gte=10).values("id"):
+            storeset.add(store['id'])
+        df = pd.DataFrame(models.Review.objects.all().values("user", "store", "score"))
+        df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
+        
+        with open('learning_dataframe.p', 'wb') as f:
+            pickle.dump(df, f)
+
+        print("[+] Done")
+
+
+        print("[*] Initializing store_image...")
+        
+        store_image_bulk = [
+            models.StoreImage(
+                store_id=store_image.store_id,
+                url=store_image.url,
+            )
+            for store_image in store_images.itertuples()
+        ]
+        models.StoreImage.objects.bulk_create(store_image_bulk)
+        print("[+] Done")
+        
 
     def handle(self, *args, **kwargs):
         # python manage.py initialize를 실행하면 가장 먼저 들어오는 부분
