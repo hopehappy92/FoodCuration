@@ -1,4 +1,4 @@
-from .models import Store, Review, Menu, CustomUser, UserLikeStore
+from .models import Store, Review, Menu, CustomUser, UserLikeStore, StoreImage
 from rest_framework import serializers
 from django.db.models import Avg
 from allauth.account.adapter import get_adapter
@@ -17,6 +17,15 @@ class MenuSerializer(serializers.ModelSerializer):
             "price",
         ]
 
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreImage
+        fields = [
+            "url",
+        ]
+
+
 class CustomRegisterSerializer(RegisterSerializer):
     age = serializers.IntegerField(required=False)
     gender = serializers.CharField(max_length=2, required=False)
@@ -29,6 +38,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 class StoreSerializer(serializers.ModelSerializer):
     menues = MenuSerializer(source="menu_set", many=True)
+    images = ImageSerializer(source="storeimage_set", many=True)
     class Meta:
         model = Store
         fields = [
@@ -43,6 +53,7 @@ class StoreSerializer(serializers.ModelSerializer):
             "category_list",
             "review_count",
             "menues",
+            "images",
         ]
 
 class StoreSerializer2(serializers.ModelSerializer):
@@ -85,6 +96,7 @@ class StoreDetailSerializer(serializers.ModelSerializer):
     avg_score = serializers.SerializerMethodField()
     reviews = ReviewSerializer(source="review_set", many=True)
     menues = MenuSerializer(source="menu_set", many=True)
+    images = ImageSerializer(source="storeimage_set", many=True)
     class Meta:
         model = Store
         fields = [
@@ -101,6 +113,7 @@ class StoreDetailSerializer(serializers.ModelSerializer):
             "reviews",
             "avg_score",
             "menues",
+            "images",
         ]
 
     def get_review_count(self, obj):

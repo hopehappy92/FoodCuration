@@ -15,43 +15,28 @@ from django_pandas.io import read_frame
 
 import pickle
 
+
+with open('learning_dataframe.p', 'rb') as file:
+    df = pickle.load(file)
+print(df)
+
 with open('svdpp.p', 'rb') as file:    # james.p 파일을 바이너리 읽기 모드(rb)로 열기
     alg2 = pickle.load(file)
+
 # user_id = 68632
 user_id = 7
-df = pd.DataFrame(columns=("user_id", "store_id", "score"))
-# a = Review.objects.all()
-# df = pd.DataFrame(list(a.values("user_id", "store_id", "score")))
-# 내 리뷰 가져오기
-for review in CustomUser.objects.get(id=user_id).review_set.all():
-    # 이 리뷰의 매장 번호에 해당하는 매장의 리뷰들 가져오기
-    # print(review.store_id)
-    for review in Store.objects.get(id=review.store_id).review_set.all():
-        # 이 리뷰 작성자들의 모든 리뷰 가져오기
-        for review in CustomUser.objects.get(id=review.user_id).review_set.all():
-            df.loc[review.id] = [review.user_id, review.store_id, review.score]
-print(df)
+# user_id = 469245
 
 
 print("---------------")
 reader = surprise.Reader()
 data = surprise.Dataset.load_from_df(df, reader)
-alg = surprise.SVDpp()
+alg = surprise.KNNBasic()
 output = alg.fit(data.build_full_trainset())
 print("---------------")
 
-print(df["store_id"])
-cnt = 0
-for store_id in df["store_id"].unique():
+for store_id in df["store"]:
     print(store_id, alg.predict(uid=user_id, iid=store_id).est)
-    print(user_id, store_id)
-    a = Review.objects.filter(user=user_id).filter(store=store_id)
-    if a:
-        print(store_id, a[0].score)
-        cnt += 1
-        if cnt > 10:
-            break
-    print("---")
 
 with open('svdpp.p', 'wb') as file:    # james.p 파일을 바이너리 쓰기 모드(wb)로 열기
     pickle.dump(alg, file)
@@ -62,12 +47,7 @@ print(alg)
 print(Review.objects.filter(user_id=user_id).values('store', 'score'))
 
 print(alg2.predict(uid=7, iid=248259).est)
-print(alg2.predict(uid=7, iid=248259).est)
-print(alg2.predict(uid=7, iid=248259).est)
-print(alg2.predict(uid=7, iid=248259).est)
-print(alg2.estimate(u=7, i=248259))
-print(alg2.estimate(u=7, i=248259))
-print(alg2.estimate(u=7, i=248259))
+print(df["store_id"])
 # 50번 유저에 대해서 50번 유저가 보지 않은 모든 영화에 대한 점수 예측값을 구한다.
 # 이미 시청한 영화는 추천 X
 # iids = dataset['iid'].unique()

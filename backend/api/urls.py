@@ -1,9 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 from api import views
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -45,4 +47,22 @@ urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('search_store', views.search_store, name="search_store"),
     path('go_to_myhome/', views.go_to_myhome, name="go_to_myhome"),
+    path('algorithm_check/', views.algorithm_check, name="algorithm_check"),
+    path('algorithm_change/', views.algorithm_change, name="algorithm_change"),
+    path('update_learning_dataframe', views.update_learning_dataframe, name="update_learning_dataframe"),
+    path('relearning_current_model', views.relearning_current_model, name="relearning_current_model"),
+    path('user_based_cf/<int:user_id>', views.user_based_cf, name="user_based_cf"),
+    path('token/', obtain_jwt_token),
+    path('token/verify/', verify_jwt_token),
+    path('token/refresh/', refresh_jwt_token),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    path('reset-password', PasswordResetView.as_view(), name='password_reset'),
+    path('reset-password/done', PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset-password/confirm/<uidb64>[0-9A-Za-z]+)-<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset-password/complete/', PasswordResetCompleteView.as_view(),name='password_reset_complete'),
+    path('accounts/', include('allauth.urls')),
+    path('crawling_check', views.crawling_check, name="crawling_check"),
+    path('crawling_start', views.crawling_start, name="crawling_start"),
+    path('create_store', views.create_store, name="create_store"),
 ]
