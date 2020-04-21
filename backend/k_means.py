@@ -124,7 +124,8 @@ group4 = knn_grouping(group4_df, score_list[0])
 
 # centroid -> 저쟁해야하는 값
 centroid = kmeans.cluster_centers_
-
+print("centroid")
+print(centroid)
 # 어느  cluster에 속하는지 알려줌
 def get_cluster(centroid, age, gender):
 

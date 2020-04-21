@@ -33,8 +33,8 @@ class Command(BaseCommand):
         store_images = pd.read_pickle('store_image.p')
         store_review_count_df = dataframes["reviews"][["store", "user"]].groupby("store").count()
         user_review_count_df = dataframes["reviews"][["store", "user"]].groupby("user").count()
-        store_review_count_df_index = store_review_count_df.index
-        user_review_count_df_index = user_review_count_df.index
+        store_review_count_df_index_set = set(store_review_count_df.index)
+        user_review_count_df_index_set = set(user_review_count_df.index)
         # 데이터 중 빈 값들을 0.0으로 입력해 줍니다.
         dataframes["stores"]["latitude"] = dataframes["stores"]["latitude"].fillna(0.0)
         dataframes["stores"]["longitude"] = dataframes["stores"]["longitude"].fillna(0.0)
@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 latitude=store.latitude,
                 longitude=store.longitude,
                 category=store.category,
-                review_count=store_review_count_df.loc[store.id] if store.id in store_review_count_df_index else 0
+                review_count=store_review_count_df.loc[store.id] if store.id in store_review_count_df_index_set else 0
             )
             for store in stores.itertuples()
         ]
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 age=user.age,
                 # 유저가 작성한 리뷰 갯수를 입력합니다.
                 # 머신러닝에서 DB 데이터를 활용하기 위해 미리 계산해 칼럼에 입력합니다.
-                review_count=user_review_count_df.loc[user.id] if user.id in user_review_count_df_index else 0
+                review_count=user_review_count_df.loc[user.id] if user.id in user_review_count_df_index_set else 0
             )
             for user in users.itertuples()
         ]
