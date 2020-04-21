@@ -30,10 +30,15 @@ class Command(BaseCommand):
         print("[*] Loading data...")
         # dataframe pkl 파일을 읽어오는 _load_dataframes함수를 실행합니다.
         dataframes = self._load_dataframes()
-
+        store_images = pd.read_pickle('store_image.p')
+        store_review_count_df = dataframes["reviews"][["store", "user"]].groupby("store").count()
+        user_review_count_df = dataframes["reviews"][["store", "user"]].groupby("user").count()
+        store_review_count_df_index = store_review_count_df.index
+        user_review_count_df_index = user_review_count_df.index
         # 데이터 중 빈 값들을 0.0으로 입력해 줍니다.
-        dataframes["stores"] = dataframes["stores"].fillna(0.0)
-        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0.0).astype(int)
+        dataframes["stores"]["latitude"] = dataframes["stores"]["latitude"].fillna(0.0)
+        dataframes["stores"]["longitude"] = dataframes["stores"]["longitude"].fillna(0.0)
+        dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0).astype(int)
         
         print("[*] Delete all data...")
         # DB에 저장된 정보를 모두 지워 초기화해 줍니다.
@@ -41,6 +46,9 @@ class Command(BaseCommand):
         models.CustomUser.objects.all().delete()
         models.Review.objects.all().delete()
         models.Menu.objects.all().delete()
+        models.StoreImage.objects.all().delete()
+        models.UserLikeStore.objects.all().delete()
+        models.Algorithm.objects.all().delete()
         print("[+] Done")
 
         print("[*] Initializing stores...")
@@ -48,7 +56,6 @@ class Command(BaseCommand):
 
         stores = dataframes["stores"]
         # 데이터프레임에서 매장 정보를 가져옵니다.
-
         stores_bulk = [
             models.Store(
                 id=store.id,
@@ -60,12 +67,7 @@ class Command(BaseCommand):
                 latitude=store.latitude,
                 longitude=store.longitude,
                 category=store.category,
-                # latitude와 longitude을 바탕으로 격자 값을 계산하여 location에 입력합니다.
-                # 맨 왼쪽 아래가 0번이고 맨 오른쪽 위가 가장 큰 값을 가지는 형태입니다.
-                location=int((store.latitude - 33.079772) / 0.0009) + (int((store.longitude -124.6)/0.0009)<<14) if store.longitude != 0.0 else 0,
-                # 매장에 작성된 리뷰 갯수를 입력합니다.
-                # 머신러닝에서 DB 데이터를 활용하기 위해 미리 계산해 칼럼에 입력합니다.
-                review_count=dataframes["reviews"]["store"][dataframes["reviews"]["store"]==store.id].count()
+                review_count=store_review_count_df.loc[store.id] if store.id in store_review_count_df_index else 0
             )
             for store in stores.itertuples()
         ]
@@ -84,7 +86,7 @@ class Command(BaseCommand):
                 age=user.age,
                 # 유저가 작성한 리뷰 갯수를 입력합니다.
                 # 머신러닝에서 DB 데이터를 활용하기 위해 미리 계산해 칼럼에 입력합니다.
-                review_count=dataframes["reviews"]["user"][dataframes["reviews"]["user"]==user.id].count()
+                review_count=user_review_count_df.loc[user.id] if user.id in user_review_count_df_index else 0
             )
             for user in users.itertuples()
         ]
@@ -140,6 +142,20 @@ class Command(BaseCommand):
             pickle.dump(df, f)
 
         print("[+] Done")
+
+
+        print("[*] Initializing store_image...")
+        
+        store_image_bulk = [
+            models.StoreImage(
+                store_id=store_image.store_id,
+                url=store_image.url,
+            )
+            for store_image in store_images.itertuples()
+        ]
+        models.StoreImage.objects.bulk_create(store_image_bulk)
+        print("[+] Done")
+        
 
     def handle(self, *args, **kwargs):
         # python manage.py initialize를 실행하면 가장 먼저 들어오는 부분
