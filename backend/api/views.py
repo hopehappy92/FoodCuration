@@ -114,6 +114,14 @@ with open('knn.p', 'rb') as file:
 with open('learning_dataframe.p', 'rb') as file:
     learning_dataframe = pickle.load(file)
 
+with open('df_all_tob_list.p', 'rb') as file:
+    df_tob_list = pickle.load(file)
+
+@api_view(['GET'])
+def trend_by_tob(self, tob_id):
+    global df_tob_list
+    return Response(df_tob_list[tob_id][["new_date", "kdj_d", "kdj_j"]])
+
 def go_to_myhome(request):
     return redirect("http://localhost:8080/")
 
@@ -122,7 +130,14 @@ class CustomLoginView(LoginView):
         user = get_object_or_404(CustomUser, username=self.user)
         # print(self.user)
         orginal_response = super().get_response()
-        mydata = {"gender": user.gender, "age": user.age, "review_count": user.review_count, "status": "success"}
+        mydata = {
+            "gender": user.gender,
+            "age": user.age,
+            "review_count": user.review_count,
+            "is_staff": user.is_staff,
+            "category_list": user.category_list,
+            "status": "success",
+            }
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
