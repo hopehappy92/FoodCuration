@@ -41,5 +41,11 @@ export default {
   },
   writeReview(params) {
     return http.post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, params)
+  },
+  setUserCategory(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.post(`${apiUrl}/set_user_category`, params, {headers})
   }
 };

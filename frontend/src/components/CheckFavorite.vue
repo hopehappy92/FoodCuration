@@ -86,6 +86,8 @@
 </template>
 
 <script>
+import { mapActions, mapMutations } from "vuex"
+
   export default {
     data () {
       // const srcs = {
@@ -143,13 +145,28 @@
       }
     },
     methods: {
+      ...mapActions("data", ["setCategory"]),
+      ...mapMutations("data", ["setIsHomeCate"]),
       remove (item) {
         const index = this.foods.indexOf(item.name)
         if (index >= 0) this.foods.splice(index, 1)
       },
-      setCate() {
-        console.log(this.foods)
-        // this.dialog = false
+      async setCate() {
+        // console.log(this.foods)
+        var params = {
+          category: ""
+        }
+        for (let i = 0; i < this.foods.length; ++i) {
+          if (i+1 == this.foods.length) {
+            params.category += (String(this.foods[i]))
+          } else {
+            params.category += (String(this.foods[i]) + "|")
+          }
+        }
+        // console.log(params)
+        await this.setCategory(params)
+        this.setIsHomeCate()
+        this.dialog = false
       }
     },
   }
