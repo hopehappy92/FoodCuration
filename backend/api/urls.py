@@ -64,4 +64,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('crawling_check', views.crawling_check, name="crawling_check"),
     path('crawling_start', views.crawling_start, name="crawling_start"),
+    path('create_store', views.create_store, name="create_store"),
 ]
