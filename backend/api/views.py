@@ -122,7 +122,14 @@ class CustomLoginView(LoginView):
         user = get_object_or_404(CustomUser, username=self.user)
         # print(self.user)
         orginal_response = super().get_response()
-        mydata = {"gender": user.gender, "age": user.age, "review_count": user.review_count, "status": "success"}
+        mydata = {
+            "gender": user.gender,
+            "age": user.age,
+            "review_count": user.review_count,
+            "is_staff": user.is_staff,
+            "category_list": user.category_list,
+            "status": "success",
+            }
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
