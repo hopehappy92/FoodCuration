@@ -17,18 +17,18 @@ import { mapActions } from "vuex";
 
 export default {
   methods: {
-    ...mapActions("data", ["checkRegister"]),
+    ...mapActions("data", ["checkNavbar"]),
     goHome() {
       router.push("/")
     }
   },
   mounted() {
     // console.log("aaa")
-    this.checkRegister()
+    this.checkNavbar()
   },
   destroyed() {
     // console.log("bbb")
-    this.checkRegister()
+    this.checkNavbar()
   }
 }
 </script>
@@ -53,10 +53,32 @@ export default {
   padding: 30px;
 }
 #notfound_badgate {
-  font-size: 50px;
-  margin-bottom: 10px;
+  color: white;
+  font-size: 60px;
+  font-weight: 500;
+  letter-spacing: 8px;
+  margin-bottom: 20px;
+  background: black;
+  position: relative;
+  animation: text 3s 1;
 }
 #notfound_gohome {
   cursor: pointer;
+  color: #6ab04c;
+}
+
+@keyframes text {
+  0%{
+    color: black;
+    margin-bottom: -40px;
+  }
+  30%{
+    letter-spacing: 25px;
+    margin-bottom: -40px;
+  }
+  85%{
+    letter-spacing: 8px;
+    margin-bottom: -40px;
+  }
 }
 </style>
