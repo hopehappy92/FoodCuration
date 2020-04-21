@@ -14,7 +14,8 @@ from surprise.model_selection import train_test_split
 from surprise.dataset import DatasetAutoFolds
 from surprise.model_selection import GridSearchCV
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+ 'backend.settings')
 django.setup()
 
 from api.models import Store #상점 46만개
@@ -34,6 +35,8 @@ all_user_df = pd.DataFrame(data=request_all_review)
 print('데이터 불러오기 완료')
 ten_review_store_list = set()
 ten_review_user_list = set()
+
+print(1234)
 for store in request_store:
     ten_review_store_list.add(store['id'])
 for user in request_user:
@@ -47,8 +50,8 @@ for dic in request_all_review:
 
 ratings_df = pd.DataFrame(selected_review_list)
 ratings_df = ratings_df[['user', 'store', 'score']]
-print(ratings_df)
-
+print(ratings_df.shape)
+print(1234)
 
 # reader => 범위 설정  & 학습 부분
 reader = Reader(rating_scale=(1, 5))
@@ -66,7 +69,7 @@ print('학습 시작')
 # 피어슨 유사도로 학습
 sim_options = {'name': 'pearson', 'user_based': True}
 algo = surprise.KNNBaseline(k=30, sim_options=sim_options)
-predictions = algo.fit(trainset)
+algo.fit(trainset)
 print('학습 완료')
 
 # 안가본 식당
@@ -80,7 +83,7 @@ def get_uneaten(ratings, store_list, user_id):
 
 
 # 추천 식당 정렬해서 리턴
-def recomm_store(algo, user_id, unvisited_store, top_n=35):
+def recomm_store(algo, user_id, unvisited_store, top_n=10):
     predicitons = []
     predicitons = [algo.predict(user_id, kk) for kk in unvisited_store]
     def sortkey_est(pred):
@@ -99,7 +102,7 @@ def recomm_store(algo, user_id, unvisited_store, top_n=35):
 
 unvisited_store = get_uneaten(ratings_df, ten_review_store_list, 243883)
 
-top_store_preds = recomm_store(algo, 243883, unvisited_store, top_n=35)
+top_store_preds = recomm_store(algo, 243883, unvisited_store)
 print('#### Top 10 음식점####')
 for top_store in top_store_preds:
     print(top_store)
