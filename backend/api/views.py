@@ -114,6 +114,14 @@ with open('knn.p', 'rb') as file:
 with open('learning_dataframe.p', 'rb') as file:
     learning_dataframe = pickle.load(file)
 
+with open('df_all_tob_list.p', 'rb') as file:
+    df_tob_list = pickle.load(file)
+
+@api_view(['GET'])
+def trend_by_tob(self, tob_id):
+    global df_tob_list
+    return Response(df_tob_list[tob_id][["new_date", "kdj_d", "kdj_j"]])
+
 def go_to_myhome(request):
     return redirect("http://localhost:8080/")
 

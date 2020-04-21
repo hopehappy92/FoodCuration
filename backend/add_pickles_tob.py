@@ -69,6 +69,55 @@ print(result_df)
 with open('pickles_tob/df_cosmetics.p', 'wb') as file:
     pickle.dump(result_df, file)
 
+# =====================================df_all_tob_list 생성용==================================
+# df_tob_list = []
+# with open('pickles_tob/df_clothes.p', 'rb') as file:
+#     df_clothes = pickle.load(file)
+#     df_tob_list.append(df_clothes)
+# with open('pickles_tob/df_accessory.p', 'rb') as file:
+#     df_accessory = pickle.load(file)
+#     df_tob_list.append(df_accessory)
+# with open('pickles_tob/df_bakery_icecream.p', 'rb') as file:
+#     df_bakery_icecream = pickle.load(file)
+#     df_tob_list.append(df_bakery_icecream)
+# with open('pickles_tob/df_cafe.p', 'rb') as file:
+#     df_cafe = pickle.load(file)
+#     df_tob_list.append(df_cafe)
+# with open('pickles_tob/df_fastfood.p', 'rb') as file:
+#     df_fastfood = pickle.load(file)
+#     df_tob_list.append(df_fastfood)
+# with open('pickles_tob/df_koreanfood.p', 'rb') as file:
+#     df_koreanfood = pickle.load(file)
+#     df_tob_list.append(df_koreanfood)
+# with open('pickles_tob/df_japanesefood.p', 'rb') as file:
+#     df_japanesefood = pickle.load(file)
+#     df_tob_list.append(df_japanesefood)
+# with open('pickles_tob/df_chinesefood.p', 'rb') as file:
+#     df_chinesefood = pickle.load(file)
+#     df_tob_list.append(df_chinesefood)
+# with open('pickles_tob/df_westernfood.p', 'rb') as file:
+#     df_westernfood = pickle.load(file)
+#     df_tob_list.append(df_westernfood)
+# with open('pickles_tob/df_bar.p', 'rb') as file:
+#     df_bar = pickle.load(file)
+#     df_tob_list.append(df_bar)
+# with open('pickles_tob/df_conveniencestore.p', 'rb') as file:
+#     df_conveniencestore = pickle.load(file)
+#     df_tob_list.append(df_conveniencestore)
+# with open('pickles_tob/df_accommodations.p', 'rb') as file:
+#     df_accommodations = pickle.load(file)
+#     df_tob_list.append(df_accommodations)
+# with open('pickles_tob/df_healthclub.p', 'rb') as file:
+#     df_healthclub = pickle.load(file)
+#     df_tob_list.append(df_healthclub)
+# with open('pickles_tob/df_beauty.p', 'rb') as file:
+#     df_beauty = pickle.load(file)
+#     df_tob_list.append(df_beauty)
+# with open('pickles_tob/df_cosmetics.p', 'rb') as file:
+#     df_cosmetics = pickle.load(file)
+#     df_tob_list.append(df_cosmetics)
 
+# with open('pickles_tob/df_all_tob_list.p', 'wb') as file:
+#     pickle.dump(df_tob_list, file)
 
 

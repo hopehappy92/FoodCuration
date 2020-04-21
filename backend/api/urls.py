@@ -52,6 +52,7 @@ urlpatterns = [
     path('update_learning_dataframe', views.update_learning_dataframe, name="update_learning_dataframe"),
     path('relearning_current_model', views.relearning_current_model, name="relearning_current_model"),
     path('user_based_cf/<int:user_id>', views.user_based_cf, name="user_based_cf"),
+    path('trend_by_tob/<int:tob_id>', views.trend_by_tob, name="trend_by_tob"),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
     path('token/refresh/', refresh_jwt_token),
