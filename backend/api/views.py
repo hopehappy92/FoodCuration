@@ -544,7 +544,7 @@ def create_store(self):
 @api_view(['POST'])
 def set_user_category(self):
     category = self.data.get("category")
-    user = CustomUser.objects.get(id=self.user_id)
-    user.category = cagtegory
+    user = CustomUser.objects.get(id=self.user.id)
+    user.category = category
     user.save()
     return Response("카테고리 등록 완료")

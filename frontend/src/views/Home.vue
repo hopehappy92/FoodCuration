@@ -76,31 +76,33 @@ export default {
         swipeToSlide: true,
         arrows: false,
       },
-      // flag: true
     }
+  },
+  computed: {
+    ...mapState({
+      islogined: state => state.data.isloggined
+    })
+  },
+  watch: {
+    islogined: function() {
+      if (this.islogined == true) {
+        if (localStorage.getItem("category_list").length == 0) {
+          // console.log("aaaaaaaaaaaa")
+          this.dialog = true
+          document.getElementById("checkFav").click();
+        }
+      }
+    }
+  },
+  mounted() {
+    this.checkNavbar()
+  },
+  destroyed() {
+    this.checkNavbar()
   },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
   },
-  // watch: {
-  //   flag: function() {
-  //     this.flag = localStorage.getItem("category_list").length
-  //   }
-  // },
-  mounted() {
-    this.checkNavbar()
-    const flag = localStorage.getItem("category_list").length
-    console.log(flag)
-    if (flag == 0) {
-      this.dialog = true
-      window.onload=function(){
-        document.getElementById("checkFav").click();
-      };
-    }
-  },
-  destroyed() {
-    this.checkNavbar()
-  }
 };
 </script>
 

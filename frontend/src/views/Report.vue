@@ -45,6 +45,14 @@ export default {
       }
     }
   },
+  mounted() {
+    // console.log("aaa")
+    this.checkNavbar()
+  },
+  destroyed() {
+    // console.log("bbb")
+    this.checkNavbar()
+  },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
     goHome() {
@@ -54,14 +62,6 @@ export default {
       this.flag = false
     }
   },
-  mounted() {
-    // console.log("aaa")
-    this.checkNavbar()
-  },
-  destroyed() {
-    // console.log("bbb")
-    this.checkNavbar()
-  }
 }
 </script>
 
