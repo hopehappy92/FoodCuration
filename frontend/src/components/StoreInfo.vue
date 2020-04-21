@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
 import axios from "axios";
 export default {
   props: {
@@ -98,6 +99,18 @@ export default {
     };
   },
   methods: {
+    ...mapActions("data", ["writeReview"]),
+    submit: async function() {
+      const params = {
+        store: this.$route.params.storeId,
+        user: this.userId,
+        score: this.score,
+        content: this.content
+      };
+      await this.writeReview(params)
+        .then(this.$emit("add-to-review"))
+        .then((this.dialog = false));
+    },
     write() {
       if (this.dialog == false) {
         this.dialog = true;
@@ -105,18 +118,18 @@ export default {
         this.dialog = false;
       }
     },
-    submit() {
-      console.log(this.userId, this.$route.params.storeId);
-      axios
-        .post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, {
-          store: this.$route.params.storeId,
-          user: this.userId,
-          score: this.score,
-          content: this.content
-        })
-        .then(this.$emit("add-to-review"))
-        .then((this.dialog = false));
-    },
+    // submit() {
+    //   console.log(this.userId, this.$route.params.storeId);
+    //   axios
+    //     .post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, {
+    //       store: this.$route.params.storeId,
+    //       user: this.userId,
+    //       score: this.score,
+    //       content: this.content
+    //     })
+    //     .then(this.$emit("add-to-review"))
+    //     .then((this.dialog = false));
+    // },
     pushLike() {
       console.log();
       const headers = {

@@ -2,7 +2,7 @@
   <v-app id="app">
     <!-- <toolbar /> -->
     <!-- <drawer /> -->
-    <Nav v-if="onRegister == false" style="height: 86px;" />
+    <Nav v-if="onNav == false" style="height: 86px;" />
     <route-view />
     <!-- <go-top /> -->
   </v-app>
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     ...mapState({
-      onRegister: state => state.data.onRegisterFlag,
+      onNav: state => state.data.onNavFlag,
     })
   },
 };

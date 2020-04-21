@@ -14,15 +14,15 @@ export default {
     RegisterForm
   },
   methods: {
-    ...mapActions("data", ["checkRegister"])
+    ...mapActions("data", ["checkNavbar"])
   },
   mounted() {
     // console.log("aaa")
-    this.checkRegister()
+    this.checkNavbar()
   },
   destroyed() {
     // console.log("bbb")
-    this.checkRegister()
+    this.checkNavbar()
   }
 }
 </script>
