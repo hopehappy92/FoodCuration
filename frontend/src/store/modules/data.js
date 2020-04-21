@@ -23,7 +23,8 @@ const state = {
   reviewListForCate: [],
   isloggined: false,
   onNavFlag: false,
-  categoryList: []
+  categoryList: [],
+  isHomeCate: false
 };
 
 // actions
@@ -469,6 +470,8 @@ const actions = {
           localStorage.setItem("gender", res.data.user.gender)
           localStorage.setItem("age", res.data.user.age)
           localStorage.setItem("review_count", res.data.user.review_count)
+          localStorage.setItem("is_staff", res.data.user.is_staff)
+          localStorage.setItem("category_list", res.data.user.category_list)
           router.push("/")
         }
       })
@@ -593,12 +596,29 @@ const actions = {
       .catch(err => {
         console.log(err)
       })
-  }
+  },
   // async deleteReview({
   //   commit
   // }, params) {
   //   await api.deleteReview(params)
-  // }
+  // },
+  async setCategory({commit}, params) {
+    // console.log(params)
+    await api.setUserCategory(params)
+    .then(res => {
+      // console.log("aaaaaaaaaaaa", res)
+      // console.log(res.status)
+      if (res.status == 200) {
+        const catelist = params.category.split("|")
+        localStorage.setItem("category_list", catelist)
+        alert("감사합니다.")
+      }
+    })
+    .catch(err => {
+      // console.log("bbbbbbbbbbbb", err)
+      alert("error")
+    })
+  }
 };
 
 // mutations
@@ -636,6 +656,10 @@ const mutations = {
   },
   setOnNavFlag(state, check) {
     state.onNavFlag = check
+  },
+  setIsHomeCate(state) {
+    // console.log("aaaaaaaa")
+    state.isHomeCate = localStorage.getItem("category_list")
   }
 };
 

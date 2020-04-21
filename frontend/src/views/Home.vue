@@ -3,6 +3,9 @@
     <div id="home_header">
       <homeHeader />
     </div>
+    <div id="home_side">
+      <homeSide />
+    </div>
     <div id="home_body">
       <!-- algo기반 추천 -->
       <div id="home_body_recommand_algo">
@@ -37,6 +40,7 @@ import CheckFavorite from "../components/CheckFavorite"
 import HomeHeader from "../components/HomeHeader"
 import HomeBody from "../components/HomeBody"
 import HomeFooter from "../components/HomeFooter"
+import HomeSide from "../components/HomeSide"
 import { mapState, mapActions } from "vuex";
 
 import VueSlickCarousel from 'vue-slick-carousel'
@@ -50,7 +54,8 @@ export default {
     HomeHeader,
     HomeBody,
     VueSlickCarousel,
-    HomeFooter
+    HomeFooter,
+    HomeSide
   },
   data() {
     return {
@@ -70,25 +75,34 @@ export default {
         speed: 500,
         swipeToSlide: true,
         arrows: false,
+      },
+    }
+  },
+  computed: {
+    ...mapState({
+      islogined: state => state.data.isloggined
+    })
+  },
+  watch: {
+    islogined: function() {
+      if (this.islogined == true) {
+        if (localStorage.getItem("category_list").length == 0) {
+          // console.log("aaaaaaaaaaaa")
+          this.dialog = true
+          document.getElementById("checkFav").click();
+        }
       }
     }
+  },
+  mounted() {
+    this.checkNavbar()
+  },
+  destroyed() {
+    this.checkNavbar()
   },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
   },
-  mounted() {
-    this.checkNavbar()
-    const flag = true
-    if (flag == true) {
-      this.dialog = true
-      window.onload=function(){
-        document.getElementById("checkFav").click();
-      };
-    }
-  },
-  destroyed() {
-    this.checkNavbar()
-  }
 };
 </script>
 
@@ -113,7 +127,7 @@ export default {
   z-index: 2;
   padding: 20px;
   /* text-align: center; */
-  width: 80vw;
+  width: 70vw;
   margin: 0 auto;
 }
 #home_body_recommand_algo {
@@ -125,5 +139,20 @@ export default {
 }
 #home_footer {
   height: 200px;
+}
+#home_side {
+  float: right;
+  width: 12vw;
+  /* border: 1px solid white; */
+  position: sticky;
+  right: 2vw;
+  top: 1vw;
+  margin-top: 30px;
+  /* background-color: white; */
+  /* background-image: url("../../public/images/side_bg2.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; */
+  height: 500px;
 }
 </style>

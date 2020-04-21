@@ -35,5 +35,10 @@ export default [{
     path: "*",
     view: "NotFound",
 		name: "notFound",
-	}
+  },
+  {
+    path: "/report",
+    view: "Report",
+    name: "report"
+  }
 ];

@@ -52,6 +52,7 @@ urlpatterns = [
     path('update_learning_dataframe', views.update_learning_dataframe, name="update_learning_dataframe"),
     path('relearning_current_model', views.relearning_current_model, name="relearning_current_model"),
     path('user_based_cf/<int:user_id>', views.user_based_cf, name="user_based_cf"),
+    path('trend_by_tob/<int:tob_id>', views.trend_by_tob, name="trend_by_tob"),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
     path('token/refresh/', refresh_jwt_token),
@@ -62,4 +63,8 @@ urlpatterns = [
     path('reset-password/confirm/<uidb64>[0-9A-Za-z]+)-<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset-password/complete/', PasswordResetCompleteView.as_view(),name='password_reset_complete'),
     path('accounts/', include('allauth.urls')),
+    path('crawling_check', views.crawling_check, name="crawling_check"),
+    path('crawling_start', views.crawling_start, name="crawling_start"),
+    path('create_store', views.create_store, name="create_store"),
+    path('set_user_category', views.set_user_category, name="set_user_category"),
 ]
