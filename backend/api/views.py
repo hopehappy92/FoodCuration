@@ -524,3 +524,12 @@ def create_store(self):
         except:
             pass
     return Response("매장 등록 완료")
+
+
+@api_view(['POST'])
+def set_user_category(self):
+    category = self.data.get("category")
+    user = CustomUser.objects.get(id=self.user_id)
+    user.category = cagtegory
+    user.save()
+    return Response("카테고리 등록 완료")
