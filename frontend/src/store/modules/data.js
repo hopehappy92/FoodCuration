@@ -22,7 +22,7 @@ const state = {
   userReviewList: [],
   reviewListForCate: [],
   isloggined: false,
-  onRegisterFlag: false,
+  onNavFlag: false,
   categoryList: []
 };
 
@@ -469,7 +469,7 @@ const actions = {
           localStorage.setItem("gender", res.data.user.gender)
           localStorage.setItem("age", res.data.user.age)
           localStorage.setItem("review_count", res.data.user.review_count)
-          router.push("/search")
+          router.push("/")
         }
       })
       .catch(err => {
@@ -494,20 +494,20 @@ const actions = {
     commit("setIsLoggined", check)
   },
 
-  checkRegister({
+  checkNavbar({
     commit
   }) {
-    // console.log(state.onRegisterFlag)
+    // console.log(state.onNavFlag)
     let check = true
-    if (state.onRegisterFlag == false) {
+    if (state.onNavFlag == false) {
       // console.log(check)
-      // console.log(state.onRegisterFlag)
-      commit("setOnRegisterFlag", check)
+      // console.log(state.onNavFlag)
+      commit("setOnNavFlag", check)
     } else {
       check = false
       // console.log(check)
-      // console.log(state.onRegisterFlag)
-      commit("setOnRegisterFlag", check)
+      // console.log(state.onNavFlag)
+      commit("setOnNavFlag", check)
     }
   },
 
@@ -555,7 +555,10 @@ const actions = {
   async searchByLocation({
     commit
   }, params) {
+    console.log(params)
     const resp = await api.getStoresByLocation(params);
+    console.log('123131231')
+    console.log(resp)
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,
@@ -569,6 +572,33 @@ const actions = {
     }));
     commit("setStoreSearchList", stores)
   },
+  async editReview({
+    commit
+  }, params) {
+    await api.editReview(params)
+      .then(res => {
+        // console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  },
+  async writeReview({
+    commit
+  }, params) {
+    await api.writeReview(params)
+      .then(res => {
+        // console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  // async deleteReview({
+  //   commit
+  // }, params) {
+  //   await api.deleteReview(params)
+  // }
 };
 
 // mutations
@@ -604,8 +634,8 @@ const mutations = {
   setIsLoggined(state, check) {
     state.isloggined = check
   },
-  setOnRegisterFlag(state, check) {
-    state.onRegisterFlag = check
+  setOnNavFlag(state, check) {
+    state.onNavFlag = check
   }
 };
 

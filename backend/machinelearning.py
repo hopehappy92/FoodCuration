@@ -98,7 +98,7 @@ def recomm_store(algo, user_id, unvisited_store, top_n=10):
     top_sotre_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
 
 
-    return top_sotre_preds
+    return top_store_preds
 
 unvisited_store = get_uneaten(ratings_df, ten_review_store_list, 243883)
 
