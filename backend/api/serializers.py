@@ -64,6 +64,14 @@ class StoreSerializer2(serializers.ModelSerializer):
             "review_count",
         ]
 
+class StoreSerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = [
+            "id",
+            "store_name",
+        ]
+
 class ReviewSerializer(serializers.ModelSerializer):
     category_list = serializers.SerializerMethodField()
     class Meta:
@@ -88,6 +96,15 @@ class ReviewSerializer2(serializers.ModelSerializer):
         fields = [
             "store",
             "user",
+            "score",
+        ]
+
+class ReviewSerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = [
+            "store",
+            "reg_time",
             "score",
         ]
 
