@@ -27,7 +27,8 @@ const state = {
   isHomeCate: false,
   navSearch: true,
   searchFromNav: false,
-  storeNameFromNav: ''
+  storeNameFromNav: '',
+  userBasedList: []
 };
 
 // actions
@@ -610,21 +611,23 @@ const actions = {
   }, params) {
     // console.log(params)
     await api.setUserCategory(params)
-    .then(res => {
-      // console.log("aaaaaaaaaaaa", res)
-      // console.log(res.status)
-      if (res.status == 200) {
-        const catelist = params.category.split("|")
-        localStorage.setItem("category_list", catelist)
-        alert("감사합니다.")
-      }
-    })
-    .catch(err => {
-      // console.log("bbbbbbbbbbbb", err)
-      alert("error")
-    })
+      .then(res => {
+        // console.log("aaaaaaaaaaaa", res)
+        // console.log(res.status)
+        if (res.status == 200) {
+          const catelist = params.category.split("|")
+          localStorage.setItem("category_list", catelist)
+          alert("감사합니다.")
+        }
+      })
+      .catch(err => {
+        // console.log("bbbbbbbbbbbb", err)
+        alert("error")
+      })
   },
-  async userBasedRecommand({commit}, value) {
+  async userBasedRecommand({
+    commit
+  }, value) {
     // console.log("aaaaaaaaaa")
     const resp = await api.getUserBasedRecommand()
     // console.log(resp)
@@ -703,6 +706,9 @@ const mutations = {
   },
   resetNavSate(state) {
     state.searchFromNav = false
+  },
+  setUserBasedRecommand(state, stores) {
+    state.userBasedList = stores.map(s => s)
   }
 };
 
