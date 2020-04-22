@@ -4,34 +4,38 @@ import requests
 from bs4 import BeautifulSoup
 from api import models
 import pandas as pd
+import pickle
 
 class Command(BaseCommand):
     def _initialize(self):
-        store_id = pd.DataFrame(models.Store.objects.filter(review_count__gte=10).values('id'))['id']
-        for id in store_id:
-            store = models.Store.objects.get(id=id)
-            if not store.storeimage_set.all():
-                try:
-                    soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
-                except:
-                    pass
-                cnt = 0
-                for img in soup.select('td a img'):
-                    if cnt > 2:
-                        break
-                    if img.get('src')[:5] == 'http:':
-                        print(img.get('src'))
-                        try:
-                            models.StoreImage.objects.create(store_id=id, url=img.get('src'))
-                            cnt += 1
-                        except:
-                            pass
+        # store_id = pd.DataFrame(models.Store.objects.filter(review_count__gte=10).values('id'))['id']
+        # for id in store_id:
+        #     store = models.Store.objects.get(id=id)
+        #     if not store.storeimage_set.all():
+        #         try:
+        #             soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
+        #         except:
+        #             pass
+        #         cnt = 0
+        #         for img in soup.select('td a img'):
+        #             if cnt > 2:
+        #                 break
+        #             if img.get('src')[:5] == 'http:':
+        #                 print(img.get('src'))
+        #                 try:
+        #                     models.StoreImage.objects.create(store_id=id, url=img.get('src'))
+        #                     cnt += 1
+        #                 except:
+        #                     pass
         
-        print(store_id)
-        review_df = pd.DataFrame(models.Review.objects.all().values(""))
-        print(review_df)
+        # print(store_id)
+        # review_df = pd.DataFrame(models.Review.objects.all().values(""))
+        # print(review_df)
 
-
+        
+        df = pd.DataFrame(models.StoreImage.objects.all().values("store_id", "url"))
+        with open('store_image.p', 'wb') as f:
+            pickle.dump(df, f)
 
         # search_base = "https://openapi.naver.com/v1/search/webkr.xml?query=다이닝코드+"
         # search_opt = "&display=10&start=1"
