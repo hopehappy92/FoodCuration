@@ -174,7 +174,7 @@ def trend_by_tob(self):
     return Response(tob_dict)
 
 def go_to_myhome(request):
-    return redirect("http://i02d106.p.ssafy.io:8080/")
+    return redirect("http://i02d106.p.ssafy.io/")
 
 class CustomLoginView(LoginView):
     def get_response(self):
