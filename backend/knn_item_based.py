@@ -13,6 +13,7 @@ from surprise import SVD, Dataset, accuracy, Reader
 from surprise.model_selection import train_test_split
 from surprise.dataset import DatasetAutoFolds
 from surprise.model_selection import GridSearchCV
+from math import acos, cos, sin, radians
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
  'backend.settings')
@@ -28,33 +29,56 @@ from api.models import CustomUser # 유저 1.8만개
 # request_user = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
 # 모든 review 다 불러옴
 
+all_store = Store.objects.all().values("id", "latitude", "longitude", "category")
+all_review = Review.objects.all().values("store_id", "score")
 
-request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
-print(type(request_all_review))
-# ten_review_store_df = pd.DataFrame(data=request_store)
-# ten_review_user_df = pd.DataFrame(data=request_user)
-# all_user_df = pd.DataFrame(data=request_all_review)
-# print('데이터 불러오기 완료')
-# ten_review_store_list = set()
-# ten_review_user_list = set()
+new_df = pd.DataFrame(columns=['category', 'store_id'])
 
-# print(1234)
-# for store in request_store:
-#     ten_review_store_list.add(store['id'])
-# for user in request_user:
-#     ten_review_user_list.add(user['id'])
+near_store = set()
+category_set = set()
+clat =37.5
+clon = 126.9
+count = 0
+all_store
 
-# selected_review_list = list()
-# for dic in request_all_review:
-#     if('score' in dic.keys() and 'user' in dic.keys() and 'store' in dic.keys()):
-#         if(dic['user'] in ten_review_user_list and dic['store'] in ten_review_store_list):
-#             selected_review_list.append(dic)
+temp_store_name = 213012
+temp_category_set = set()
+for store in all_store:
+    if(store['id']==temp_store_name):
+        categories = store["category"].split("|")
+        for category in categories:
+            temp_category_set.add(category)
 
-# ratings_df = pd.DataFrame(selected_review_list)
-# ratings_df = ratings_df[['store', 'user', 'score']]
-# print(ratings_df.shape)
-# print(1234)
-request_all_review = pd.DataFrame(request_all_review)
+print(len(temp_category_set))
+for store in all_store:
+    lat = store['latitude']
+    lon = store['longitude']
+    if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < 1:
+        near_store.add(store['id'])
+        categories = store["category"].split("|")
+        for category in categories:
+            category_set.add(category)
+            new_df.loc[len(new_df)] = [category, store['id']]
+
+# store에서 category값만 분류
+print(len(near_store))
+print(near_store)
+print(len(category_set))
+print(len(new_df))
+print(category_set)
+near_store_review = list()
+
+for review in all_review:
+    if review['store_id'] in near_store:
+        near_store_review.append(review)
+
+# 근처에 있는 식당들의 review만 가져옴
+print(len(near_store_review))
+
+
+
+
+request_all_review = pd.DataFrame(near_store_review)
 reader = Reader(rating_scale=(1, 5))
 request_all_review = surprise.Dataset.load_from_df(df=request_all_review, reader=reader)
 trainset = request_all_review.build_full_trainset()
