@@ -4,7 +4,7 @@
       <div id="regi_title">Food Tailor</div>
       <div id="regi_desc">오직 당신 한 사람을 위한,</div>
       <div id="regi_back" @click="goHome()">혹시 이미 회원이신가요?</div>
-      <hr style="width: 80%; margin: 20px auto; border: 0.5px solid black;" />
+      <hr style="width: 80%; margin: 20px auto; border: 0.5px solid black;">
       <div id="regi_body">
         <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
           <ValidationProvider name="id" rules="required|alpha_num|max:15">

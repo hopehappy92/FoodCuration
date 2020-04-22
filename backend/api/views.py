@@ -114,6 +114,31 @@ with open('knn.p', 'rb') as file:
 with open('learning_dataframe.p', 'rb') as file:
     learning_dataframe = pickle.load(file)
 
+with open('df_all_tob_list.p', 'rb') as file:
+    df_tob_list = pickle.load(file)
+
+@api_view(['GET'])
+def trend_by_tob(self):
+    global df_tob_list
+    tob_dict = {
+        "의류": df_tob_list[0][["new_date", "kdj_d", "kdj_j"]],
+        "악세사리류": df_tob_list[1][["new_date", "kdj_d", "kdj_j"]],
+        "제과점/아이스크림점": df_tob_list[2][["new_date", "kdj_d", "kdj_j"]],
+        "커피/음료전문점": df_tob_list[3][["new_date", "kdj_d", "kdj_j"]],
+        "패스트푸드점": df_tob_list[4][["new_date", "kdj_d", "kdj_j"]],
+        "한식": df_tob_list[5][["new_date", "kdj_d", "kdj_j"]],
+        "일식/생선회집": df_tob_list[6][["new_date", "kdj_d", "kdj_j"]],
+        "중식": df_tob_list[7][["new_date", "kdj_d", "kdj_j"]],
+        "양식": df_tob_list[8][["new_date", "kdj_d", "kdj_j"]],
+        "주점": df_tob_list[9][["new_date", "kdj_d", "kdj_j"]],
+        "편의점": df_tob_list[10][["new_date", "kdj_d", "kdj_j"]],
+        "숙박": df_tob_list[11][["new_date", "kdj_d", "kdj_j"]],
+        "헬스장": df_tob_list[12][["new_date", "kdj_d", "kdj_j"]],
+        "미용원/피부미용원": df_tob_list[13][["new_date", "kdj_d", "kdj_j"]],
+        "화장품점": df_tob_list[14][["new_date", "kdj_d", "kdj_j"]],
+    }
+    return Response(tob_dict)
+
 def go_to_myhome(request):
     return redirect("http://localhost:8080/")
 
@@ -122,7 +147,14 @@ class CustomLoginView(LoginView):
         user = get_object_or_404(CustomUser, username=self.user)
         # print(self.user)
         orginal_response = super().get_response()
-        mydata = {"gender": user.gender, "age": user.age, "review_count": user.review_count, "status": "success"}
+        mydata = {
+            "gender": user.gender,
+            "age": user.age,
+            "review_count": user.review_count,
+            "is_staff": user.is_staff,
+            "category_list": user.category_list,
+            "status": "success",
+            }
         orginal_response.data["user"].update(mydata)
         return orginal_response
 
@@ -368,6 +400,13 @@ class StoreViewSet2(viewsets.GenericViewSet):
         serializer = serializers.StoreSerializer2(models.Store.objects.filter(review_count__gte=review_count), many=True)
         return Response(serializer.data)
 
+class StoreViewSet3(viewsets.GenericViewSet):
+    serializer_class = serializers.StoreSerializer3
+
+    @api_view(['GET'])
+    def get_queryset(self):
+        serializer = serializers.StoreSerializer3(models.Store.objects.filter(review_count__gte=1), many=True)
+        return Response(serializer.data)
 
 class like_store(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = serializers.LikeUserSerializer
@@ -400,6 +439,11 @@ class like_store(mixins.CreateModelMixin, viewsets.GenericViewSet):
 @api_view(['GET'])
 def review_list(self):
     serializer = serializers.ReviewSerializer2(models.Review.objects.all(), many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def reviews_info(self):
+    serializer = serializers.ReviewSerializer3(models.Review.objects.all(), many=True)
     return Response(serializer.data)
 
 
@@ -524,3 +568,12 @@ def create_store(self):
         except:
             pass
     return Response("매장 등록 완료")
+
+
+@api_view(['POST'])
+def set_user_category(self):
+    category = self.data.get("category")
+    user = CustomUser.objects.get(id=self.user_id)
+    user.category = cagtegory
+    user.save()
+    return Response("카테고리 등록 완료")

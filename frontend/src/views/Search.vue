@@ -43,15 +43,14 @@
           </card>
           <v-divider class="mx-4" />
         </v-flex>
-
+        <v-flex xs12 md8 v-show="showMap">
+          <StoresLocation ref="showMap" :latitude="lat" :longitude="lon" :stores="stores"></StoresLocation>
+        </v-flex>
         <v-flex xs12 md8>
           <v-flex v-for="store in stores" :key="store.id" pa-4>
             <router-link
               :to="{ name: 'StoreDetail', params: {
-              storeId: store.id,
-              storeName: store.name,
-              storeAddress: store.address,
-              storeTel: store.tel
+              storeId: store.id
             }}"
             >
               <store-list-card
@@ -73,12 +72,14 @@
 import Card from "@/components/Card";
 import router from "@/router";
 import StoreListCard from "@/components/StoreListCard";
+import StoresLocation from "@/components/StoresLocation";
 import { mapState, mapActions } from "vuex";
 import axios from "axios";
 export default {
   components: {
     Card,
-    StoreListCard
+    StoreListCard,
+    StoresLocation
   },
   data: () => ({
     storeName: "",
@@ -86,13 +87,13 @@ export default {
     lon: 0,
     lat: 0,
     location: 1,
-    sort_value: ""
+    sort_value: "",
+    showMap: 0
   }),
   watch: {
     sort_value: function() {
       if (this.sort_value == "주변검색") {
         this.getLocation();
-        this.loading = false;
       } else {
         this.noLocation();
       }
@@ -115,6 +116,7 @@ export default {
       };
       await this.getStores(params);
       this.loading = false;
+      this.showMap = 0;
     },
     loadMore: async function() {
       this.loading = true;
@@ -143,12 +145,18 @@ export default {
       this.location = 1;
     },
     locationSubmit: async function() {
+      console.log(this.lat);
+      console.log(this.lon);
+      console.log(this.storeName);
       const params = {
         latitude: this.lat,
         longitude: this.lon,
         words: this.storeName
       };
       await this.searchByLocation(params);
+      this.loading = false;
+      this.$refs.showMap.showMap();
+      this.showMap = 1;
     }
   }
 };
