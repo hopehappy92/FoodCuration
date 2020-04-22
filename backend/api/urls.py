@@ -55,6 +55,7 @@ urlpatterns = [
     path('relearning_current_model', views.relearning_current_model, name="relearning_current_model"),
     path('user_based_cf/<int:user_id>', views.user_based_cf, name="user_based_cf"),
     path('trend_by_tob', views.trend_by_tob, name="trend_by_tob"),
+    path('compare_with_chain', views.compare_with_chain, name="compare_with_chain"),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
     path('token/refresh/', refresh_jwt_token),

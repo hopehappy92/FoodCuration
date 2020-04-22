@@ -117,6 +117,18 @@ with open('learning_dataframe.p', 'rb') as file:
 with open('df_all_tob_list.p', 'rb') as file:
     df_tob_list = pickle.load(file)
 
+with open('chain_result_list.p', 'rb') as file:
+    chain_result_list = pickle.load(file)
+
+@api_view(['GET'])
+def compare_with_chain(self):
+    global chain_result_list
+    chain_dict = {
+        "체인점 평점 순위": chain_result_list[0],
+        "비체인/체인/전체 평점 비교": chain_result_list[1],
+    }
+    return Response(chain_dict)
+
 @api_view(['GET'])
 def trend_by_tob(self):
     global df_tob_list
