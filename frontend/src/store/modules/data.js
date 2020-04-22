@@ -469,6 +469,8 @@ const actions = {
           localStorage.setItem("gender", res.data.user.gender)
           localStorage.setItem("age", res.data.user.age)
           localStorage.setItem("review_count", res.data.user.review_count)
+          localStorage.setItem("is_staff", res.data.user.is_staff)
+          localStorage.setItem("category_list", res.data.user.category_list)
           router.push("/")
         }
       })
@@ -593,12 +595,22 @@ const actions = {
       .catch(err => {
         console.log(err)
       })
-  }
+  },
   // async deleteReview({
   //   commit
   // }, params) {
   //   await api.deleteReview(params)
-  // }
+  // },
+  async setCategory({commit}, params) {
+    // console.log(params)
+    await api.setUserCategory(params)
+    .then(res => {
+      console.log("aaaaaaaaaaaa", res)
+    })
+    .catch(err => {
+      console.log("bbbbbbbbbbbb", err)
+    })
+  }
 };
 
 // mutations
