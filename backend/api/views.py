@@ -79,7 +79,7 @@ def get_cluster(age, gender):
 get_image_dict = dict()
 
 # 자동으로 크롤링 시작할 get_image_dict 길이
-start_crawling_length = 1000
+start_crawling_length = 100
 
 all_store = Store.objects.all()
 
@@ -559,6 +559,7 @@ def user_based_cf(self):
     추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
     '''
     user = CustomUser.objects.get(id=self.user.id)
+    # user = CustomUser.objects.get(id=15)
     if user.review_count > 9:
         alg_name = Algorithm.objects.get(id=1).alg_name
         df = learning_dataframe[learning_dataframe["user"] != user.id]
@@ -575,6 +576,8 @@ def user_based_cf(self):
         serializer = serializers.StoreSerializer([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
     else:
         serializer = serializers.StoreSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True)
+    
+    check_image(serializer)
     return Response(serializer.data)
 
 
