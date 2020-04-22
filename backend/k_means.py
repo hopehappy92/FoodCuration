@@ -1,126 +1,71 @@
 from sklearn.cluster import KMeans
+import os
+import django
+from django.core.management.base import BaseCommand
+from backend import settings
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+ 'backend.settings')
+django.setup()
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import requests
+from api.models import Review, CustomUser
+import pickle
 
-request_user = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
-request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
-
-# id / age, gender 기준으로 dataframe 분리
-user_id = pd.DataFrame(data=request_user, columns=['id'])
-user_df = pd.DataFrame(data=request_user, columns=['age', 'gender'])
-
-def func(row):
-    if row['gender'] == '남':
-        return 5
-    else:
-        return 0
-
+user_df = pd.DataFrame(CustomUser.objects.filter(review_count__gte=10).values("id", "age", "gender"))
+male_value = 15
+female_value = 0
+min_review = 5
 # gender 값을 정수로 변환
-user_df['gender'] = user_df.apply(func, axis=1)
-print(user_df.head())
-
+user_df['gender'] = user_df['gender'].apply(lambda x: male_value if x=="남" else female_value)
 # kmeans 학습
 kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=300, random_state=0)
-kmeans.fit(user_df)
+kmeans.fit(user_df[["age", "gender"]])
 print('cluster 완료')
 
 # kmeans.labels_ : 몇번 클르서티인지 라벨링 붙이고 분리했었던 id col을 붙임
-user_df['clutser'] = kmeans.labels_
-user_df['id'] = user_id
-print(kmeans.cluster_centers_)
-
-# cluster를 관리하기 위해 set_list를 만듬
-set_list = [set(), set(), set(), set(), set()]
-
-# cluster들의 평균을 구하기 위한 list
-score_list = [0 for i in range(5)]
-count_list = [0 for i in range(5)]
-
-# 빠른 연산을 위해 데이터프레임에 .loc로 넣어주기 휘암
-idx0 = 0
-idx1 = 0
-idx2 = 0
-idx3 = 0
-idx4 = 0
-
-# cluster로 나누어 review들을 관리할 데이터프레임 생성
-group0_df = pd.DataFrame(columns=['id', 'score'])
-group0_df['score'] = group0_df['score'].astype(float)
-group1_df = pd.DataFrame(columns=['id', 'score'])
-group1_df['score'] = group1_df['score'].astype(float)
-group2_df = pd.DataFrame(columns=['id', 'score'])
-group2_df['score'] = group2_df['score'].astype(float)
-group3_df = pd.DataFrame(columns=['id', 'score'])
-group3_df['score'] = group3_df['score'].astype(float)
-group4_df = pd.DataFrame(columns=['id', 'score'])
-group4_df['score'] = group4_df['score'].astype(float)
-
-# cluster에 해당하는 곳에 id값을 넣음
-print('id에 따라 그룹 분류중...')
-for df in user_df.iterrows():
-    set_list[df[1]['clutser']].add(df[1]['id'])
-
-# review들을 모두 확인하면서 48번 라인에 만들었던 dataframe에 넣음
-print('개별이 속한 그룹으로 리뷰 분산 진행 중....')
-for dic in request_all_review:
-    user_id = dic['user']
-    store_id = dic['store']
-    score = dic['score']
-    
-    if(score!=1 and score!=2 and score!=3 and score!=4 and score!=5):
-        continue
-    if user_id in set_list[0]:
-        score_list[0] += dic['score']
-        count_list[0] += 1
-        group0_df.loc[idx1] = [store_id, score]
-        idx0 += 1
-    elif user_id in set_list[1]:
-        score_list[1] += dic['score']
-        count_list[1] += 1
-        group1_df.loc[idx2] = [store_id, score]
-        idx1 += 1
-    elif user_id in set_list[2]:
-        score_list[2] += dic['score']
-        count_list[2] += 1
-        group2_df.loc[idx2] = [store_id, score]
-        idx2 += 1
-    elif user_id in set_list[3]:
-        score_list[3] += dic['score']
-        count_list[3] += 1
-        group3_df.loc[idx2] = [store_id, score]
-        idx3 += 1
-    elif user_id in set_list[4]:
-        score_list[4] += dic['score']
-        count_list[4] += 1
-        group4_df.loc[idx2] = [store_id, score]
-        idx4 += 1
-print('분산완료')
-
-# cluster의 평균 구하기
+user_df['cluster'] = kmeans.labels_
 for i in range(5):
-    score_list[i] /= count_list[i]
+    print(user_df[user_df['cluster']==i])
+print(user_df[user_df['cluster']==3])
+# 모든 리뷰를 불러와 데이터프레임 생성
+review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "store_id"))
 
-# 데이터프레임에서 인기도와 평점을 고려한 평점 계산기
-def knn_grouping(df, nbr):
-    grouped = df.groupby('id')
-    grouped = grouped.agg(['sum', 'count', 'mean'])
-    grouped = grouped['score']
-
-    grouped['calc'] = (grouped['count']/(grouped['count']+3))*grouped['mean'] + (3/(grouped['count']+3))*nbr
-    grouped.sort_values(['calc'], ascending=False, inplace=True)
-    print(grouped)
-
-    return grouped
+# 가져온 유저가 있는 리뷰만 남김
+review_df = review_df[review_df['user_id'].isin(set(user_df['id']))]
 
 
-# 5가지 그룹별 맛집 순위 -> 저장해야하는 값
-group0 = knn_grouping(group0_df, score_list[0])
-group1 = knn_grouping(group1_df, score_list[0])
-group2 = knn_grouping(group2_df, score_list[0])
-group3 = knn_grouping(group3_df, score_list[0])
-group4 = knn_grouping(group4_df, score_list[0])
+user_df = user_df.set_index('id')
+
+# 리뷰 테이블에 유저 클러스터정보를 조인해서 합쳐준다.
+temp_df = pd.merge(user_df["cluster"], review_df, left_index=True, right_on="user_id")
+temp_df["score"] = temp_df["score"].astype(float)
+print('temp_df')
+print(temp_df)
+
+# 클러스터의 인덱스에 클러스터 번호에 해당하는 정보만 가져와서 저장한다.
+cluster_list = [temp_df[["store_id", "score"]][temp_df["cluster"]==i] for i in range(5)]
+print("cluster")
+print(cluster_list[0])
+
+for i in range(5):
+    # cluster 각각을 store로 묶는다
+    cluster_list[i] = cluster_list[i].groupby('store_id').agg(['sum', 'count', 'mean'])['score']
+    print("cluster", i)
+    print(len(cluster_list[i]))
+    print(cluster_list[i])
+    cluster_list[i] = cluster_list[i][cluster_list[i]['count']>=5]
+    # 각 클러스터별 평균평점을 계산한다.
+    a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
+
+    # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
+    cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
+
+    # calc 기준으로 내림차순 정렬한다.
+    cluster_list[i].sort_values(['calc'], ascending=False, inplace=True)
+    cluster_list[i] = cluster_list[i].index
 
 # centroid -> 저쟁해야하는 값
 centroid = kmeans.cluster_centers_
@@ -131,28 +76,28 @@ def get_cluster(centroid, age, gender):
 
     def gender_to_integer(gender):
         if gender=='남':
-            return 5
+            return male_value
         else:
-            return 0
+            return female_value
 
-    gtoi = gender_to_integer(gender);
+    gtoi = gender_to_integer(gender)
 
     index = -1
     init_distance = 9999999
-
+    print(gtoi, age)
     for i in range(5):
-        distance = 0
         distance_y = centroid[i][0]
         distance_x = centroid[i][1]
 
-        distance += (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
-        if(init_distance<distance):
+        distance = (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
+        if(init_distance>distance):
             init_distance = distance
             index = i
 
 
     return index
-
+print(user_df)
+print(get_cluster(centroid, 28, '남'))
 # 성별과 나이를 받아서 k_means하기 위한 임시값
 temp_gender = '남'
 temp_age = 47
@@ -161,16 +106,19 @@ temp_age = 47
 cluster = get_cluster(centroid, temp_age, temp_gender)
 
 def get_Top_stores(cluster, n=10):
-    if(cluster==0):
-        return group0.head()
-    elif(cluster==1):
-        return group1.head()
-    elif(cluster==2):
-        return group2.head()
-    elif(cluster==3):
-        return group3.head()
-    elif(cluster==4):
-        return group4.head()
+    return cluster_list[cluster][:n]
 
 result = get_Top_stores(cluster)
 print(result)
+
+# with open('k_means.p', 'wb') as f:
+#     pickle.dump(cluster_list, f)
+#     pickle.dump(centroid, f)
+
+# with open('k_means.p', 'rb') as f:
+#     cluster_list2 = pickle.load(f)
+#     centroid2 = pickle.load(f)
+
+for i in range(5):
+    print(cluster_list2[i])
+    print(centroid2[i])

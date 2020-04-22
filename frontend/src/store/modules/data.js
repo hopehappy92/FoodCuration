@@ -24,7 +24,8 @@ const state = {
   isloggined: false,
   onNavFlag: false,
   categoryList: [],
-  isHomeCate: false
+  isHomeCate: false,
+  userBasedList: []
 };
 
 // actions
@@ -618,6 +619,28 @@ const actions = {
       // console.log("bbbbbbbbbbbb", err)
       alert("error")
     })
+  },
+  async userBasedRecommand({commit}, value) {
+    // console.log("aaaaaaaaaa")
+    const resp = await api.getUserBasedRecommand()
+    // console.log(resp)
+
+    const stores = resp.data.map(d => ({
+      id: d.id,
+      name: d.store_name,
+      branch: d.branch,
+      area: d.area,
+      tel: d.tel,
+      address: d.address,
+      lat: d.latitude,
+      lng: d.longitude,
+      categories: d.category_list,
+      reviewCount: d.review_count,
+      menues: d.menues,
+      images: d.images
+    }));
+    console.log(stores)
+    commit("setUserBasedRecommand", stores);
   }
 };
 
@@ -660,6 +683,9 @@ const mutations = {
   setIsHomeCate(state) {
     // console.log("aaaaaaaa")
     state.isHomeCate = localStorage.getItem("category_list")
+  },
+  setUserBasedRecommand(state, stores) {
+    state.userBasedList = stores.map(s => s);
   }
 };
 
