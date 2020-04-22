@@ -39,6 +39,7 @@ import axios from "axios";
 import StoreLocation from "@/components/StoreLocation";
 import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
+import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   props: ["storeId"],
   components: {
@@ -63,7 +64,8 @@ export default {
         this.longitude = res.data.longitude;
         this.reviewCnt = res.data.review_count;
         this.storeMenuList = res.data.menues;
-      });
+      })
+      .then(this.checkNavSearch(0));
   },
   data() {
     return {
@@ -80,6 +82,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations("data", ["checkNavSearch"]),
     updatedReview() {
       this.$refs.updateReview.reRoad();
     },

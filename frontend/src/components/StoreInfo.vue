@@ -68,6 +68,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import { mdiHanger } from "@mdi/js";
 import axios from "axios";
 export default {
   props: {
@@ -89,13 +90,13 @@ export default {
       userId: localStorage.getItem("pk"),
       like: false,
       options: [
-        { text: "평점", value: 1 },
-        { text: "1", value: 2 },
-        { text: "2", value: 3 },
-        { text: "3", value: 4 },
-        { text: "4", value: 5 },
-        { text: "5", value: 6 }
-      ]
+        { text: "1점!", value: 1 },
+        { text: "2점!", value: 2 },
+        { text: "3점!", value: 3 },
+        { text: "4점!", value: 4 },
+        { text: "5점!", value: 5 }
+      ],
+      options_value: 3
     };
   },
   methods: {
@@ -152,6 +153,9 @@ export default {
       } else {
         this.like = false;
       }
+    },
+    selectOption(value) {
+      this.options_value = value;
     }
   }
 };
