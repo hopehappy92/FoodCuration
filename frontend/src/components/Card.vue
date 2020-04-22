@@ -1,7 +1,7 @@
 <template>
   <v-card v-bind="$attrs" :style="styles" v-on="$listeners">
     <offset v-if="hasOffset" :inline="inline" :full-width="fullWidth" :offset="offset">
-      <v-card v-if="!$slots.offset" color="blue lighten-1" elevation class="pa-5" dark>
+      <v-card v-if="!$slots.offset" color="black lighten-1" elevation class="pa-5" dark>
         <slot v-if="!title && !text" name="header" />
         <span v-else>
           <p class="headline" v-text="title" />

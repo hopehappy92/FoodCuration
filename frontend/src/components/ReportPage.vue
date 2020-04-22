@@ -94,6 +94,9 @@
           section5
         </div>
       </pre>
+      <div>
+        <canvas id="chart0" />
+      </div>
       <div id="section6">asdf</div>
     </div>
   </div>
@@ -111,6 +114,29 @@ export default {
         "업종별 경향"
       ]
     }
+  },
+  mounted() {
+    const jsondata = {"hour": [1093, 699, 443, 244, 194, 187, 133, 257, 432, 608, 825, 1019, 1334, 1536, 1267, 1176, 1245, 1379, 1352, 1411, 1362, 1249, 1251, 1155], "dayofweek": [3030, 3024, 2744, 2785, 2662, 3585, 4021]}
+
+    var ctx = document.getElementById('chart0').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            datasets: [{
+                label: '시간대 별 리뷰 갯수',
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: jsondata.hour
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
   }
 }
 </script>
@@ -139,9 +165,6 @@ export default {
   margin: 10px auto;
   font-size: 48px;
   padding: 10px;
-}
-#report_tabbox {
-  /* margin-right: 10.7vw; */
 }
 .report_tab {
   display: inline-block;

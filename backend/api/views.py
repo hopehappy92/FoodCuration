@@ -619,7 +619,6 @@ def create_store(self):
 @api_view(['POST'])
 def set_user_category(self):
     category = self.data.get("category")
-    print(self.user)
     user = CustomUser.objects.get(id=self.user.id)
     user.category = category
     user.save()

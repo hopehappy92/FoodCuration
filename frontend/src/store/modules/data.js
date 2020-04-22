@@ -23,7 +23,8 @@ const state = {
   reviewListForCate: [],
   isloggined: false,
   onNavFlag: false,
-  categoryList: []
+  categoryList: [],
+  isHomeCate: false
 };
 
 // actions
@@ -605,10 +606,17 @@ const actions = {
     // console.log(params)
     await api.setUserCategory(params)
     .then(res => {
-      console.log("aaaaaaaaaaaa", res)
+      // console.log("aaaaaaaaaaaa", res)
+      // console.log(res.status)
+      if (res.status == 200) {
+        const catelist = params.category.split("|")
+        localStorage.setItem("category_list", catelist)
+        alert("감사합니다.")
+      }
     })
     .catch(err => {
-      console.log("bbbbbbbbbbbb", err)
+      // console.log("bbbbbbbbbbbb", err)
+      alert("error")
     })
   }
 };
@@ -648,6 +656,10 @@ const mutations = {
   },
   setOnNavFlag(state, check) {
     state.onNavFlag = check
+  },
+  setIsHomeCate(state) {
+    // console.log("aaaaaaaa")
+    state.isHomeCate = localStorage.getItem("category_list")
   }
 };
 
