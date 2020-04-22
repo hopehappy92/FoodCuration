@@ -3,7 +3,7 @@
         [{
             "name": "RESTAPI",          
             "script": "manage.py",
-            "args": ["runserver", "0.0.0.0:8765"], 
+            "args": ["runsslserver", "0.0.0.0:8765"],
             "exec_mode": "fork", 
             "instances": "1", 
             "wait_ready": true, 
