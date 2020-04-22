@@ -24,7 +24,11 @@ const state = {
   isloggined: false,
   onNavFlag: false,
   categoryList: [],
-  isHomeCate: false
+  isHomeCate: false,
+  navSearch: true,
+  searchFromNav: false,
+  storeNameFromNav: '',
+  userBasedList: []
 };
 
 // actions
@@ -602,22 +606,48 @@ const actions = {
   // }, params) {
   //   await api.deleteReview(params)
   // },
-  async setCategory({commit}, params) {
+  async setCategory({
+    commit
+  }, params) {
     // console.log(params)
     await api.setUserCategory(params)
-    .then(res => {
-      // console.log("aaaaaaaaaaaa", res)
-      // console.log(res.status)
-      if (res.status == 200) {
-        const catelist = params.category.split("|")
-        localStorage.setItem("category_list", catelist)
-        alert("감사합니다.")
-      }
-    })
-    .catch(err => {
-      // console.log("bbbbbbbbbbbb", err)
-      alert("error")
-    })
+      .then(res => {
+        // console.log("aaaaaaaaaaaa", res)
+        // console.log(res.status)
+        if (res.status == 200) {
+          const catelist = params.category.split("|")
+          localStorage.setItem("category_list", catelist)
+          alert("감사합니다.")
+        }
+      })
+      .catch(err => {
+        // console.log("bbbbbbbbbbbb", err)
+        alert("error")
+      })
+  },
+  async userBasedRecommand({
+    commit
+  }, value) {
+    // console.log("aaaaaaaaaa")
+    const resp = await api.getUserBasedRecommand()
+    // console.log(resp)
+
+    const stores = resp.data.map(d => ({
+      id: d.id,
+      name: d.store_name,
+      branch: d.branch,
+      area: d.area,
+      tel: d.tel,
+      address: d.address,
+      lat: d.latitude,
+      lng: d.longitude,
+      categories: d.category_list,
+      reviewCount: d.review_count,
+      menues: d.menues,
+      images: d.images
+    }));
+    console.log(stores)
+    commit("setUserBasedRecommand", stores);
   }
 };
 
@@ -660,6 +690,25 @@ const mutations = {
   setIsHomeCate(state) {
     // console.log("aaaaaaaa")
     state.isHomeCate = localStorage.getItem("category_list")
+  },
+  checkNavSearch(state, check = 0) {
+    console.log('반응했니?')
+    if (check === 1) {
+      state.navSearch = false
+    } else {
+      state.navSearch = true
+    }
+  },
+  searchFromNav(state, params) {
+    console.log(params)
+    state.searchFromNav = true
+    state.storeNameFromNav = params
+  },
+  resetNavSate(state) {
+    state.searchFromNav = false
+  },
+  setUserBasedRecommand(state, stores) {
+    state.userBasedList = stores.map(s => s)
   }
 };
 

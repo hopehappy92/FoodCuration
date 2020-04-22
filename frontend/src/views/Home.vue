@@ -8,12 +8,17 @@
     </div>
     <div id="home_body">
       <!-- algo기반 추천 -->
-      <div id="home_body_recommand_algo">
+      <div v-if="check" id="home_body_recommand_algo">
         For You
       </div>
-      <VueSlickCarousel v-bind="settings">
-        <div v-for="i in 5" :key="i">
-          <homeBody />
+      <VueSlickCarousel v-if="check == true" v-bind="settings">
+        <div v-for="i in userStores.length" :key="i">
+          <homeBody 
+            :name="userStores[i-1].name"
+            :review-count="userStores[i-1].reviewCount"
+            :area="userStores[i-1].area"
+            :images="userStores[i-1].images"
+          />
         </div>
       </VueSlickCarousel>
       <!-- 전체 추천 -->
@@ -76,15 +81,17 @@ export default {
         swipeToSlide: true,
         arrows: false,
       },
+      check: false
     }
   },
   computed: {
     ...mapState({
-      islogined: state => state.data.isloggined
-    })
+      islogined: state => state.data.isloggined,
+      userStores: state => state.data.userBasedList,
+    }),
   },
   watch: {
-    islogined: function() {
+    islogined: async function() {
       if (this.islogined == true) {
         if (localStorage.getItem("category_list").length == 0) {
           // console.log("aaaaaaaaaaaa")
@@ -92,9 +99,11 @@ export default {
           document.getElementById("checkFav").click();
         }
       }
-    }
+      await this.userBasedRecommand()
+      this.check = true
+    },
   },
-  mounted() {
+  async mounted() {
     this.checkNavbar()
   },
   destroyed() {
@@ -102,6 +111,7 @@ export default {
   },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
+    ...mapActions("data", ["userBasedRecommand"])
   },
 };
 </script>
