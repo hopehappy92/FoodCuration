@@ -25,7 +25,9 @@ const state = {
   onNavFlag: false,
   categoryList: [],
   isHomeCate: false,
-  userBasedList: []
+  navSearch: true,
+  searchFromNav: false,
+  storeNameFromNav: ''
 };
 
 // actions
@@ -603,7 +605,9 @@ const actions = {
   // }, params) {
   //   await api.deleteReview(params)
   // },
-  async setCategory({commit}, params) {
+  async setCategory({
+    commit
+  }, params) {
     // console.log(params)
     await api.setUserCategory(params)
     .then(res => {
@@ -684,8 +688,21 @@ const mutations = {
     // console.log("aaaaaaaa")
     state.isHomeCate = localStorage.getItem("category_list")
   },
-  setUserBasedRecommand(state, stores) {
-    state.userBasedList = stores.map(s => s);
+  checkNavSearch(state, check = 0) {
+    console.log('반응했니?')
+    if (check === 1) {
+      state.navSearch = false
+    } else {
+      state.navSearch = true
+    }
+  },
+  searchFromNav(state, params) {
+    console.log(params)
+    state.searchFromNav = true
+    state.storeNameFromNav = params
+  },
+  resetNavSate(state) {
+    state.searchFromNav = false
   }
 };
 

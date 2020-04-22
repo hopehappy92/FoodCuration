@@ -3,7 +3,7 @@
     <div id="home_header">
       <div id="home_header_header">
         <div id="home_header_header_logo">
-          <img id="home_header_header_logo_img" src="../../public/images/logo.png" alt="Logo">
+          <img id="home_header_header_logo_img" src="../../public/images/logo.png" alt="Logo" />
         </div>
         <div id="home_header_header_tab">
           <div v-if="islogined == false">
@@ -33,27 +33,30 @@
       <div id="home_header_search">
         <form id="home_header_search_form" action="/search">
           <div id="home_header_search_input_before" />
-          <input id="home_header_search_input" type="text" placeholder="식당명">
-          <button id="home_header_search_btn"> 
+          <input
+            id="home_header_search_input"
+            type="text"
+            placeholder="식당명"
+            v-model="storeName"
+            @keyup.prevent="enterKey(storeName)"
+          />
+          <button id="home_header_search_btn" @click.prevent="goSearchPage(storeName)">
             <b>검색</b>
           </button>
           <div id="home_header_search_input_after" />
         </form>
       </div>
-
     </div>
     <div id="home_body">
-      <div>
-        asfdf
-      </div>
+      <div>asfdf</div>
     </div>
   </div>
 </template>
 
 <script>
 import Login from "../components/Login";
-import { mapState, mapActions } from "vuex";
-import router from "../router"
+import { mapState, mapActions, mapMutations } from "vuex";
+import router from "../router";
 
 export default {
   components: {
@@ -61,8 +64,9 @@ export default {
   },
   data() {
     return {
+      storeName: ""
       // islogined: false,
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -72,6 +76,7 @@ export default {
   methods: {
     ...mapActions("data", ["checkLogin"]),
     ...mapActions("data", ["logout"]),
+    ...mapMutations("data", ["searchFromNav"]),
     goRegi() {
       router.push("/register");
     },
@@ -82,10 +87,19 @@ export default {
     dologout() {
       this.logout();
     },
+    goSearchPage(storeName) {
+      this.searchFromNav(storeName);
+      router.push("/search");
+    },
+    enterKey(storeName) {
+      if (window.event.keyCode == 13) {
+        this.goSearchPage(storeName);
+      }
+    }
   },
   mounted() {
     this.checkLogin();
-  },
+  }
 };
 </script>
 

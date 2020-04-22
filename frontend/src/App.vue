@@ -3,6 +3,7 @@
     <!-- <toolbar /> -->
     <!-- <drawer /> -->
     <Nav v-if="onNav == false" style="height: 86px;" />
+    <!-- <HomeHeader v-if="onNav == false" style="height: 200px;"></HomeHeader> -->
     <route-view />
     <go-top />
   </v-app>
@@ -26,9 +27,9 @@ export default {
   },
   computed: {
     ...mapState({
-      onNav: state => state.data.onNavFlag,
+      onNav: state => state.data.onNavFlag
     })
-  },
+  }
 };
 </script>
 

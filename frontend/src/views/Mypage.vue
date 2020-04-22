@@ -1,18 +1,14 @@
 <template>
-  <div 
+  <div
     id="mypage"
     v-infinite-scroll="loadMore"
     infinite-scroll-disabled="loading"
     infinite-scroll-distance="10"
   >
     <div id="mypageform">
-      <MypageSidebar
-        id="mypage_sidebar"
-        :reviews="reviews"
-        @searchcate="searchcate"
-      />
+      <MypageSidebar id="mypage_sidebar" :reviews="reviews" @searchcate="searchcate" />
       <div id="mypage_body">
-        <MypageHeader 
+        <MypageHeader
           id="mypage_body_header"
           @searchword="searchword"
           @sortvalue="sortvalue"
@@ -33,24 +29,20 @@
           </div>
         </div>
         <div v-else>
-          <div id="no_content">
-            검색 결과가 없습니다.
-          </div>
+          <div id="no_content">검색 결과가 없습니다.</div>
         </div>
       </div>
-      
     </div>
   </div>
-
 </template>
 
 <script>
 // import router from "../router"
-import MypageSidebar from "../components/MypageSidebar"
-import MypageHeader from "../components/MypageHeader"
-import MypageCard from "../components/MypageCard"
-import { mapState, mapActions } from "vuex";
-import router from "../router"
+import MypageSidebar from "../components/MypageSidebar";
+import MypageHeader from "../components/MypageHeader";
+import MypageCard from "../components/MypageCard";
+import { mapState, mapActions, mapMutations } from "vuex";
+import router from "../router";
 
 export default {
   components: {
@@ -68,7 +60,7 @@ export default {
     return {
       loading: true,
       flag: true
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -81,9 +73,10 @@ export default {
     ...mapActions("data", ["getReviewByCategory"]),
     ...mapActions("data", ["sortReviewByScore"]),
     ...mapActions("data", ["sortReviewByTime"]),
+    ...mapMutations("data", ["checkNavSearch"]),
     async searchword(word, value) {
       // console.log("되나", word, value)
-      let params = {}
+      let params = {};
       if (value == 1) {
         params = {
           user: this.$route.params.userId,
@@ -95,11 +88,11 @@ export default {
           user: this.$route.params.userId,
           store_name: word,
           page_size: 1000
-        }
+        };
       }
       // console.log("mypage ", params)
-      await this.getUserReview(params)
-      this.flag = false
+      await this.getUserReview(params);
+      this.flag = false;
     },
     loadMore: async function() {
       if (this.flag == true) {
@@ -122,10 +115,10 @@ export default {
           user: this.$route.params.userId,
           page: 1,
           append: false
-        }
-        await this.getUserReview(params)
-        this.loading = false
-        this.flag = true
+        };
+        await this.getUserReview(params);
+        this.loading = false;
+        this.flag = true;
       } else {
         const dataform = {
           params: {
@@ -133,19 +126,19 @@ export default {
             page_size: 1000
           },
           word: word
-        }
-        await this.getReviewByCategory(dataform)
-        this.flag = false
+        };
+        await this.getReviewByCategory(dataform);
+        this.flag = false;
       }
     },
     sortvalue(value) {
       // console.log(value)
       if (value == "rating") {
-        this.sortReviewByScore()
+        this.sortReviewByScore();
       } else {
-        this.sortReviewByTime(value)
+        this.sortReviewByTime(value);
       }
-      this.flag = false
+      this.flag = false;
     }
   },
   async mounted() {
@@ -155,15 +148,16 @@ export default {
       append: false
     };
     // console.log("mypage ", params)
-    await this.getUserReview(params)
-    this.loading = false
+    this.checkNavSearch(0);
+    await this.getUserReview(params);
+    this.loading = false;
   },
   created() {
     // if (this.$route.params.userId != localStorage.getItem("pk")) {
     //   router.push("/wrongid")
     // }
   }
-}
+};
 </script>
 
 <style scoped>
