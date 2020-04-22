@@ -22,6 +22,8 @@ import heapq
 import requests
 from bs4 import BeautifulSoup
 from math import acos, cos, sin, radians
+from sklearn.cluster import KMeans
+
 
 
 # 메서드 정리
@@ -47,12 +49,37 @@ from math import acos, cos, sin, radians
 #     def destroy(self, request, pk=None):
 #         pass
 
+male_value = 15
+female_value = 0
+min_review = 5
+with open('k_means.p', 'rb') as f:
+    cluster_list = pickle.load(f)
+    centroid = pickle.load(f)
+
+def get_cluster(age, gender):
+    def gender_to_integer(gender):
+        if gender=='남':
+            return male_value
+        else:
+            return female_value
+    gtoi = gender_to_integer(gender)
+    index = -1
+    init_distance = 9999999
+    for i in range(5):
+        distance_y = centroid[i][0]
+        distance_x = centroid[i][1]
+        distance = (distance_y-age)*(distance_y-age) + (distance_x-gtoi)*(distance_x-gtoi)
+        if(init_distance>distance):
+            init_distance = distance
+            index = i
+    return index
+
 
 # 이미지 크롤링이 필요한 매장 id
 get_image_dict = dict()
 
 # 자동으로 크롤링 시작할 get_image_dict 길이
-start_crawling_length = 1000
+start_crawling_length = 100
 
 all_store = Store.objects.all()
 
@@ -75,7 +102,7 @@ def crawling():
     while Q:
         _, store_id = heapq.heappop(Q)
         store = Store.objects.get(id=store_id)
-        soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969#imgrc=RakknToj3buHrM".format(store.store_name, store.area)).text, 'html.parser')
+        soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
         # print(soup.select('td a img'))
         cnt = 0
         for img in soup.select('td a img'):
@@ -520,33 +547,46 @@ def relearning_current_model(self):
 
 
 @api_view(['GET'])
-def user_based_cf(self, user_id):
-    alg_name = Algorithm.objects.get(id=1).alg_name
-    df = learning_dataframe[learning_dataframe["user"] != user_id]
-    stores = df["store"]
-    arr = []
-    arr2 = []
-    if alg_name == 'svdpp':
-        alg = svdpp
-    elif alg_name == 'knn':
-        alg = knn
+def user_based_cf(self):
+    '''
+    추천할 알고리즘을 확인하여 추천을 해 줍니다.
+    현재 요청을 보낸 유저의 리뷰가 10개 이상인 경우
+    서버에 적용중인 알고리즘(knn, svdpp)이 어떤것인지 확인 후 해당 알고리즘 기반 추천 결과를 제공
+
+    10개 미만인 경우
+    k-means 알고리즘을 적용하여 결과를 제공
+
+    추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
+    '''
+    user = CustomUser.objects.get(id=self.user.id)
+    # user = CustomUser.objects.get(id=15)
+    if user.review_count > 9:
+        alg_name = Algorithm.objects.get(id=1).alg_name
+        df = learning_dataframe[learning_dataframe["user"] != user.id]
+        stores = df["store"]
+        arr = []
+        if alg_name == 'svdpp':
+            alg = svdpp
+        elif alg_name == 'knn':
+            alg = knn
+        
+        for store in stores.unique():
+            arr.append([store, alg.predict(uid=user.id, iid=store).est])
+        arr.sort(key = lambda x: x[1], reverse=True)
+        serializer = serializers.StoreSerializer([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
+    else:
+        serializer = serializers.StoreSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True)
     
-    for store in stores.unique():
-        arr.append([store, alg.predict(uid=user_id, iid=store).est])
-        arr2.append(store)
-    arr.sort(key = lambda x: x[1], reverse=True)
-    print(arr[:15])
-    return Response([store for store, score in arr[:15]])
+    check_image(serializer)
+    return Response(serializer.data)
+
+
 
 
 @api_view(['POST'])
 def create_store(self):
     print('asdfasdf')
     try:
-        print(dir(self))
-        print(self.data)
-        print("fsdfsdf")
-        print(self.query_params)
         store_name = self.data.get("store_name")
         branch = self.data.get("branch")
         area = self.data.get("area")
@@ -558,7 +598,6 @@ def create_store(self):
         tag = self.data.get("tag")
         menues = self.data.get("menues")
         cid = Store.objects.all().order_by('-id')[0].id + 1
-        print(cid)
         Store.objects.create(id=cid, store_name=store_name, branch=branch, area=area, tel=tel, address=address, latitude=latitude, longitude=longitude, category=category, tag=tag)
     except:
         return Response("매장 등록 실패")
@@ -577,3 +616,60 @@ def set_user_category(self):
     user.category = category
     user.save()
     return Response("카테고리 등록 완료")
+
+
+@api_view(['GET'])
+def relearning_kmeans(self):
+    global cluster_list, centroid
+    user_df = pd.DataFrame(CustomUser.objects.filter(review_count__gte=10).values("id", "age", "gender"))
+    male_value = 15
+    female_value = 0
+    min_review = 5
+
+    # gender 값을 정수로 변환
+    user_df['gender'] = user_df['gender'].apply(lambda x: male_value if x=="남" else female_value)
+
+    # kmeans 학습
+    kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=300, random_state=0)
+    kmeans.fit(user_df[["age", "gender"]])
+
+    # kmeans.labels_ : 몇번 클르서티인지 라벨링 붙이고 분리했었던 id col을 붙임
+    user_df['cluster'] = kmeans.labels_
+
+    # 모든 리뷰를 불러와 데이터프레임 생성
+    review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "store_id"))
+
+    # 가져온 유저가 있는 리뷰만 남김
+    review_df = review_df[review_df['user_id'].isin(set(user_df['id']))]
+
+    user_df = user_df.set_index('id')
+
+    # 리뷰 테이블에 유저 클러스터정보를 조인해서 합쳐준다.
+    temp_df = pd.merge(user_df["cluster"], review_df, left_index=True, right_on="user_id")
+    temp_df["score"] = temp_df["score"].astype(float)
+
+    # 클러스터의 인덱스에 클러스터 번호에 해당하는 정보만 가져와서 저장한다.
+    cluster_list = [temp_df[["store_id", "score"]][temp_df["cluster"]==i] for i in range(5)]
+
+    for i in range(5):
+        # cluster 각각을 store로 묶는다
+        cluster_list[i] = cluster_list[i].groupby('store_id').agg(['sum', 'count', 'mean'])['score']
+        cluster_list[i] = cluster_list[i][cluster_list[i]['count']>=5]
+
+        # 각 클러스터별 평균평점을 계산한다.
+        a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
+
+        # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
+        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
+
+        # calc 기준으로 내림차순 정렬한다.
+        cluster_list[i].sort_values(['calc'], ascending=False, inplace=True)
+        cluster_list[i] = cluster_list[i].index
+        cluster_list[i] = [Store.objects.get(id=cluster_list[i][j]) for j in range(min(20, len(cluster_list[i])))]
+
+    # centroid -> 저쟁해야하는 값
+    centroid = kmeans.cluster_centers_
+    with open('k_means.p', 'wb') as f:
+        pickle.dump(cluster_list, f)
+        pickle.dump(centroid, f)
+    return Response('k_means 재 학습 완료')
