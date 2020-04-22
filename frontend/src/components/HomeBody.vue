@@ -4,10 +4,11 @@
       <img src="../../public/images/icons/user.png" alt="image" class="home_body_card_img">
       <div class="home_body_card_hover">
         <div class="home_body_card_text">
-          <div>가게명</div>
+          <div>{{ name }}</div>
           <div>평점</div>
-          <div>리뷰수</div>
-          <div>지역</div>
+          <div>리뷰 갯수 : {{ reviewCount }}</div>
+          <div>지역 : {{ area }}</div>
+          이미지 : {{ images }}
         </div>
         <button class="home_body_card_btn" @click.prevent="goDetail()">Go Detail</button>
       </div>
@@ -17,6 +18,24 @@
  
 <script>
   export default {
+    props: {
+      name: {
+        type: String,
+        default: ""
+      },
+      reviewCount: {
+        type: Number,
+        default: 0
+      },
+      area: {
+        type: String,
+        default: ""
+      },
+      images: {
+        type: Array,
+        defalut: []
+      }
+    },
     data() {
       return {
       }
