@@ -58,8 +58,9 @@
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   text-align: center;
-  /* width: 100%;
-  height: 100%; */
+  width: 100%;
+  height: 100%;
+  padding-top: 4vw;
 }
 
 .container:hover .home_body_card_img {
@@ -74,16 +75,9 @@
   /* background-color: black; */
   color: white;
   font-size: 16px;
-  padding: 16px 32px;
-  /* margin-top: 20px; */
-  width: 100%;
-  height: 100%;
 }
 .home_body_card_btn {
   border: 2px solid white;
   padding: 4px 8px;
-  /* position: absolute; */
-  /* bottom: 25px;
-  right: 115px; */
 }
 </style>
