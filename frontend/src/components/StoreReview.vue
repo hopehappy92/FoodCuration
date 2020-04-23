@@ -49,7 +49,7 @@ export default {
   mounted() {
     axios
       .get(
-        `http://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+        `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
       )
       .then(res => {
         console.log(res.data);
@@ -82,7 +82,7 @@ export default {
       setTimeout(() => {
         axios
           .get(
-            `http://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+            `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
           )
           .then(res => {
             this.reviews = res.data.reverse();
@@ -101,7 +101,7 @@ export default {
     deleteReview(review_id) {
       console.log(review_id);
       axios
-        .delete(`http://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`)
+        .delete(`https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`)
         .then(this.reRoad());
     }
   },

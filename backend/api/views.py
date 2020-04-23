@@ -97,12 +97,17 @@ def check_image(serializer):
 def crawling():
     global get_image_dict
     Q = []
+    cnt2 = 30
     for key, value in get_image_dict.items():
         heapq.heappush(Q, [-value, key])
     while Q:
         _, store_id = heapq.heappop(Q)
         store = Store.objects.get(id=store_id)
-        soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
+        try:
+            soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
+            cnt2 -= 1
+        except:
+            continue
         # print(soup.select('td a img'))
         cnt = 0
         for img in soup.select('td a img'):
@@ -113,9 +118,11 @@ def crawling():
                     cnt += 1
                 except:
                     pass
-            if cnt > 3:
+            if cnt > 2:
                 del get_image_dict[store_id]
                 break
+        if not cnt2:
+            break
     
     df = pd.DataFrame(StoreImage.objects.all().values("store_id", "url"))
     with open('store_image.p', 'wb') as f:
@@ -167,7 +174,7 @@ def trend_by_tob(self):
     return Response(tob_dict)
 
 def go_to_myhome(request):
-    return redirect("http://localhost:8080/")
+    return redirect("https://i02d106.p.ssafy.io/")
 
 class CustomLoginView(LoginView):
     def get_response(self):

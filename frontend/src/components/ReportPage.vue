@@ -157,7 +157,7 @@ export default {
       this.lowerLine.push(20)
       this.upperLine.push(80)
     }
-    axios.get(`http://127.0.0.1:8000/api/trend_by_tob`)
+    axios.get(`https://127.0.0.1:8000/api/trend_by_tob`)
     .then(res => {
       // console.log(res.data)
       const dataset = res.data
