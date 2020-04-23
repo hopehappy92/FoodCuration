@@ -186,7 +186,7 @@ def trend_by_tob(self):
     return Response(tob_dict)
 
 def go_to_myhome(request):
-    return redirect("http://i02d106.p.ssafy.io/")
+    return redirect("https://i02d106.p.ssafy.io/")
 
 class CustomLoginView(LoginView):
     def get_response(self):
@@ -577,7 +577,8 @@ def user_based_cf(self):
 
     추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
     '''
-    user = CustomUser.objects.get(id=self.user.id)
+    user = CustomUser.objects.get(id=15)
+    # user = CustomUser.objects.get(id=self.user.id)
     # user = CustomUser.objects.get(id=15)
     if user.review_count > 9:
         alg_name = Algorithm.objects.get(id=1).alg_name
@@ -592,9 +593,9 @@ def user_based_cf(self):
         for store in stores.unique():
             arr.append([store, alg.predict(uid=user.id, iid=store).est])
         arr.sort(key = lambda x: x[1], reverse=True)
-        serializer = serializers.StoreSerializer([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
+        serializer = serializers.StoreDetailSerializer2([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
     else:
-        serializer = serializers.StoreSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True)
+        serializer = serializers.StoreDetailSerializer2(cluster_list[get_cluster(user.age, user.gender)], many=True)
     
     check_image(serializer)
     return Response(serializer.data)

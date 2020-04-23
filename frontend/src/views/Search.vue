@@ -183,12 +183,14 @@ export default {
       const that = this;
       navigator.geolocation.getCurrentPosition(function(pos) {
         console.log(pos.coords.longitude, pos.coords.latitude);
-        that.lat = pos.coords.latitude;
-        that.lon = pos.coords.longitude;
-        that.location = 0;
         setTimeout(() => {
-          that.$refs.showMap.showMap();
-        }, 500);
+          that.lat = pos.coords.latitude;
+          that.lon = pos.coords.longitude;
+          that.location = 0;
+          setTimeout(() => {
+            that.$refs.showMap.showMap();
+          }, 1000);
+        }, 1000);
       });
     },
     noLocation() {
