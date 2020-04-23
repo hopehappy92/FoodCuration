@@ -8,7 +8,7 @@
         월 1$로 지역별 상권분석부터 업종별 경향까지 <br>
         다양한 분석 알고리즘으로 당신의 성공적인 창업을 도와드립니다.
       </div>
-      <div>
+      <div id="report_link">
         <div id="report_free" class="report_add" @click="goReportPage()">
           무료 체험판
         </div>
@@ -89,6 +89,9 @@ export default {
   font-size: 24px;
   animation: text 3s 1;
 }
+#report_link {
+  animation: showup 4s ease-in-out;
+}
 .report_add {
   display: inline-block;
   cursor: pointer;
@@ -97,6 +100,7 @@ export default {
 }
 #report_free {
   color: yellowgreen;
+  animation: showupfree 4s ease-in-out
 }
 .container-text {
   background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
@@ -107,6 +111,28 @@ export default {
   font-weight: 1000;
   font-family: 'Bungee', cursive;
   animation: filling 3s ease forwards;
+}
+@keyframes showup {
+  0% {
+    color: black;
+  }
+  80% {
+    color: black;
+  }
+  100% {
+    color: white;
+  }
+}
+@keyframes showupfree {
+  0% {
+    color: black;
+  }
+  80% {
+    color: black;
+  }
+  100% {
+    color: yellowgreen;
+  }
 }
 @keyframes filling {
   from{

@@ -54,8 +54,12 @@ export default {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
     }
-    return http.get(`${apiUrl}/user_based_cf`, {
-      headers
-    })
+    return http.get(`${apiUrl}/user_based_cf`, {headers})
   },
+  getTrendChartData() {
+    return  http.get(`${apiUrl}/trend_by_tob`)
+  },
+  getChainChartData() {
+    return http.get(`${apiUrl}/compare_with_chain`)
+  }
 };

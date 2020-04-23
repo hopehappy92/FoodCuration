@@ -74,20 +74,23 @@ class StoreSerializer3(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     category_list = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
     class Meta:
         model = Review
         fields = [
             "id",
             "store",
             "store_name",
-            "user",
+            "user_id",
+            "username",
             "score",
             "content",
             "reg_time",
             "category_list",
         ]
+    def get_username(self, obj):
+        return obj.user.username
     def get_category_list(self, obj):
-        
         return Store.objects.get(id=obj.store_id).category_list
 
 class ReviewSerializer2(serializers.ModelSerializer):
@@ -130,6 +133,30 @@ class StoreDetailSerializer(serializers.ModelSerializer):
             "reviews",
             "avg_score",
             "menues",
+            "images",
+        ]
+
+    def get_review_count(self, obj):
+        return obj.review_set.count()
+
+    def get_avg_score(self, obj):
+        if obj.review_set.count():
+            return obj.review_set.aggregate(Avg('score'))["score__avg"]
+        return 0
+
+
+class StoreDetailSerializer2(serializers.ModelSerializer):
+    review_count = serializers.SerializerMethodField()
+    avg_score = serializers.SerializerMethodField()
+    images = ImageSerializer(source="storeimage_set", many=True)
+    class Meta:
+        model = Store
+        fields = [
+            "id",
+            "store_name",
+            "area",
+            "review_count",
+            "avg_score",
             "images",
         ]
 

@@ -13,6 +13,7 @@ from surprise import SVD, Dataset, accuracy, Reader
 from surprise.model_selection import train_test_split
 from surprise.dataset import DatasetAutoFolds
 from surprise.model_selection import GridSearchCV
+from math import acos, cos, sin, radians
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
  'backend.settings')
@@ -22,72 +23,109 @@ from api.models import Store #상점 46만개
 from api.models import Review # 리뷰 9만개
 from api.models import CustomUser # 유저 1.8만개
 
-# # review가 10개 이상인 식당만 불러옴
-# request_store = requests.get("http://i02d106.p.ssafy.io:8765/api/store/10").json()
-# # review가 10개 이상인 유저만 불러옴
-# request_user = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
-# 모든 review 다 불러옴
+
+def recoNearStroe(temp_id):
+    queryset = []
+    store = Store.objects.get(id=temp_id)
+    all_store = Store.objects.all()
+    store_df = pd.DataFrame(all_store.values("id", "longitude", "latitude", "category"))
+    print('start')
+    lon = store.longitude
+    lat = store.latitude
+    store_df = store_df[store_df["longitude"] - lon < 0.015]
+    store_df = store_df[store_df["longitude"] - lon > -0.015]
+    store_df = store_df[store_df["latitude"] - lat < 0.015]
+    store_df = store_df[store_df["latitude"] - lat > -0.015]
+    store_df = store_df[store_df.apply(lambda x: 6371*acos(cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"]))), axis=1) < 1][["id", "category"]]
+    print('===')
+    print(store_df)
+
+    # print("start")
+    # a = []
+    # for store in all_store:
+    #     lat = store.latitude
+    #     lon = store.longitude
+    #     if abs(clon-lon) < 0.01 and abs(clat - lat) < 0.01:
+    #         a.append(store)
+    # # print(a)
+    # for store in a:
+    #     lat = store.latitude
+    #     lon = store.longitude
+    #     b = 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat)))
+    #     queryset.append(b)
+    
+    # temp_series = pd.Series(queryset)
+    # print(temp_series)
+    # store
+    store_df=store_df[temp_series < 1]
+    print(store_df)
+    print('----------------------')
+    # print("start")
+    # store_df = store_df[store_df.apply(lambda x: 6371*acos(cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"]))), axis=1) < 1]
+    # # store_df['calc'] = store_df.apply(lambda x: x['category'])
+    # print('----------------------')
+    # 초기 데이터 받아와
+    all_store =pd.DataFrame(Store.objects.all().values("id", "latitude", "longitude", "category"))
+    review_df = pd.DataFrame(Review.objects.all().values("score", "store_id"))
+    min_review = 5
+    print('store 데이터 받아오기 완료')
+    # 원하는 id에 해당하는 삭당 정보 받아와
+    near_store = pd.DataFrame(columns=["id", 'category', 'category_count', 'calc'])
+    temp_store = all_store.loc[all_store['id'] == temp_id]
+    temp_store_name = temp_store['id']
+    clat = temp_store['latitude'].values[0]
+    clon = temp_store['longitude'].values[0]
+
+    # 해당 식당의 카테고리 먼저 가져와
+    category_set = set(temp_store['category'].values[0].split('|'))
+    
+    # 이게 잘 안 먹히네요
+    # all_store = all_store.loc[6371*acos(cos(radians(all_store['latitude']))*cos(radians(clat))*cos(radians(clon)-radians(all_store['longitude']))+sin(radians(all_store['latitude']))*sin(radians(clat))) < 1]
 
 
-request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
-print(type(request_all_review))
-# ten_review_store_df = pd.DataFrame(data=request_store)
-# ten_review_user_df = pd.DataFrame(data=request_user)
-# all_user_df = pd.DataFrame(data=request_all_review)
-# print('데이터 불러오기 완료')
-# ten_review_store_list = set()
-# ten_review_user_list = set()
+    # for문이 속도가 느려 전처리를 좀 했습니다. 정사각형 약 1km반경으로 가져왔습니다
+    con1 = (all_store['longitude']<(0.01+clon))
+    con2 = ((clon -0.01) <all_store['longitude'])
+    con3 = (all_store['latitude']<(0.01+clat))
+    con4 = ((clat -0.01) <all_store['latitude'])
+    all_store = all_store[con1 & con2 & con3 & con4]
+    print('거리 필터링 완료')
+    print(len(all_store))
+    # 반경 1km 내에 있으면 category 겹치는게 몇개인지 계산
+    for i in range(len(all_store)):
+        store = all_store.iloc[i]
+        lat = store['latitude']
+        lon = store['longitude']
+        if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < 1:
+            if(store['id']==temp_id):
+                continue
+            categories = store["category"].split('|')
+            count = 0
+            for c in categories:
+                if c in category_set:
+                    count += 1
+            near_store.loc[len(near_store)] = [store['id'], store['category'], count, 0]
+    print('카테고리 for문 완료')
+    # 필요한 review들만 가져옴
+    review_df = review_df[review_df['store_id'].isin(set(near_store['id']))]
 
-# print(1234)
-# for store in request_store:
-#     ten_review_store_list.add(store['id'])
-# for user in request_user:
-#     ten_review_user_list.add(user['id'])
+    review_df = review_df.groupby('store_id').agg(['sum', 'count', 'mean'])['score']
+    a = sum(review_df['sum'])/sum(review_df['count'])
 
-# selected_review_list = list()
-# for dic in request_all_review:
-#     if('score' in dic.keys() and 'user' in dic.keys() and 'store' in dic.keys()):
-#         if(dic['user'] in ten_review_user_list and dic['store'] in ten_review_store_list):
-#             selected_review_list.append(dic)
+    # 인기도 고려한 평점 계산
+    review_df['calc'] = review_df.apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)
 
-# ratings_df = pd.DataFrame(selected_review_list)
-# ratings_df = ratings_df[['store', 'user', 'score']]
-# print(ratings_df.shape)
-# print(1234)
-request_all_review = pd.DataFrame(request_all_review)
-reader = Reader(rating_scale=(1, 5))
-request_all_review = surprise.Dataset.load_from_df(df=request_all_review, reader=reader)
-trainset = request_all_review.build_full_trainset()
-sim_options = {'name': 'pearson_baseline', 'user_based': False}
-algo = KNNBaseline(sim_options=sim_options)
-algo.fit(trainset)
+    for i in review_df.index:
+        val = review_df.loc[i]
+        store_calc = val['calc']
+        near_store.loc[near_store['id']==i, 'calc'] = store_calc
 
-print('완료')
+    # 카테고리 일치 개수, 인기도 고려한 평점 순 정렬
+    near_store.sort_values(by=['category_count', 'calc'], inplace=True, ascending=False)
 
+    return near_store.head(n=20)
 
-
-# Read the mappings raw id <-> movie name
-rid_to_name, name_to_rid = read_item_names()
-
-# Retrieve inner id of the movie Toy Story
-toy_story_raw_id = name_to_rid['Toy Story (1995)']
-toy_story_inner_id = algo.trainset.to_inner_iid(toy_story_raw_id)
-
-# Retrieve inner ids of the nearest neighbors of Toy Story.
-toy_story_neighbors = algo.get_neighbors(toy_story_inner_id, k=10)
-
-# Convert inner ids of the neighbors into names.
-toy_story_neighbors = (algo.trainset.to_raw_iid(inner_id)
-                       for inner_id in toy_story_neighbors)
-toy_story_neighbors = (rid_to_name[rid]
-                       for rid in toy_story_neighbors)
-
-print()
-print('The 10 nearest neighbors of Toy Story are:')
-for movie in toy_story_neighbors:
-    print(movie)
-
-
+print(recoNearStroe(124164))
 
 
 

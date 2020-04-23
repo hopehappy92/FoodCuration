@@ -151,6 +151,18 @@ with open('learning_dataframe.p', 'rb') as file:
 with open('df_all_tob_list.p', 'rb') as file:
     df_tob_list = pickle.load(file)
 
+with open('chain_result_list.p', 'rb') as file:
+    chain_result_list = pickle.load(file)
+
+@api_view(['GET'])
+def compare_with_chain(self):
+    global chain_result_list
+    chain_dict = {
+        "체인점 평점 순위": chain_result_list[0],
+        "비체인/체인/전체 평점 비교": chain_result_list[1],
+    }
+    return Response(chain_dict)
+
 @api_view(['GET'])
 def trend_by_tob(self):
     global df_tob_list
@@ -565,7 +577,8 @@ def user_based_cf(self):
 
     추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
     '''
-    user = CustomUser.objects.get(id=self.user.id)
+    user = CustomUser.objects.get(id=15)
+    # user = CustomUser.objects.get(id=self.user.id)
     # user = CustomUser.objects.get(id=15)
     if user.review_count > 9:
         alg_name = Algorithm.objects.get(id=1).alg_name
@@ -580,9 +593,9 @@ def user_based_cf(self):
         for store in stores.unique():
             arr.append([store, alg.predict(uid=user.id, iid=store).est])
         arr.sort(key = lambda x: x[1], reverse=True)
-        serializer = serializers.StoreSerializer([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
+        serializer = serializers.StoreDetailSerializer2([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
     else:
-        serializer = serializers.StoreSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True)
+        serializer = serializers.StoreDetailSerializer2(cluster_list[get_cluster(user.age, user.gender)], many=True)
     
     check_image(serializer)
     return Response(serializer.data)

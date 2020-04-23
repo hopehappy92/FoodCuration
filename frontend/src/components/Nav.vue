@@ -6,13 +6,14 @@
         <!-- <i class="fab fa-drupal" />
         <span>Food Curation</span>-->
       </div>
-      <div class="nav_innder_middle" v-if="$store.state.data.navSearch">
+      <div v-if="$store.state.data.navSearch" class="nav_innder_middle">
         <input
+          v-model="storeName"
           type="text"
           placeholder="  식당명으로 맛집을 검색해보세요"
           v-model="storeName"
           @keyup="enterKey(storeName)"
-        />
+        >
         <i class="fas fa-search" @click="goSearchPage(storeName)" />
       </div>
       <div v-if="islogined == false">
@@ -45,16 +46,16 @@
 import router from "../router";
 import Login from "../components/Login";
 import { mapState, mapActions, mapMutations } from "vuex";
-import { mdiHanger } from "@mdi/js";
+// import { mdiHanger } from "@mdi/js";
 
 export default {
+  components: {
+    Login
+  },
   data() {
     return {
       storeName: ""
     };
-  },
-  components: {
-    Login
   },
   computed: {
     ...mapState({
