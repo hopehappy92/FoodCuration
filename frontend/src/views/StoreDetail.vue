@@ -74,12 +74,26 @@ export default {
         this.storeAddress = res.data.address;
         this.storeTel = res.data.tel;
         this.storeCategories = res.data.category_list;
-        this.latitude = res.data.latitude;
-        this.longitude = res.data.longitude;
+        this.latitude = Number(res.data.latitude);
+        this.longitude = Number(res.data.longitude);
         this.reviewCnt = res.data.review_count;
         this.storeMenuList = res.data.menues;
       })
       .then(this.checkNavSearch(0));
+  },
+  data() {
+    return {
+      storeName: "",
+      storeScore: 0,
+      reviewCnt: 0,
+      storeArea: "",
+      storeTel: "",
+      storeAddress: "",
+      storeCategories: [],
+      storeMenuList: [],
+      latitude: 0,
+      longitude: 0
+    };
   },
   methods: {
     ...mapMutations("data", ["checkNavSearch"]),
@@ -87,7 +101,7 @@ export default {
       this.$refs.updateReview.reRoad();
     },
     avgScore(avgScore) {
-      this.storeScore = avgScore;
+      this.storeScore = Number(avgScore);
     }
   }
 };
@@ -108,6 +122,8 @@ export default {
   margin-left: 20px;
   background-color: whitesmoke;
   height: fit-content;
+  display: flex;
+  flex-flow: column;
 }
 .main_content {
   width: 60%;

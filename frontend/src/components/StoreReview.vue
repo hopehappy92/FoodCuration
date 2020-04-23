@@ -3,8 +3,8 @@
     <h2 class="review_header">리뷰 ({{ reviewCnt }})</h2>
     <div v-for="(review, index) in paginatedData" :key="index" class="review_main">
       <div class="review_container">
-        <div class="review_container_left">{{ review.user }}</div>
-        <div class="review_container_middle">{{ review.content }}</div>
+        <div class="review_container_left">{{review.username}}</div>
+        <div class="review_container_middle">{{review.content}}</div>
         <div class="review_container_right">
           <div v-if="review.user == myId">
             <updateReview :review-id="review.id" :content="review.content" @editReview="reRoad">
@@ -12,9 +12,9 @@
             </updateReview>
             <i class="fas fa-trash-alt" @click="deleteReview(review.id)" />
           </div>
-          <div v-else>
-            <i class="far fa-thumbs-up" />
-          </div>
+          <!-- <div v-else>
+            <i class="far fa-thumbs-up"></i>
+          </div>-->
         </div>
       </div>
     </div>
@@ -43,7 +43,8 @@ export default {
       myId: localStorage.getItem("pk"),
       modal: false,
       avgScore: 0,
-      reviewCnt: 0
+      reviewCnt: 0,
+      userName: ""
     };
   },
   computed: {
@@ -67,6 +68,7 @@ export default {
       )
       .then(res => {
         console.log(res.data);
+        console.log("dddd");
         if (res.data.length) {
           var value = 0;
           let allScore = 0;
@@ -115,7 +117,9 @@ export default {
     deleteReview(review_id) {
       console.log(review_id);
       axios
-        .delete(`https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`)
+        .delete(
+          `https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`
+        )
         .then(this.reRoad());
     }
   }
@@ -172,6 +176,7 @@ export default {
 }
 .page-btn:hover {
   background: rgb(133, 132, 132);
+  cursor: pointer;
 }
 .btn-cover .page-count {
   padding: 0 1rem;

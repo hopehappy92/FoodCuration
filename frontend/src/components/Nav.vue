@@ -2,14 +2,16 @@
   <div>
     <div class="nav">
       <div class="nav_inner_left" @click="goHome()">
-        <i class="fab fa-drupal" />
-        <span>Food Curation</span>
+        <img id="home_header_header_logo_img" src="../../public/images/logo_black.png" alt="Logo" />
+        <!-- <i class="fab fa-drupal" />
+        <span>Food Curation</span>-->
       </div>
       <div v-if="$store.state.data.navSearch" class="nav_innder_middle">
         <input
           v-model="storeName"
           type="text"
-          placeholder="  맛집을 찾아드립니다"
+          placeholder="  식당명으로 맛집을 검색해보세요"
+          v-model="storeName"
           @keyup="enterKey(storeName)"
         >
         <i class="fas fa-search" @click="goSearchPage(storeName)" />
@@ -105,7 +107,7 @@ export default {
   z-index: 100;
   width: 100%;
   padding-top: 15px;
-  padding-bottom: 15px;
+  padding-bottom: 20px;
   border-bottom: black solid 3px;
 }
 .nav_inner_left:hover {
@@ -125,6 +127,7 @@ export default {
 .nav_innder_middle {
   width: 30%;
   display: flex;
+  margin-left: 200px;
 }
 .nav_innder_middle > input {
   background: #f1f1f1;
@@ -174,5 +177,11 @@ input:focus {
 .nav_menu {
   font-family: "Do Hyeon", sans-serif;
   font-size: 18px;
+}
+#home_header_header_logo_img {
+  width: 150px;
+  position: absolute;
+  top: -6px;
+  left: 0px;
 }
 </style>

@@ -11,6 +11,7 @@ export default {
     longitude: Number,
     latitude: Number,
     startSearch: Number,
+    dis: Number,
     stores: {
       type: Array,
       default: false
@@ -39,10 +40,26 @@ export default {
       var mapContainer = document.getElementById("map"), // 지도를 표시할 div
         mapOption = {
           center: new kakao.maps.LatLng(this.latitude, this.longitude), // 지도의 중심좌표
-          level: 4 // 지도의 확대 레벨
+          level: that.dis > 300 ? 5 : 4 // 지도의 확대 레벨
         };
 
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      var markerPosition = new kakao.maps.LatLng(this.latitude, this.longitude);
+
+      var imageSrc = "https://image.flaticon.com/icons/svg/1792/1792071.svg",
+        imageSize = new kakao.maps.Size(52, 47), // 마커이미지의 크기입니다
+        imageOption = { offset: new kakao.maps.Point(27, 69) };
+      var markerImage = new kakao.maps.MarkerImage(
+        imageSrc,
+        imageSize,
+        imageOption
+      );
+      var marker = new kakao.maps.Marker({
+        position: markerPosition,
+        image: markerImage
+      });
+      marker.setMap(map);
+
       var stores = this.stores;
       var positions = [];
       kakao.maps.event.addListener(map, "center_changed", function() {
