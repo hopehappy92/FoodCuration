@@ -46,12 +46,16 @@ export default {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
     }
-    return http.post(`${apiUrl}/set_user_category`, params, {headers})
+    return http.post(`${apiUrl}/set_user_category`, params, {
+      headers
+    })
   },
   getUserBasedRecommand() {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
     }
-    return http.get(`${apiUrl}/user_based_cf`, {headers})
-  }
+    return http.get(`${apiUrl}/user_based_cf`, {
+      headers
+    })
+  },
 };

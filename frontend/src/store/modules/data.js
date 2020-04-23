@@ -704,7 +704,7 @@ const mutations = {
     state.searchFromNav = true
     state.storeNameFromNav = params
   },
-  resetNavSate(state) {
+  resetNavState(state) {
     state.searchFromNav = false
   },
   setUserBasedRecommand(state, stores) {
