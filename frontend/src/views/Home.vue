@@ -18,7 +18,8 @@
             :name="userStores[i-1].name"
             :review-count="userStores[i-1].reviewCount"
             :area="userStores[i-1].area"
-            :images="userStores[i-1].images"
+            :images="userStores[i-1].images[0]['url']"
+            :avg-score="userStores[i-1].avgScore"
           />
         </div>
       </VueSlickCarousel>

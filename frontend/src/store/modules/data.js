@@ -18,7 +18,7 @@ const state = {
     lng: 0.0,
     categories: []
   },
-
+  isStaff: false,
   userReviewList: [],
   reviewListForCate: [],
   isloggined: false,
@@ -515,12 +515,12 @@ const actions = {
         } else {
           alert("아이디와 비밀번호를 확인해 주세요")
         }
-        // console.log(err)
-        // console.log(err.response.data.non_field_errors[0] == "이메일 주소가 확인되지 않았습니다.")
       })
-    // console.log("aaaaaaaaaaaaaaaaaaaa")
     await actions.userBasedRecommand(state)
     // console.log("Login")
+    if (localStorage.getItem("is_staff") === "true") {
+      commit("setIsStaff", true)
+    }
     commit("setIsLoggined", check)
     return flag
   },
@@ -532,6 +532,7 @@ const actions = {
     localStorage.clear()
     router.push("/")
     commit("setIsLoggined", check)
+    commit("setIsStaff", check)
   },
 
   checkNavbar({
@@ -553,6 +554,9 @@ const actions = {
     if (localStorage.getItem("pk")) {
       check = true
       commit("setIsLoggined", check)
+    }
+    if (localStorage.getItem("is_staff") === "true") {
+      commit("setIsStaff", true)
     }
   },
 
@@ -661,20 +665,15 @@ const actions = {
     commit
   }, value) {
     const resp = await api.getUserBasedRecommand()
-    console.log(resp)
+    // console.log(resp)
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,
-      branch: d.branch,
       area: d.area,
-      tel: d.tel,
-      address: d.address,
-      lat: d.latitude,
-      lng: d.longitude,
-      categories: d.category_list,
       reviewCount: d.review_count,
-      menues: d.menues,
-      images: d.images
+      images: d.images,
+      avgScore: d.avg_score
+
     }));
     mutations.setUserBasedRecommand(state, stores)
   },
@@ -765,6 +764,9 @@ const mutations = {
   },
   setUserBasedRecommand(state, stores) {
     state.userBasedList = stores.map(s => s)
+  },
+  setIsStaff(state, check) {
+    state.isStaff = check
   }
 };
 

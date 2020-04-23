@@ -1,15 +1,14 @@
 <template>
   <div class="home_body_card">
     <div class="container">
-      <!-- <img v-if="images != ''" :src="images[0]['url']" alt="image" class="home_body_card_img"> -->
-      <!-- <img v-else src="../../public/images/icons/user.png" class="home_body_card_img" alt="image"> -->
+      <img v-if="images == ''" src="../../public/images/icons/user.png" class="home_body_card_img" alt="image">
+      <img v-else :src="images" alt="image" class="home_body_card_img">
       <div class="home_body_card_hover">
         <div class="home_body_card_text">
           <div style="font-size: 1.4vw; margin-bottom: 5px;">{{ name }}</div>
-          <div class="home_body_card_desc">평점</div>
+          <div class="home_body_card_desc">평점 : {{ avgScore.toFixed(1) }}</div>
           <div class="home_body_card_desc">리뷰 갯수 : {{ reviewCount }}</div>
           <div class="home_body_card_desc">지역 : {{ area }}</div>
-          {{ images == "" }}
         </div>
         <button class="home_body_card_btn" @click.prevent="goDetail()">Go Detail</button>
       </div>
@@ -39,18 +38,21 @@ import router from "../router"
         default: ""
       },
       images: {
-        type: Array,
-        defalut: []
+        type: String,
+        default: ""
+      },
+      avgScore: {
+        type: Number,
+        default: 0
       }
     },
     data() {
       return {
+        image: ""
       }
     },
     methods: {
       goDetail() {
-        console.log("aaaaaaaaaaaaaaaaaa")
-        console.log(this.id)
         router.push("/StoreDetail/" + this.id)
       }
     }
