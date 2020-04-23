@@ -25,6 +25,13 @@ from api.models import CustomUser # 유저 1.8만개
 
 
 def recoNearStroe(temp_id):
+    store = Store.objects.get(id=temp_id)
+    store_df = pd.DataFrame(Store.objects.all().values("id", "latitude", "longitude", "category"))
+    lon = store.longitude
+    lat = store.latitude
+    # store_df = store_df[6371*acos(cos(radians(lat))*cos(radians(store_df["latitude"]))*cos(radians(store_df["longitude"])-radians(lon))+sin(radians(lat))*sin(radiansstore_df["latitude"]()))]
+    store_df = store_df[6371*acos(cos(radians(lat))*cos(radians(store_df["latitude"]))*cos(radians(store_df["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(store_df["latitude"])))<1]
+    print(store_df)
     # 초기 데이터 받아와
     all_store =pd.DataFrame(Store.objects.all().values("id", "latitude", "longitude", "category"))
     review_df = pd.DataFrame(Review.objects.all().values("score", "store_id"))
