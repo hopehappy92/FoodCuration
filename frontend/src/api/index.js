@@ -43,7 +43,15 @@ export default {
     return http.post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, params)
   },
   setUserCategory(params) {
-    // console.log("ccccccccccccccc")
-    return http.post(`${apiUrl}/set_user_category`, params)
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.post(`${apiUrl}/set_user_category`, params, {headers})
+  },
+  getUserBasedRecommand() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/user_based_cf`, {headers})
   }
 };

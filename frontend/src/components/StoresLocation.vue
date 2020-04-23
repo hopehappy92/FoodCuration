@@ -10,11 +10,32 @@ export default {
   props: {
     longitude: Number,
     latitude: Number,
-    stores: Object
+    startSearch: Number,
+    stores: {
+      type: Array,
+      default: false
+    }
+  },
+  data() {
+    return {
+      location: Object
+    };
   },
   methods: {
     showMap() {
-      console.log(this.longitude, this.latitude);
+      // var mapContainer = document.getElementById("map"),
+      //   mapOption = {
+      //     center: new kakao.maps.LatLng(this.latitude, this.longitude),
+      //     level: 3
+      //   };
+      // var map = new kakao.maps.Map(mapContainer, mapOption);
+      // var markerPosition = new kakao.maps.LatLng(this.latitude, this.longitude);
+      // var marker = new kakao.maps.Marker({
+      //   position: markerPosition
+      // });
+      // marker.setMap(map);
+      const that = this;
+      console.log("지도야 나와라!!!!");
       var mapContainer = document.getElementById("map"), // 지도를 표시할 div
         mapOption = {
           center: new kakao.maps.LatLng(this.latitude, this.longitude), // 지도의 중심좌표
@@ -24,6 +45,12 @@ export default {
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
       var stores = this.stores;
       var positions = [];
+      kakao.maps.event.addListener(map, "center_changed", function() {
+        var latlng = map.getCenter();
+        that.location = latlng;
+        that.$emit("child", that.location);
+      });
+
       for (let store of stores) {
         positions.push({
           content: `<div>${store.name}</div>`,

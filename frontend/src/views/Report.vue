@@ -8,14 +8,16 @@
         월 1$로 지역별 상권분석부터 업종별 경향까지 <br>
         다양한 분석 알고리즘으로 당신의 성공적인 창업을 도와드립니다.
       </div>
-      <div id="report_free" class="report_add" @click="goReportPage()">
-        무료 체험판
-      </div>
-      <div class="report_add">
-        |
-      </div>
-      <div class="report_add" @click="goHome()">
-        돌아가기
+      <div>
+        <div id="report_free" class="report_add" @click="goReportPage()">
+          무료 체험판
+        </div>
+        <div class="report_add">
+          |
+        </div>
+        <div class="report_add" @click="goHome()">
+          돌아가기
+        </div>
       </div>
     </div>
     <div v-else id="report_report">
@@ -45,6 +47,14 @@ export default {
       }
     }
   },
+  mounted() {
+    // console.log("aaa")
+    this.checkNavbar()
+  },
+  destroyed() {
+    // console.log("bbb")
+    this.checkNavbar()
+  },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
     goHome() {
@@ -54,14 +64,6 @@ export default {
       this.flag = false
     }
   },
-  mounted() {
-    // console.log("aaa")
-    this.checkNavbar()
-  },
-  destroyed() {
-    // console.log("bbb")
-    this.checkNavbar()
-  }
 }
 </script>
 

@@ -186,7 +186,7 @@ def trend_by_tob(self):
     return Response(tob_dict)
 
 def go_to_myhome(request):
-    return redirect("http://localhost:8080/")
+    return redirect("http://i02d106.p.ssafy.io/")
 
 class CustomLoginView(LoginView):
     def get_response(self):
@@ -631,7 +631,6 @@ def create_store(self):
 @api_view(['POST'])
 def set_user_category(self):
     category = self.data.get("category")
-    print(self.user)
     user = CustomUser.objects.get(id=self.user.id)
     user.category = category
     user.save()
