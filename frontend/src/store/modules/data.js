@@ -28,7 +28,55 @@ const state = {
   navSearch: true,
   searchFromNav: false,
   storeNameFromNav: '',
-  userBasedList: []
+  userBasedList: [],
+  trendChartData: {
+    의류: {label: [], data1: [], data2: []},
+    악세사리류: {label: [], data1: [], data2: []},
+    "제과점/아이스크림점": {label: [], data1: [], data2: []},
+    "커피/음료전문점": {label: [], data1: [], data2: []},
+    패스트푸드점: {label: [], data1: [], data2: []},
+    한식: {label: [], data1: [], data2: []},
+    "일식/생선회집": {label: [], data1: [], data2: []},
+    중식: {label: [], data1: [], data2: []},
+    양식: {label: [], data1: [], data2: []},
+    주점: {label: [], data1: [], data2: []},
+    편의점: {label: [], data1: [], data2: []},
+    숙박: {label: [], data1: [], data2: []},
+    헬스장: {label: [], data1: [], data2: []},
+    "미용원/피부미용원": {label: [], data1: [], data2: []},
+    화장품점: {label: [], data1: [], data2: []},
+  },
+  trendTabs: [
+    "의류",
+    "악세사리류",
+    "제과점/아이스크림점",
+    "커피/음료전문점",
+    "패스트푸드점",
+    "한식",
+    "일식/생선회집",
+    "중식",
+    "양식",
+    "주점",
+    "편의점",
+    "숙박",
+    "헬스장",
+    "미용원/피부미용원",
+    "화장품점",
+  ],
+  chainChartData: {
+    "비체인/체인/전체 평점 비교": {
+      chain: [],
+      score: []
+    },
+    "체인점 평점 순위": {
+      score: [],
+      store_name: []
+    }
+  },
+  chainTabs: [
+    "비체인/체인/전체 평점 비교",
+    "체인점 평점 순위"
+  ]
 };
 
 // actions
@@ -347,17 +395,14 @@ const actions = {
         commit("addUserReviewList", tmp)
       }
     } else {
-      // console.log(state.userReviewList[0].category_list)
       let idxlst = []
       for (let i = 0; i < state.userReviewList.length; ++i) {
         for (let j = 0; j < state.userReviewList[i].category_list.length; ++j) {
           if (state.userReviewList[i].category_list[j] == word) {
-            // state.userReviewList.splice(i, 1)
             idxlst.push(i)
           }
         }
       }
-      // console.log(idxlst)
 
       for (let i = 0; i < idxlst.length; ++i) {
         for (let j = 0; j < state.userReviewList.length; ++j) {
@@ -373,7 +418,6 @@ const actions = {
         cnt += 1
       }
     }
-    // console.log(state.userReviewList)
   },
 
   sortReviewByScore({
@@ -395,8 +439,6 @@ const actions = {
   }, value) {
     const tmp = state.userReviewList
     let cnt = 0
-    // console.log(tmp)
-    // console.log(value)
     function date_latest(a, b) {
       var dateA = new Date(a["reg_time"]).getTime()
       var dateB = new Date(b["reg_time"]).getTime()
@@ -422,27 +464,16 @@ const actions = {
   async register({
     commit
   }, params) {
-    // console.log(params)
     let check = false
     await api.register(params)
       .then(res => {
         if (res.status == 201) {
           alert("인증 이메일을 발송하였습니다. 확인해주세요.")
-          // console.log(res)
           check = true
-          // localStorage.setItem("token", res.data.token)
-          // localStorage.setItem("pk", res.data.user.pk)
-          // localStorage.setItem("username", res.data.user.username)
-          // localStorage.setItem("email", res.data.user.email)
-          // localStorage.setItem("gender", res.data.user.gender)
-          // localStorage.setItem("age", res.data.user.age)
-          // localStorage.setItem("review_count", res.data.user.review_count)
           router.push("/")
         }
       })
       .catch(err => {
-        // alert("문제가 생겼당")
-        // console.log(err)
         if (err.response.data.username && err.response.data.email) {
           alert("아이디와 이메일이 중복되었습니다.")
         } else if (err.response.data.username) {
@@ -452,7 +483,6 @@ const actions = {
         }
         console.log(err.response)
       })
-    // commit("setIsLoggined", check)
   },
 
   async login({
@@ -488,6 +518,9 @@ const actions = {
         // console.log(err)
         // console.log(err.response.data.non_field_errors[0] == "이메일 주소가 확인되지 않았습니다.")
       })
+    // console.log("aaaaaaaaaaaaaaaaaaaa")
+    await actions.userBasedRecommand(state)
+    // console.log("Login")
     commit("setIsLoggined", check)
     return flag
   },
@@ -504,16 +537,11 @@ const actions = {
   checkNavbar({
     commit
   }) {
-    // console.log(state.onNavFlag)
     let check = true
     if (state.onNavFlag == false) {
-      // console.log(check)
-      // console.log(state.onNavFlag)
       commit("setOnNavFlag", check)
     } else {
       check = false
-      // console.log(check)
-      // console.log(state.onNavFlag)
       commit("setOnNavFlag", check)
     }
   },
@@ -579,6 +607,7 @@ const actions = {
     }));
     commit("setStoreSearchList", stores)
   },
+
   async editReview({
     commit
   }, params) {
@@ -590,6 +619,7 @@ const actions = {
         console.log(err)
       })
   },
+
   async writeReview({
     commit
   }, params) {
@@ -606,6 +636,7 @@ const actions = {
   // }, params) {
   //   await api.deleteReview(params)
   // },
+
   async setCategory({
     commit
   }, params) {
@@ -625,13 +656,12 @@ const actions = {
         alert("error")
       })
   },
+
   async userBasedRecommand({
     commit
   }, value) {
-    // console.log("aaaaaaaaaa")
     const resp = await api.getUserBasedRecommand()
     // console.log(resp)
-
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,
@@ -646,8 +676,34 @@ const actions = {
       menues: d.menues,
       images: d.images
     }));
-    console.log(stores)
-    commit("setUserBasedRecommand", stores);
+    mutations.setUserBasedRecommand(state, stores)
+  },
+
+  async goTrendChartData({commit}) {
+    const res = await api.getTrendChartData()
+    const dataset = res.data
+    for (let i = 0; i < state.trendTabs.length; ++i) {
+      for (let j = 0; j < dataset[`${state.trendTabs[i]}`]["new_date"].length; ++j) {
+        state.trendChartData[`${state.trendTabs[i]}`]["label"].push(dataset[`${state.trendTabs[i]}`]["new_date"][j].slice(5,10))
+      }
+      state.trendChartData[`${state.trendTabs[i]}`]["data1"] = dataset[`${state.trendTabs[i]}`]["kdj_d"]
+      state.trendChartData[`${state.trendTabs[i]}`]["data2"] = dataset[`${state.trendTabs[i]}`]["kdj_j"]
+    }
+    // console.log(state.trendChartData)
+  },
+
+  async goChainChartData({commit}) {
+    const res = await api.getChainChartData()
+    // console.log(res)
+    const dataset = res.data
+    for (let i = 0; i < state.chainTabs.length; ++i) {
+      if (i == 0) {
+        state.chainChartData[`${state.chainTabs[i]}`]["chain"] = dataset[`${state.chainTabs[i]}`]["chain"]
+      } else {
+        state.chainChartData[`${state.chainTabs[i]}`]["store_name"] = dataset[`${state.chainTabs[i]}`]["store_name"]
+      }
+      state.chainChartData[`${state.chainTabs[i]}`]["score"] = dataset[`${state.chainTabs[i]}`]["score"]
+    }
   }
 };
 

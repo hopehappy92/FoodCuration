@@ -1,27 +1,27 @@
 <template>
   <div class="container">
-    <h2 class="review_header">리뷰 ({{reviewCnt}})</h2>
-    <div class="review_main" v-for="(review, index) in paginatedData" :key="index">
+    <h2 class="review_header">리뷰 ({{ reviewCnt }})</h2>
+    <div v-for="(review, index) in paginatedData" :key="index" class="review_main">
       <div class="review_container">
-        <div class="review_container_left">{{review.user}}</div>
-        <div class="review_container_middle">{{review.content}}</div>
+        <div class="review_container_left">{{ review.user }}</div>
+        <div class="review_container_middle">{{ review.content }}</div>
         <div class="review_container_right">
           <div v-if="review.user == myId">
-            <updateReview :reviewId="review.id" :content="review.content" @editReview="reRoad">
-              <i class="fas fa-edit" slot="click"></i>
+            <updateReview :review-id="review.id" :content="review.content" @editReview="reRoad">
+              <i slot="click" class="fas fa-edit" />
             </updateReview>
-            <i class="fas fa-trash-alt" @click="deleteReview(review.id)"></i>
+            <i class="fas fa-trash-alt" @click="deleteReview(review.id)" />
           </div>
           <div v-else>
-            <i class="far fa-thumbs-up"></i>
+            <i class="far fa-thumbs-up" />
           </div>
         </div>
       </div>
     </div>
     <div class="btn-cover">
-      <button :disabled="pageNum === 0" @click="prevPage" class="page-btn">이전</button>
+      <button :disabled="pageNum === 0" class="page-btn" @click="prevPage">이전</button>
       <span class="page-count">{{ pageNum + 1 }} / {{ pageCount }} 페이지</span>
-      <button :disabled="pageNum >= pageCount - 1" @click="nextPage" class="page-btn">다음</button>
+      <button :disabled="pageNum >= pageCount - 1" class="page-btn" @click="nextPage">다음</button>
     </div>
   </div>
 </template>
@@ -46,10 +46,24 @@ export default {
       reviewCnt: 0
     };
   },
+  computed: {
+    pageCount() {
+      let listLeng = this.reviews.length,
+        listSize = this.pageSize,
+        page = Math.floor(listLeng / listSize);
+      if (listLeng % listSize > 0) page += 1;
+      return page;
+    },
+    paginatedData() {
+      const start = this.pageNum * this.pageSize,
+        end = start + this.pageSize;
+      return this.reviews.slice(start, end);
+    }
+  },
   mounted() {
     axios
       .get(
-        `http://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+        `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
       )
       .then(res => {
         console.log(res.data);
@@ -82,7 +96,7 @@ export default {
       setTimeout(() => {
         axios
           .get(
-            `http://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+            `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
           )
           .then(res => {
             this.reviews = res.data.reverse();
@@ -101,22 +115,8 @@ export default {
     deleteReview(review_id) {
       console.log(review_id);
       axios
-        .delete(`http://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`)
+        .delete(`https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`)
         .then(this.reRoad());
-    }
-  },
-  computed: {
-    pageCount() {
-      let listLeng = this.reviews.length,
-        listSize = this.pageSize,
-        page = Math.floor(listLeng / listSize);
-      if (listLeng % listSize > 0) page += 1;
-      return page;
-    },
-    paginatedData() {
-      const start = this.pageNum * this.pageSize,
-        end = start + this.pageSize;
-      return this.reviews.slice(start, end);
     }
   }
 };

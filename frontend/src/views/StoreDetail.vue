@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Nav></Nav>
+    <Nav />
     <div class="header">
       <!-- 가게 사진들  -->
     </div>
@@ -8,24 +8,24 @@
       <!-- 음식점 정보 -->
       <div class="main_content">
         <StoreInfo
-          :storeName="storeName"
-          :storeScore="storeScore"
-          :reviewCnt="reviewCnt"
-          :storeArea="storeArea"
-          :storeTel="storeTel"
-          :storeAddress="storeAddress"
-          :storeCategories="storeCategories"
-          :storeMenuList="storeMenuList"
+          :store-name="storeName"
+          :store-score="storeScore"
+          :review-cnt="reviewCnt"
+          :store-area="storeArea"
+          :store-tel="storeTel"
+          :store-address="storeAddress"
+          :store-categories="storeCategories"
+          :store-menu-list="storeMenuList"
           @add-to-review="updatedReview"
-        ></StoreInfo>
+        />
         <!-- 리뷰 테이블 -->
-        <StoreReview ref="updateReview" @avg="avgScore"></StoreReview>
-        <br />
-        <br />
+        <StoreReview ref="updateReview" @avg="avgScore" />
+        <br>
+        <br>
       </div>
       <!-- 오른쪽 기능 메뉴 -->
       <div class="aside">
-        <StoreLocation :longitude="longitude" :latitude="latitude"></StoreLocation>
+        <StoreLocation :longitude="longitude" :latitude="latitude" />
       </div>
     </div>
     <footer>.</footer>
@@ -41,17 +41,31 @@ import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
-  props: ["storeId"],
   components: {
     Nav,
     StoreLocation,
     StoreInfo,
     StoreReview
   },
+  props: ["storeId"],
+  data() {
+    return {
+      storeName: "",
+      storeScore: 0,
+      reviewCnt: "작성된 리뷰가 없습니다",
+      storeArea: "",
+      storeTel: "",
+      storeAddress: "",
+      storeCategories: [],
+      storeMenuList: [],
+      latitude: "",
+      longitude: ""
+    };
+  },
   mounted(res) {
     axios
       .get(
-        `http://i02d106.p.ssafy.io:8765/api/stores/${this.$route.params.storeId}`
+        `https://i02d106.p.ssafy.io:8765/api/stores/${this.$route.params.storeId}`
       )
       .then(res => {
         console.log(res);
@@ -66,20 +80,6 @@ export default {
         this.storeMenuList = res.data.menues;
       })
       .then(this.checkNavSearch(0));
-  },
-  data() {
-    return {
-      storeName: "",
-      storeScore: 0,
-      reviewCnt: "작성된 리뷰가 없습니다",
-      storeArea: "",
-      storeTel: "",
-      storeAddress: "",
-      storeCategories: [],
-      storeMenuList: [],
-      latitude: "",
-      longitude: ""
-    };
   },
   methods: {
     ...mapMutations("data", ["checkNavSearch"]),

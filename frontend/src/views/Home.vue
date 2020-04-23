@@ -11,9 +11,10 @@
       <div v-if="check" id="home_body_recommand_algo">
         For You
       </div>
-      <VueSlickCarousel v-if="check == true" v-bind="settings">
+      <VueSlickCarousel v-if="check" v-bind="settings">
         <div v-for="i in userStores.length" :key="i">
-          <homeBody 
+          <homeBody
+            :id="userStores[i-1].id"
             :name="userStores[i-1].name"
             :review-count="userStores[i-1].reviewCount"
             :area="userStores[i-1].area"
@@ -94,24 +95,29 @@ export default {
     islogined: async function() {
       if (this.islogined == true) {
         if (localStorage.getItem("category_list").length == 0) {
-          // console.log("aaaaaaaaaaaa")
           this.dialog = true
           document.getElementById("checkFav").click();
         }
       }
-      await this.userBasedRecommand()
       this.check = true
     },
   },
   async mounted() {
-    this.checkNavbar()
+    await this.checkNavbar()
+    await this.test()
   },
   destroyed() {
     this.checkNavbar()
   },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
-    ...mapActions("data", ["userBasedRecommand"])
+    ...mapActions("data", ["userBasedRecommand"]),
+    async test() {
+      if (localStorage.getItem("pk")) {
+        await this.userBasedRecommand()
+        this.check = true
+      }
+    },
   },
 };
 </script>
@@ -157,7 +163,7 @@ export default {
   position: sticky;
   right: 2vw;
   top: 1vw;
-  margin-top: 30px;
+  margin-top: 10px;
   /* background-color: white; */
   /* background-image: url("../../public/images/side_bg2.png");
   background-position: center;
