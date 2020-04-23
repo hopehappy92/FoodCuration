@@ -27,8 +27,9 @@ from api.models import CustomUser # 유저 1.8만개
 def recoNearStroe(temp_id):
     # 초기 데이터 받아와
     all_store =pd.DataFrame(Store.objects.all().values("id", "latitude", "longitude", "category"))
+    review_df = pd.DataFrame(Review.objects.all().values("score", "store_id"))
     min_review = 5
-
+    print('store 데이터 받아오기 완료')
     # 원하는 id에 해당하는 삭당 정보 받아와
     near_store = pd.DataFrame(columns=["id", 'category', 'category_count', 'calc'])
     temp_store = all_store.loc[all_store['id'] == temp_id]
@@ -49,7 +50,8 @@ def recoNearStroe(temp_id):
     con3 = (all_store['latitude']<(0.01+clat))
     con4 = ((clat -0.01) <all_store['latitude'])
     all_store = all_store[con1 & con2 & con3 & con4]
-
+    print('거리 필터링 완료')
+    print(len(all_store))
     # 반경 1km 내에 있으면 category 겹치는게 몇개인지 계산
     for i in range(len(all_store)):
         store = all_store.iloc[i]
@@ -64,9 +66,8 @@ def recoNearStroe(temp_id):
                 if c in category_set:
                     count += 1
             near_store.loc[len(near_store)] = [store['id'], store['category'], count, 0]
-
+    print('카테고리 for문 완료')
     # 필요한 review들만 가져옴
-    review_df = pd.DataFrame(Review.objects.all().values("score", "store_id"))
     review_df = review_df[review_df['store_id'].isin(set(near_store['id']))]
 
     review_df = review_df.groupby('store_id').agg(['sum', 'count', 'mean'])['score']
@@ -83,7 +84,7 @@ def recoNearStroe(temp_id):
     # 카테고리 일치 개수, 인기도 고려한 평점 순 정렬
     near_store.sort_values(by=['category_count', 'calc'], inplace=True, ascending=False)
 
-    return near_store
+    return near_store.head(n=20)
 
 print(recoNearStroe(124164))
 
