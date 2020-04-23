@@ -82,6 +82,7 @@ get_image_dict = dict()
 start_crawling_length = 100
 
 all_store = Store.objects.all()
+all_review = Review.objects.all()
 
 def check_image(serializer):
     global get_image_dict
@@ -267,7 +268,7 @@ class StoreReviewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = (
-            models.Review.objects.all()
+            all_review
         )
         return queryset
 
@@ -484,12 +485,12 @@ class like_store(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 @api_view(['GET'])
 def review_list(self):
-    serializer = serializers.ReviewSerializer2(models.Review.objects.all(), many=True)
+    serializer = serializers.ReviewSerializer2(all_review, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def reviews_info(self):
-    serializer = serializers.ReviewSerializer3(models.Review.objects.all(), many=True)
+    serializer = serializers.ReviewSerializer3(all_review, many=True)
     return Response(serializer.data)
 
 
@@ -528,7 +529,7 @@ def update_learning_dataframe(self):
     storeset = set()
     for store in Store.objects.filter(review_count__gte=10).values("id"):
         storeset.add(store['id'])
-    df = pd.DataFrame(Review.objects.all().values("user", "store", "score"))
+    df = pd.DataFrame(all_review.values("user", "store", "score"))
     df = df[df["user"].isin(userset) & df["store"].isin(storeset)]
     
     with open('learning_dataframe.p', 'wb') as f:
@@ -601,6 +602,52 @@ def user_based_cf(self):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def recommend_by_store_id(self, store_id):
+    '''
+    '''
+    store = Store.objects.get(id=store_id)
+    store_df = pd.DataFrame(all_store.values("id", "longitude", "latitude", "category"))
+    min_review = 5
+    lon = store.longitude
+    lat = store.latitude
+    store_df = store_df[store_df["longitude"] - lon < 0.015]
+    store_df = store_df[store_df["longitude"] - lon > -0.015]
+    store_df = store_df[store_df["latitude"] - lat < 0.015]
+    store_df = store_df[store_df["latitude"] - lat > -0.015]
+    store_df = store_df[store_df.apply(lambda x: 6371*acos(cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"]))), axis=1) < 1][["id", "category"]]
+    
+    a = []
+    store_category_set = set(store.category.split('|'))
+    for categories in store_df["category"]:
+        cnt = 0
+        for category in categories.split('|'):
+            if category in store_category_set:
+                cnt += 1
+        a.append(cnt)
+    store_df['count'] = a
+    
+    # 필요한 review들만 가져옴
+    review_df = pd.DataFrame(all_review.values("user_id", "score", "store_id"))
+    review_df = review_df[review_df['store_id'].isin(set(store_df['id']))]
+
+    review_df = review_df.groupby('store_id').agg(['sum', 'count', 'mean'])['score']
+    a = sum(review_df['sum'])/sum(review_df['count'])    
+    
+    review_df['calc'] = review_df.apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)
+    
+    store_df = pd.merge(store_df[["id", "count"]], review_df["calc"], right_index=True, left_on="id", how='outer').set_index('id')
+
+    store_df['calc'] = store_df['calc'].fillna(0.0)
+    store_df.sort_values(by=['count', 'calc'], inplace=True, ascending=False)
+
+    queryset = [Store.objects.get(id=i) for i in store_df.index[:20]]
+
+
+    serializer = serializers.StoreDetailSerializer2(queryset, many=True)
+    
+    check_image(serializer)
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -657,7 +704,7 @@ def relearning_kmeans(self):
     user_df['cluster'] = kmeans.labels_
 
     # 모든 리뷰를 불러와 데이터프레임 생성
-    review_df = pd.DataFrame(Review.objects.all().values("user_id", "score", "store_id"))
+    review_df = pd.DataFrame(all_review.values("user_id", "score", "store_id"))
 
     # 가져온 유저가 있는 리뷰만 남김
     review_df = review_df[review_df['user_id'].isin(set(user_df['id']))]
