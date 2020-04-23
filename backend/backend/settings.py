@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     "rest_auth.registration",
     'allauth.socialaccount',
     "corsheaders",
-]
+    "sslserver",
+    ]
 
 SITE_ID = 1
 

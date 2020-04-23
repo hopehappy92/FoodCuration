@@ -6,7 +6,7 @@
 import axios from "axios";
 export default {
   mounted(res) {
-    axios.get("http://127.0.0.1:8000/api/stores").then(res => {
+    axios.get("https://127.0.0.1:8000/api/stores").then(res => {
       console.log(res.results);
       this.stores = res.results;
     });

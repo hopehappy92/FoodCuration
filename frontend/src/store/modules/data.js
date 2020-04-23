@@ -661,7 +661,7 @@ const actions = {
     commit
   }, value) {
     const resp = await api.getUserBasedRecommand()
-    // console.log(resp)
+    console.log(resp)
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,

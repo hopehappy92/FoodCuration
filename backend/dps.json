@@ -1,14 +1,16 @@
 {       
     "apps":            
-       [{
-         "name": "RESTAPI",          
-         "script": "manage.py",
-         "args": ["runserver", "0.0.0.0:8765"], 
-         "exec_mode": "fork", 
-         "instances": "1", 
-         "wait_ready": true, 
-         "autorestart": false, 
-         "max_restarts": 5, 
-         "interpreter" : "python3" 
-       }] 
+        [{
+            "name": "RESTAPI",          
+            "script": "manage.py",
+            "args": ["runsslserver", "0.0.0.0:8765"],
+
+
+
+
+
+            "interpreter" : "python3",
+            "certificate": "django.cert",
+            "key": "django.key"
+        }] 
 }

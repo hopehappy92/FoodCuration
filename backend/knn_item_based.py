@@ -25,6 +25,45 @@ from api.models import CustomUser # 유저 1.8만개
 
 
 def recoNearStroe(temp_id):
+    queryset = []
+    store = Store.objects.get(id=temp_id)
+    all_store = Store.objects.all()
+    store_df = pd.DataFrame(all_store.values("id", "longitude", "latitude", "category"))
+    print('start')
+    lon = store.longitude
+    lat = store.latitude
+    store_df = store_df[store_df["longitude"] - lon < 0.015]
+    store_df = store_df[store_df["longitude"] - lon > -0.015]
+    store_df = store_df[store_df["latitude"] - lat < 0.015]
+    store_df = store_df[store_df["latitude"] - lat > -0.015]
+    store_df = store_df[store_df.apply(lambda x: 6371*acos(cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"]))), axis=1) < 1][["id", "category"]]
+    print('===')
+    print(store_df)
+
+    # print("start")
+    # a = []
+    # for store in all_store:
+    #     lat = store.latitude
+    #     lon = store.longitude
+    #     if abs(clon-lon) < 0.01 and abs(clat - lat) < 0.01:
+    #         a.append(store)
+    # # print(a)
+    # for store in a:
+    #     lat = store.latitude
+    #     lon = store.longitude
+    #     b = 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat)))
+    #     queryset.append(b)
+    
+    # temp_series = pd.Series(queryset)
+    # print(temp_series)
+    # store
+    store_df=store_df[temp_series < 1]
+    print(store_df)
+    print('----------------------')
+    # print("start")
+    # store_df = store_df[store_df.apply(lambda x: 6371*acos(cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"]))), axis=1) < 1]
+    # # store_df['calc'] = store_df.apply(lambda x: x['category'])
+    # print('----------------------')
     # 초기 데이터 받아와
     all_store =pd.DataFrame(Store.objects.all().values("id", "latitude", "longitude", "category"))
     review_df = pd.DataFrame(Review.objects.all().values("score", "store_id"))

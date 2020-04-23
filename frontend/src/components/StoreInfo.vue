@@ -138,7 +138,7 @@ export default {
       };
       axios
         .post(
-          `http://i02d106.p.ssafy.io:8765/api/like_store`,
+          `https://i02d106.p.ssafy.io:8765/api/like_store`,
           {
             customuser_id: localStorage.getItem("pk"),
             store_id: this.$route.params.storeId

@@ -1,8 +1,8 @@
 <template>
   <div class="home_body_card">
     <div class="container">
-      <img v-if="images != ''" :src="images[0]['url']" alt="image" class="home_body_card_img">
-      <img v-else src="../../public/images/icons/user.png" class="home_body_card_img" alt="image">
+      <!-- <img v-if="images != ''" :src="images[0]['url']" alt="image" class="home_body_card_img"> -->
+      <!-- <img v-else src="../../public/images/icons/user.png" class="home_body_card_img" alt="image"> -->
       <div class="home_body_card_hover">
         <div class="home_body_card_text">
           <div style="font-size: 1.4vw; margin-bottom: 5px;">{{ name }}</div>
