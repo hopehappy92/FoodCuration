@@ -18,34 +18,70 @@
       </div>
     </div>
     <div id="report_box">
-      Detail Box
-      이것은 글이다
-      글이고
       <div id="section1">
-        section1
+        <div id="section1Header">
+          개요
+        </div>
       </div>
       
       이것은 글이다
       글이고
       <div id="section2">
-        section2
+        <div class="sectionHeader">
+          지역별
+        </div>
       </div>
       이것은 글이다
       글이고
       <div id="section3">
-        section3
-      </div>
-      이것은 글이다
-      글이고
-      <div id="section4">
-        section4
+        <div class="sectionHeader">
+          상권 추천
+        </div>
       </div>
       이것은 글이다
       글이고
 
+      <div id="section4">
+        <div class="sectionHeader">
+          체인점 비교
+        </div>
+        <div v-for="(value, i) in chainTabs" id="report_box_chain_btn" :key="i">
+          <div :id="`chainBtn${i}`" class="report_box_chain_btn_text" @click="showChain(i)">
+            {{ value }}
+          </div>
+        </div>
+        <div id="report_box_chain_btn_text_detail" @click="showChainDetail()">
+          그래프 보는법
+        </div>
+        <div id="report_box_chain_btn" class="report_box_chain_btn_text" @click="deleteChain()">
+          초기화
+        </div>
+        <div v-if="chainDetail">
+          <div id="report_box_chain_read_box">
+            <b style="font-size: 32px; color: white;">비체인 / 체인 / 전체 평점비교</b><br>
+            <!-- <br> -->
+            <div style="text-align: start; font-size: 18px; line-height: 30px;">
+              - 개인사업자, 체인점, 전체 음식점 사이 평점 비교
+            </div>
+            <br>
+            <br>
+            <b style="font-size: 32px; color: white;">체인점 평점 순위</b><br>
+            <!-- <br> -->
+            <div style="text-align: start; font-size: 18px; line-height: 30px;">
+              - 체인점 평점 1위 부터 10위 까지의 순위
+            </div>
+          </div>
+        </div>
+        <canvas v-if="chainFlag == true && chainReset == false" id="chainchart1" class="report_box_chain_chart" />
+        <canvas v-else-if="chainFlag == false && chainReset == false" id="chainchart2" class="report_box_chain_chart" />
+      </div>
+
       <div id="section5">
+        <div class="sectionHeader">
+          업종별 경향 비교
+        </div>
         <div v-for="(value, i) in trendTabs" id="report_box_trend_btn" :key="i">
-          <div :id="`btn${i}`" class="report_box_trend_btn_text" @click="showTrends(value)">
+          <div :id="`trendBtn${i}`" class="report_box_trend_btn_text" @click="showTrends(value)">
             {{ value }}
           </div>
         </div>
@@ -82,10 +118,10 @@
           </div>
         </div>
         <div>
-          <canvas v-if="trendFlag == false && trendreset == false" :id="`chart${trendNumber}`" class="report_box_trend_chart" />
+          <canvas v-if="trendFlag == false && trendreset == false" :id="`trendchart${trendNumber}`" class="report_box_trend_chart" />
           <div v-else-if="trendFlag == true && trendreset == false">
-            <div v-for="(value, i) in trendTabs" :key="i">
-              <canvas :id="`chart${i}`" class="report_box_trend_chart" />
+            <div v-for="(value, i) in trendTabs" id="report_box_trend_all_chart" :key="i">
+              <canvas :id="`trendchart${i}`" class="report_box_trend_chart" />
             </div>
           </div>
         </div>
@@ -96,8 +132,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import router from "../router"
+import { mapActions, mapState } from "vuex"
 
 export default {
   data() {
@@ -109,40 +145,6 @@ export default {
         "체인점",
         "업종별 경향"
       ],
-      trendTabs: [
-        "의류",
-        "악세사리류",
-        "제과점/아이스크림점",
-        "커피/음료전문점",
-        "패스트푸드점",
-        "한식",
-        "일식/생선회집",
-        "중식",
-        "양식",
-        "주점",
-        "편의점",
-        "숙박",
-        "헬스장",
-        "미용원/피부미용원",
-        "화장품점",
-      ],
-      chartData: {
-        의류: {label: [], data1: [], data2: []},
-        악세사리류: {label: [], data1: [], data2: []},
-        "제과점/아이스크림점": {label: [], data1: [], data2: []},
-        "커피/음료전문점": {label: [], data1: [], data2: []},
-        패스트푸드점: {label: [], data1: [], data2: []},
-        한식: {label: [], data1: [], data2: []},
-        "일식/생선회집": {label: [], data1: [], data2: []},
-        중식: {label: [], data1: [], data2: []},
-        양식: {label: [], data1: [], data2: []},
-        주점: {label: [], data1: [], data2: []},
-        편의점: {label: [], data1: [], data2: []},
-        숙박: {label: [], data1: [], data2: []},
-        헬스장: {label: [], data1: [], data2: []},
-        "미용원/피부미용원": {label: [], data1: [], data2: []},
-        화장품점: {label: [], data1: [], data2: []},
-      },
       lowerLine: [],
       upperLine: [],
       trendNumber: -1,
@@ -150,30 +152,30 @@ export default {
       trendIndex: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       trendreset: false,
       trendsDetail: false,
+      chainFlag: -1,
+      chainReset: true,
+      chainDetail: false,
     }
   },
-  mounted() {
+  computed: {
+    ...mapState({
+      trendChartData: state => state.data.trendChartData,
+      trendTabs: state => state.data.trendTabs,
+      chainChartData: state => state.data.chainChartData,
+      chainTabs: state => state.data.chainTabs,
+    })
+  },
+  async mounted() {
     for (let i = 0; i < 60; ++i) {
       this.lowerLine.push(20)
       this.upperLine.push(80)
     }
-    axios.get(`http://127.0.0.1:8000/api/trend_by_tob`)
-    .then(res => {
-      // console.log(res.data)
-      const dataset = res.data
-      for (let i = 0; i < this.trendTabs.length; ++i) {
-        for (let j = 0; j < dataset[`${this.trendTabs[i]}`]["new_date"].length; ++j) {
-          this.chartData[`${this.trendTabs[i]}`]["label"].push(dataset[`${this.trendTabs[i]}`]["new_date"][i].slice(5,10))
-        }
-        this.chartData[`${this.trendTabs[i]}`]["data1"] = dataset[`${this.trendTabs[i]}`]["kdj_d"]
-        this.chartData[`${this.trendTabs[i]}`]["data2"] = dataset[`${this.trendTabs[i]}`]["kdj_j"]
-      }
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    await this.goTrendChartData()
+    await this.goChainChartData()
   },
   methods: {
+    ...mapActions("data", ["goTrendChartData"]),
+    ...mapActions("data", ["goChainChartData"]),
     goHome() {
       router.push("/")
     },
@@ -187,19 +189,19 @@ export default {
     changeTrendNumber(i) {
       this.trendNumber = i
     },
-    drawChart(i) {
-      var ctx = document.getElementById(`chart${this.trendNumber}`).getContext('2d');
+    drawLineChart(i) {
+      var ctx = document.getElementById(`trendchart${this.trendNumber}`).getContext('2d');
       var chart = new Chart(ctx, {
           // The type of chart we want to create
           type: 'line',
           // The data for our dataset
           data: {
-              labels: this.chartData[`${this.trendTabs[i]}`]["label"],
+              labels: this.trendChartData[`${this.trendTabs[i]}`]["label"],
               datasets: [{
                 label: 'Slow K',
                 backgroundColor: 'blue',
                 borderColor: 'blue',
-                data: this.chartData[`${this.trendTabs[i]}`]["data1"],
+                data: this.trendChartData[`${this.trendTabs[i]}`]["data1"],
                 fill: false,
                 borderWidth: 2,
                 pointBorderWidth: 0.5,
@@ -207,7 +209,7 @@ export default {
                 label: 'Slow D',
                 backgroundColor: 'red',
                 borderColor: 'red',
-                data: this.chartData[`${this.trendTabs[i]}`]["data2"],
+                data: this.trendChartData[`${this.trendTabs[i]}`]["data2"],
                 fill: false,
                 borderWidth: 2,
                 pointBorderWidth: 0.5,
@@ -255,13 +257,17 @@ export default {
       // console.log("aaaaaaaaaaa")
       this.trendreset = true
       for (let i = 0; i < this.trendTabs.length; ++i) {
-          let target = document.getElementById(`btn${i}`)
-          target.style = ""
-          target = document.getElementById("report_box_trend_btn_all")
-          target.style = ""
-        }
+        let target = document.getElementById(`trendBtn${i}`)
+        target.style = ""
+        target = document.getElementById("report_box_trend_btn_all")
+        target.style = ""
+      }
+    },
+    setTrendReset() {
+      this.trendreset = true
     },
     async showTrends(value) {
+      await this.setTrendReset()
       this.trendreset = false
       // console.log(this.chartData)
       if (value == "all") {
@@ -269,7 +275,7 @@ export default {
         for (let i = 0; i < this.trendTabs.length; ++i) {
           // console.log(i)
           await this.changeTrendNumber(i)
-          this.drawChart(i)
+          this.drawLineChart(i)
         }
         let target = document.getElementById("report_box_trend_btn_all")
         // console.log(target)
@@ -278,7 +284,7 @@ export default {
           target.style.backgroundColor = "black"
         }
         for (let i = 0; i < this.trendTabs.length; ++i) {
-          target = document.getElementById(`btn${i}`)
+          target = document.getElementById(`trendBtn${i}`)
           target.style = ""
         }
       } else {
@@ -286,21 +292,171 @@ export default {
         for (let i = 0; i < this.trendTabs.length; ++i) {
           if (this.trendTabs[i] == value) {
             await this.changeTrendNumber(i)
-            this.drawChart(i)
-            let target = document.getElementById(`btn${i}`)
+            this.drawLineChart(i)
+            let target = document.getElementById(`trendBtn${i}`)
             // console.log(target)
             if (target.style.length == 0) {
               target.style.color = "white"
               target.style.backgroundColor = "black"
             }
           } else {
-            let target = document.getElementById(`btn${i}`)
+            let target = document.getElementById(`trendBtn${i}`)
             target.style = ""
             target = document.getElementById("report_box_trend_btn_all")
             target.style = ""
           }
         }
-        
+      }
+    },
+    showChainDetail() {
+      if (this.chainDetail == false) {
+        this.chainDetail = true
+      } else {
+        this.chainDetail = false
+      }
+    },
+    changeChainFlag(idx) {
+      if (idx == 0) {
+        this.chainFlag = true
+      } else {
+        this.chainFlag = false
+      }
+    },
+    setChainReset() {
+      this.chainReset = true
+    },
+    deleteChain() {
+      this.chainReset = true
+      for (let i = 0; i < this.chainTabs.length; ++i) {
+        let target = document.getElementById(`chainBtn${i}`)
+        target.style = ""
+        target = document.getElementById("report_box_chain_btn")
+        target.style = ""
+      }
+    },
+    async showChain(idx) {
+      await this.setChainReset()
+      this.chainReset = false
+      // console.log(idx)
+
+      if (idx == 0) {
+        var target = document.getElementById(`chainBtn0`)
+        var nontarget = document.getElementById(`chainBtn1`)
+      } else {
+        target = document.getElementById(`chainBtn1`)
+        nontarget = document.getElementById(`chainBtn0`)
+      }
+      target.style.color = "white"
+      target.style.backgroundColor = "black"
+      nontarget.style = ""
+      
+      if (idx === 0) {
+        await this.changeChainFlag(idx)
+        var ctx = document.getElementById(`chainchart1`).getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                  label: '비체인',
+                  backgroundColor: 'red',
+                  borderColor: 'red',
+                  data: [this.chainChartData[`${this.chainTabs[0]}`]["score"][0]],
+                }, {
+                  label: '체인',
+                  backgroundColor: 'blue',
+                  borderColor: 'blue',
+                  data: [this.chainChartData[`${this.chainTabs[0]}`]["score"][1]],
+                }, {
+                  label: '전체',
+                  backgroundColor: 'green',
+                  borderColor: 'green',
+                  data: [this.chainChartData[`${this.chainTabs[0]}`]["score"][2]],
+                }],
+            },
+            // Configuration options go here
+            options: {
+              scales: {
+                yAxes: [{
+                    ticks: {
+                        max: 5.00,
+                        min: 0,
+                        stepSize: 1.00
+                    }
+                }]
+              }
+            }
+        });
+      } else {
+        await this.changeChainFlag(idx)
+        var ctx2 = document.getElementById(`chainchart2`).getContext('2d');
+        var chart2 = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][0],
+                  backgroundColor: 'red',
+                  borderColor: 'red',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][0]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][1],
+                  backgroundColor: 'orange',
+                  borderColor: 'orange',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][1]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][2],
+                  backgroundColor: 'yellow',
+                  borderColor: 'yellow',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][2]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][3],
+                  backgroundColor: 'green',
+                  borderColor: 'green',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][3]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][4],
+                  backgroundColor: 'blue',
+                  borderColor: 'blue',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][4]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][5],
+                  backgroundColor: 'navy',
+                  borderColor: 'navy',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][5]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][6],
+                  backgroundColor: 'purple',
+                  borderColor: 'purple',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][6]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][7],
+                  backgroundColor: 'black',
+                  borderColor: 'black',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][7]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][8],
+                  backgroundColor: 'gray',
+                  borderColor: 'gray',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][8]],
+                }, {
+                  label: this.chainChartData[`${this.chainTabs[1]}`]["store_name"][9],
+                  backgroundColor: 'pink',
+                  borderColor: 'pink',
+                  data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][9]],
+                }],
+            },
+            // Configuration options go here
+            options: {
+              scales: {
+                yAxes: [{
+                    ticks: {
+                        max: 5.00,
+                        min: 0,
+                        stepSize: 1.00
+                    }
+                }]
+              }
+            }
+        });
       }
     }
   }
@@ -346,6 +502,12 @@ export default {
   text-decoration: none;
   color: black;
 }
+.report_tab:hover {
+  background-color: gray;
+}
+.report_tab_a:hover {
+  color: white;
+}
 #report_box {
   border: 1px solid black;
   width: 80vw;
@@ -353,6 +515,19 @@ export default {
   height: 100%;
   padding: 20px;
 }
+#section1Header {
+  text-align: start;
+  font-size: 2.5vw;
+  font-weight: 600;
+  margin: 0 0 10px 0
+}
+.sectionHeader {
+  text-align: start;
+  font-size: 2.5vw;
+  font-weight: 600;
+  margin: 40px 0 10px 0
+}
+
 #report_box_trend_btn_all {
   display: inline-block;
   width: 25vw;
@@ -390,5 +565,45 @@ export default {
   margin: auto;
   background-color: gray;
   padding: 20px;
+}
+
+#report_box_trend_all_chart {
+  display: inline-block;
+  width: 38vw;
+}
+#report_box_chain_btn {
+  display: inline-block;
+  border: 1px solid black;
+  width: 18vw;
+  font-size: 1.3vw;
+  padding: 2px;
+}
+.report_box_chain_btn_text {
+  cursor: pointer;
+}
+.report_box_chain_btn_text:hover {
+  background-color: black;
+  color: white;
+}
+.report_box_chain_chart {
+  border: 1px solid black;
+  margin: 10px auto;
+}
+#report_box_chain_btn_text_detail {
+  display: inline-block;
+  border: 1px solid black;
+  width: 18vw;
+  font-size: 1.3vw;
+  padding: 2px;
+  background-color: gray;
+  color: white;
+  cursor: pointer;
+}
+#report_box_chain_read_box {
+  border: 1px solid black;
+  width: 30vw;
+  margin: auto;
+  background-color: gray;
+  padding: 30px 20px;
 }
 </style>

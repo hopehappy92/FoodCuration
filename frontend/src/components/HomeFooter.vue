@@ -5,8 +5,8 @@
         <div class="home_footer_text">
           <img src="../../public/images/logo.png" alt="logo" style="width: 100px;">
         </div>
-        <div class="home_footer_text policy">
-          <PolicyPrivacy>
+        <div class="home_footer_text">
+          <PolicyPrivacy class="policy">
             <div slot="PP">
               개인정보 취급 방침
             </div>
@@ -15,8 +15,8 @@
         <div class="home_footer_text policy">
           |
         </div>
-        <div class="home_footer_text policy">
-          <PolicyService>
+        <div class="home_footer_text">
+          <PolicyService class="policy">
             <div slot="PS">
               이용 약관
             </div>

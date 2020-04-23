@@ -3,20 +3,20 @@
     <div class="content_top">
       <div class="content_top_title">
         <div class="content_top_title_inner">
-          <h1 class="store_title">{{ storeName}}</h1>
-          <div id="card_rating">{{ storeScore}}</div>
+          <h1 class="store_title">{{ storeName }}</h1>
+          <div id="card_rating">{{ storeScore }}</div>
         </div>
       </div>
       <button class="icon_review" @click="write">
         <i class="fas fa-pencil-alt" />
         <p>리뷰작성</p>
       </button>
-      <button class="icon_like" v-if="like" @click="pushLike">
-        <i class="fas fa-heart"></i>
+      <button v-if="like" class="icon_like" @click="pushLike">
+        <i class="fas fa-heart" />
         <p>취소</p>
       </button>
-      <button class="icon_like" v-else @click="pushLike">
-        <i class="far fa-heart"></i>
+      <button v-else class="icon_like" @click="pushLike">
+        <i class="far fa-heart" />
         <p>좋아요</p>
       </button>
     </div>
@@ -48,7 +48,7 @@
         </tr>
       </tbody>
     </table>
-    <form v-show="dialog" @submit.prevent="submit" id="review_form">
+    <form v-show="dialog" id="review_form" @submit.prevent="submit">
       <textarea v-model="content" class="message" placeholder="리뷰를 작성해주세요" rows="5" />
       <div class="review_update">
         <v-select
@@ -68,7 +68,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import { mdiHanger } from "@mdi/js";
+// import { mdiHanger } from "@mdi/js";
 import axios from "axios";
 export default {
   props: {
@@ -138,7 +138,7 @@ export default {
       };
       axios
         .post(
-          `http://i02d106.p.ssafy.io:8765/api/like_store`,
+          `https://i02d106.p.ssafy.io:8765/api/like_store`,
           {
             customuser_id: localStorage.getItem("pk"),
             store_id: this.$route.params.storeId

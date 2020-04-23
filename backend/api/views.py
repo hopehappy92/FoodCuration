@@ -97,12 +97,17 @@ def check_image(serializer):
 def crawling():
     global get_image_dict
     Q = []
+    cnt2 = 30
     for key, value in get_image_dict.items():
         heapq.heappush(Q, [-value, key])
     while Q:
         _, store_id = heapq.heappop(Q)
         store = Store.objects.get(id=store_id)
-        soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
+        try:
+            soup = BeautifulSoup(requests.get("https://www.google.com/search?q={}+{}&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjyvab49fXoAhXa7GEKHQBXA9YQ_AUoAXoECAsQAw&cshid=1587348524871324&biw=1920&bih=969".format(store.store_name, store.area)).text, 'html.parser')
+            cnt2 -= 1
+        except:
+            continue
         # print(soup.select('td a img'))
         cnt = 0
         for img in soup.select('td a img'):
@@ -113,9 +118,11 @@ def crawling():
                     cnt += 1
                 except:
                     pass
-            if cnt > 3:
+            if cnt > 2:
                 del get_image_dict[store_id]
                 break
+        if not cnt2:
+            break
     
     df = pd.DataFrame(StoreImage.objects.all().values("store_id", "url"))
     with open('store_image.p', 'wb') as f:
@@ -144,6 +151,18 @@ with open('learning_dataframe.p', 'rb') as file:
 with open('df_all_tob_list.p', 'rb') as file:
     df_tob_list = pickle.load(file)
 
+with open('chain_result_list.p', 'rb') as file:
+    chain_result_list = pickle.load(file)
+
+@api_view(['GET'])
+def compare_with_chain(self):
+    global chain_result_list
+    chain_dict = {
+        "체인점 평점 순위": chain_result_list[0],
+        "비체인/체인/전체 평점 비교": chain_result_list[1],
+    }
+    return Response(chain_dict)
+
 @api_view(['GET'])
 def trend_by_tob(self):
     global df_tob_list
@@ -167,7 +186,7 @@ def trend_by_tob(self):
     return Response(tob_dict)
 
 def go_to_myhome(request):
-    return redirect("http://localhost:8080/")
+    return redirect("https://i02d106.p.ssafy.io/")
 
 class CustomLoginView(LoginView):
     def get_response(self):
@@ -558,7 +577,8 @@ def user_based_cf(self):
 
     추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
     '''
-    user = CustomUser.objects.get(id=self.user.id)
+    user = CustomUser.objects.get(id=15)
+    # user = CustomUser.objects.get(id=self.user.id)
     # user = CustomUser.objects.get(id=15)
     if user.review_count > 9:
         alg_name = Algorithm.objects.get(id=1).alg_name
@@ -573,9 +593,9 @@ def user_based_cf(self):
         for store in stores.unique():
             arr.append([store, alg.predict(uid=user.id, iid=store).est])
         arr.sort(key = lambda x: x[1], reverse=True)
-        serializer = serializers.StoreSerializer([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
+        serializer = serializers.StoreDetailSerializer2([Store.objects.get(id=arr[i][0]) for i in range(min(20, len(arr)))], many=True)
     else:
-        serializer = serializers.StoreSerializer(cluster_list[get_cluster(user.age, user.gender)], many=True)
+        serializer = serializers.StoreDetailSerializer2(cluster_list[get_cluster(user.age, user.gender)], many=True)
     
     check_image(serializer)
     return Response(serializer.data)

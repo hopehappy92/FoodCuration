@@ -3,7 +3,7 @@
     <div id="home_header">
       <div id="home_header_header">
         <div id="home_header_header_logo">
-          <img id="home_header_header_logo_img" src="../../public/images/logo.png" alt="Logo" />
+          <img id="home_header_header_logo_img" src="../../public/images/logo.png" alt="Logo">
         </div>
         <div id="home_header_header_tab">
           <div v-if="islogined == false">
@@ -26,6 +26,9 @@
               <li>
                 <button class="nav_menu" @click="goMypage()">마이페이지</button>
               </li>
+              <li v-if="isStaff == true">
+                <button class="nav_menu" @click="goAdmin()">관리자페이지</button>
+              </li>
             </ul>
           </div>
         </div>
@@ -35,11 +38,11 @@
           <div id="home_header_search_input_before" />
           <input
             id="home_header_search_input"
+            v-model="storeName"
             type="text"
             placeholder="식당명"
-            v-model="storeName"
             @keyup.prevent="enterKey(storeName)"
-          />
+          >
           <button id="home_header_search_btn" @click.prevent="goSearchPage(storeName)">
             <b>검색</b>
           </button>
@@ -64,14 +67,19 @@ export default {
   },
   data() {
     return {
-      storeName: ""
-      // islogined: false,
+      storeName: "",
+      // isStaff: false
     };
   },
   computed: {
     ...mapState({
-      islogined: state => state.data.isloggined
+      islogined: state => state.data.isloggined,
+      isStaff: state => state.data.isStaff
     })
+  },
+  mounted() {
+    this.checkLogin();
+    // console.log(this.isStaff)
   },
   methods: {
     ...mapActions("data", ["checkLogin"]),
@@ -95,11 +103,12 @@ export default {
       if (window.event.keyCode == 13) {
         this.goSearchPage(storeName);
       }
+    },
+    goAdmin() {
+      router.push("/adminpage")
     }
   },
-  mounted() {
-    this.checkLogin();
-  }
+  
 };
 </script>
 
