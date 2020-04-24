@@ -8,9 +8,12 @@
         월 1$로 지역별 상권분석부터 업종별 경향까지 <br>
         다양한 분석 알고리즘으로 당신의 성공적인 창업을 도와드립니다.
       </div>
-      <div>
-        <div id="report_free" class="report_add" @click="goReportPage()">
+      <div id="report_link">
+        <div v-if="isMobile == false" id="report_free" class="report_add" @click="goReportPage()">
           무료 체험판
+        </div>
+        <div v-else id="report_mobile" class="report_add">
+          모바일은 지원하지 않습니다.
         </div>
         <div class="report_add">
           |
@@ -44,15 +47,19 @@ export default {
       },
       mainStyleFalse: {
         backgroundColor: "white"
-      }
+      },
+      isMobile: false
     }
   },
   mounted() {
-    // console.log("aaa")
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
     this.checkNavbar()
   },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
+  },
   destroyed() {
-    // console.log("bbb")
     this.checkNavbar()
   },
   methods: {
@@ -62,6 +69,13 @@ export default {
     },
     goReportPage() {
       this.flag = false
+    },
+    onResponsiveInverted() {
+      if (window.innerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
     }
   },
 }
@@ -71,9 +85,6 @@ export default {
 #report_main {
   text-align: center;
   height: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 #report_box {
   border: 5px solid;
@@ -89,6 +100,9 @@ export default {
   font-size: 24px;
   animation: text 3s 1;
 }
+#report_link {
+  animation: showup 4s ease-in-out;
+}
 .report_add {
   display: inline-block;
   cursor: pointer;
@@ -97,6 +111,11 @@ export default {
 }
 #report_free {
   color: yellowgreen;
+  animation: showupfree 4s ease-in-out;
+}
+#report_mobile {
+  color: red;
+  animation: showupfree 4s ease-in-out;
 }
 .container-text {
   background-image:  url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
@@ -107,6 +126,28 @@ export default {
   font-weight: 1000;
   font-family: 'Bungee', cursive;
   animation: filling 3s ease forwards;
+}
+@keyframes showup {
+  0% {
+    color: black;
+  }
+  80% {
+    color: black;
+  }
+  100% {
+    color: white;
+  }
+}
+@keyframes showupfree {
+  0% {
+    color: black;
+  }
+  80% {
+    color: black;
+  }
+  100% {
+    color: yellowgreen;
+  }
 }
 @keyframes filling {
   from{
@@ -128,6 +169,20 @@ export default {
   85%{
     letter-spacing: 8px;
     margin-bottom: -40px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #report_box {
+    width: 80vw;
+    height: 90%;
+  }
+  #report_desc {
+    font-size: 20px;
+  }
+  .container-text {
+    font-size: 50px;
+    margin-top: 50vw;
   }
 }
 </style>

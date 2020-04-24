@@ -241,4 +241,23 @@ export default {
 #regi_body > span > span:nth-child(7) > div > div > div {
   justify-content: center;
 }
+
+@media screen and (max-width: 600px) {
+  #regi_box {
+    width: 100%;
+    padding: 0px;
+  }
+  #regi_title {
+    font-size: 50px;
+  }
+  #regi_desc {
+    font-size: 20px;
+  }
+  #regi_back {
+    font-size: 12px;
+    margin: auto;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
 </style>

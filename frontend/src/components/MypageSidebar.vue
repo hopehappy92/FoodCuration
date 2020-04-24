@@ -1,30 +1,33 @@
 <template>
   <div>
     <div id="my_sidebar">
-      <img id="user_img" src="../../public/images/regi_bg.png" alt="user_img">
-      <div id="user_nickname">
-        {{ user_name }}
-      </div>
-      <div id="user_id">
-        {{ user_email }}
-      </div>
-      <div id="user_gender_age">
-        {{ user_gender }} / {{ user_age }}
-      </div>
-      <hr>
-      <div id="user_categories">
-        <div>
-          카테고리 모아보기
+      <div class="my_sidebar_box">
+        <div id="user_nickname">
+          {{ user_name }}
         </div>
-        <button 
-          v-for="category in category_lst.slice(0,10)" 
-          :id="`${category[0]}`" 
-          :key="category[0]"
-          class="user_category"
-          @click="goSearchByCategory(`${ category[0] }`); onclickEvent(`${ category[0] }`)"
-        >
-          {{ category[0] }}
-        </button>
+        <div id="user_id">
+          {{ user_email }}
+        </div>
+        <div id="user_gender_age">
+          {{ user_gender }} / {{ user_age }}
+        </div>
+      </div>
+      <div class="my_sidebar_box">
+        <div id="user_categories">
+          <div>
+            카테고리 모아보기
+          </div>
+          <hr style="margin: 8px 0;">
+          <button 
+            v-for="category in category_lst.slice(0,10)" 
+            :id="`${category[0]}`" 
+            :key="category[0]"
+            class="user_category"
+            @click="goSearchByCategory(`${ category[0] }`); onclickEvent(`${ category[0] }`)"
+          >
+            {{ category[0] }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -141,17 +144,14 @@ export default {
   width: 22%;
   float: left;
   text-align: center;
-  border: 1px solid black;
-  padding: 20px;
+  /* border: 1px solid black; */
+  /* padding: 20px; */
   /* position: fixed; */
-  background-color: rgba(255, 255, 255, 0.9);
+  /* background-color: rgba(255, 255, 255, 0.9); */
 }
-#user_img {
-  width: 10vw;
-  height: 10vw;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
-  margin-top: 30px;
+.my_sidebar_box {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
   margin-bottom: 20px;
 }
 #user_nickname {
@@ -193,6 +193,36 @@ export default {
   transition: all .5s;
   display: block;
   width: 90%;
+}
+
+@media screen and (max-width: 600px) {
+  #my_sidebar {
+    width: 100%;
+    float: none;
+  }
+  .my_sidebar_box {
+    padding: 0px;
+    background-color: rgb(255, 255, 255);
+  }
+  #user_nickname {
+    font-size: 18px;
+    margin-bottom: 0px;
+  }
+  #user_id {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  #user_gender_age {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  #user_categories {
+    padding: 5px;
+  }
+  .user_category {
+    font-size: 14px;
+    margin: 5px;
+  }
 }
 
 </style>

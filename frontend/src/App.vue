@@ -2,7 +2,7 @@
   <v-app id="app">
     <!-- <toolbar /> -->
     <!-- <drawer /> -->
-    <Nav v-if="onNav == false" style="height: 86px;" />
+    <Nav v-if="onNav == false" style="height: 83px;" />
     <!-- <HomeHeader v-if="onNav == false" style="height: 200px;"></HomeHeader> -->
     <route-view />
     <go-top />

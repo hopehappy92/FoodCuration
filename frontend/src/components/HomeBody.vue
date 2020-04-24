@@ -1,14 +1,14 @@
 <template>
   <div class="home_body_card">
     <div class="container">
-      <img src="../../public/images/icons/user.png" alt="image" class="home_body_card_img">
+      <img v-if="images == ''" src="../../public/images/icons/user.png" class="home_body_card_img" alt="image">
+      <img v-else :src="images" alt="image" class="home_body_card_img">
       <div class="home_body_card_hover">
         <div class="home_body_card_text">
-          <div>{{ name }}</div>
-          <div>평점</div>
-          <div>리뷰 갯수 : {{ reviewCount }}</div>
-          <div>지역 : {{ area }}</div>
-          이미지 : {{ images }}
+          <div id="home_body_card_title">{{ name }}</div>
+          <div class="home_body_card_desc">평점 : {{ avgScore.toFixed(1) }}</div>
+          <div class="home_body_card_desc">리뷰 갯수 : {{ reviewCount }}</div>
+          <div class="home_body_card_desc">지역 : {{ area }}</div>
         </div>
         <button class="home_body_card_btn" @click.prevent="goDetail()">Go Detail</button>
       </div>
@@ -17,8 +17,14 @@
 </template>
  
 <script>
+import router from "../router"
+
   export default {
     props: {
+      id: {
+        type: Number,
+        default: 0
+      },
       name: {
         type: String,
         default: ""
@@ -32,17 +38,22 @@
         default: ""
       },
       images: {
-        type: Array,
-        defalut: []
+        type: String,
+        default: ""
+      },
+      avgScore: {
+        type: Number,
+        default: 0
       }
     },
     data() {
       return {
+        image: ""
       }
     },
     methods: {
       goDetail() {
-        console.log("aaaaaaaaaaaaaaaaaa")
+        router.push("/StoreDetail/" + this.id)
       }
     }
   }
@@ -60,12 +71,13 @@
   opacity: 1;
   display: block;
   width: 100%;
-  height: 100%;
+  height: 15vw;
+  /* height: 100%; */
   transition: .5s ease;
-  backface-visibility: hidden;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  /* backface-visibility: hidden; */
+  /* background-position: center;
+  background-repeat: no-repeat; */
+  /* background-size: 100% 100%; */
 }
 
 .home_body_card_hover {
@@ -79,7 +91,7 @@
   text-align: center;
   width: 100%;
   height: 100%;
-  padding-top: 4vw;
+  padding-top: 3vw;
 }
 
 .container:hover .home_body_card_img {
@@ -98,5 +110,28 @@
 .home_body_card_btn {
   border: 2px solid white;
   padding: 4px 8px;
+  margin-top: 2px;
+}
+#home_body_card_title {
+  font-size: 1.4vw;
+  margin-bottom: 5px;
+}
+.home_body_card_desc {
+  margin-bottom: 2px;
+}
+
+@media screen and (max-width: 600px) {
+  .home_body_card_img {
+    height: 225px;
+  }
+  .home_body_card_hover {
+    padding-top: 10vw;
+  }
+  .home_body_card_btn {
+    margin-top: 10px;
+  }
+  #home_body_card_title {
+    font-size: 20px;
+  }
 }
 </style>
