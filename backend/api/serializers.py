@@ -54,6 +54,7 @@ class StoreSerializer(serializers.ModelSerializer):
             "review_count",
             "menues",
             "images",
+            "tag",
         ]
 
 class StoreSerializer2(serializers.ModelSerializer):
