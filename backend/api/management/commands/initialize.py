@@ -67,7 +67,8 @@ class Command(BaseCommand):
                 latitude=store.latitude,
                 longitude=store.longitude,
                 category=store.category,
-                review_count=store_review_count_df.loc[store.id] if store.id in store_review_count_df_index_set else 0
+                review_count=store_review_count_df.loc[store.id] if store.id in store_review_count_df_index_set else 0,
+                tag=store.tag
             )
             for store in stores.itertuples()
         ]
