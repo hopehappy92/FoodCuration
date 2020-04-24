@@ -7,18 +7,20 @@
           <div id="card_rating">{{ storeScore }}</div>
         </div>
       </div>
-      <button class="icon_review" @click="write">
-        <i class="fas fa-pencil-alt" />
-        <p>리뷰작성</p>
-      </button>
-      <button v-if="like" class="icon_like" @click="pushLike">
-        <i class="fas fa-heart" />
-        <p>취소</p>
-      </button>
-      <button v-else class="icon_like" @click="pushLike">
-        <i class="far fa-heart" />
-        <p>좋아요</p>
-      </button>
+      <div class="content_top_right">
+        <button class="icon_review" @click="write">
+          <i class="fas fa-pencil-alt" />
+          <p>리뷰작성</p>
+        </button>
+        <button v-if="like" class="icon_like" @click="pushLike">
+          <i class="fas fa-heart" />
+          <p>취소</p>
+        </button>
+        <button v-else class="icon_like" @click="pushLike">
+          <i class="far fa-heart" />
+          <p>좋아요</p>
+        </button>
+      </div>
     </div>
     <p class="area">{{ storeArea }}</p>
     <table>
@@ -201,7 +203,7 @@ export default {
   margin-left: 10px;
 }
 .content_top_title {
-  width: 80%;
+  width: 100%;
   display: flex;
   align-items: baseline;
   flex-direction: row nowrap;
@@ -211,6 +213,12 @@ export default {
   display: flex;
   align-items: baseline;
   margin-left: 10px;
+}
+.content_top_right {
+  width: 20%;
+  margin-right: 20px;
+  display: flex;
+  flex-flow: row nowrap;
 }
 .icon_review {
   margin-right: 30px;
@@ -238,14 +246,17 @@ th {
   text-align: left;
   padding-bottom: 10px;
   font-family: "Yeon Sung", cursive;
+  font-size: 25px;
 }
 td {
   margin-left: 20px;
   padding-bottom: 10px;
   font-family: "Yeon Sung", cursive;
+  font-size: 20px;
 }
 .info_content {
   font-family: "Yeon Sung", cursive;
+  font-size: 20px;
 }
 .message {
   width: 100%;

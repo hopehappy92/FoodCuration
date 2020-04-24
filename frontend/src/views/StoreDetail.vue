@@ -20,15 +20,18 @@
         />
         <!-- 리뷰 테이블 -->
         <StoreReview ref="updateReview" @avg="avgScore" />
-        <br>
-        <br>
+        <br />
+        <br />
       </div>
       <!-- 오른쪽 기능 메뉴 -->
       <div class="aside">
         <StoreLocation :longitude="longitude" :latitude="latitude" />
+        <br />
+        <br />
+        <DetailRecStores :storeId="storeId" />
       </div>
     </div>
-    <footer>.</footer>
+    <HomeFooter></HomeFooter>
   </div>
 </template>
 
@@ -39,28 +42,17 @@ import axios from "axios";
 import StoreLocation from "@/components/StoreLocation";
 import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
+import HomeFooter from "@/components/HomeFooter";
+import DetailRecStores from "@/components/DetailRecStores";
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   components: {
     Nav,
     StoreLocation,
     StoreInfo,
-    StoreReview
-  },
-  props: ["storeId"],
-  data() {
-    return {
-      storeName: "",
-      storeScore: 0,
-      reviewCnt: "작성된 리뷰가 없습니다",
-      storeArea: "",
-      storeTel: "",
-      storeAddress: "",
-      storeCategories: [],
-      storeMenuList: [],
-      latitude: "",
-      longitude: ""
-    };
+    StoreReview,
+    DetailRecStores,
+    HomeFooter
   },
   mounted(res) {
     axios
@@ -92,7 +84,8 @@ export default {
       storeCategories: [],
       storeMenuList: [],
       latitude: 0,
-      longitude: 0
+      longitude: 0,
+      storeId: Number(this.$route.params.storeId)
     };
   },
   methods: {
@@ -120,16 +113,16 @@ export default {
 .aside {
   width: 30%;
   margin-left: 20px;
-  background-color: whitesmoke;
+  background-color: rgb(15, 15, 15);
   height: fit-content;
   display: flex;
   flex-flow: column;
 }
 .main_content {
-  width: 60%;
+  width: 50%;
   display: flex;
   flex-flow: column nowrap;
-  margin-left: 50px;
+  margin-left: 140px;
   background-color: whitesmoke;
   border-radius: 1%;
 }
