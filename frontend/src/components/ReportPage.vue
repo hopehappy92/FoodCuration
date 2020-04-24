@@ -22,24 +22,41 @@
         <div id="section1Header">
           개요
         </div>
+        
       </div>
       
-      이것은 글이다
-      글이고
+
+
       <div id="section2">
         <div class="sectionHeader">
-          지역별
+          지역별순위
         </div>
+        <img src="../../public/images/report/consumption_gender.png" alt="consumption_gender" class="report_box_location_imgs">
+        <img src="../../public/images/report/consumption_top3.png" alt="consumption_top3" class="report_box_location_imgs">
+        <div v-for="(value, i) in locationTabs" id="report_box_location_btn" :key="i">
+          <div :id="`locationBtn${i}`" class="report_box_location_btn_text" @click="showLocation(i)">
+            {{ value }} 지역순위
+          </div>
+        </div>
+        <div id="report_box_location_btn_reset">
+          <div id="report_box_location_btn_text_reset" @click="deleteLocation()">
+            초기화
+          </div>
+        </div>
+        <canvas v-if="locationFlag == true && locationReset == false" id="locationchart0" />
+        <canvas v-else-if="locationFlag == false && locationReset == false" id="locationchart1" />
       </div>
-      이것은 글이다
-      글이고
+
+
+
+
       <div id="section3">
         <div class="sectionHeader">
           상권 추천
         </div>
       </div>
-      이것은 글이다
-      글이고
+
+
 
       <div id="section4">
         <div class="sectionHeader">
@@ -149,12 +166,14 @@ export default {
       upperLine: [],
       trendNumber: -1,
       trendFlag: -1,
-      trendIndex: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       trendreset: false,
       trendsDetail: false,
       chainFlag: -1,
       chainReset: true,
       chainDetail: false,
+      locationFlag: -1,
+      locationReset: false,
+      locationDetail: false,
     }
   },
   computed: {
@@ -163,6 +182,8 @@ export default {
       trendTabs: state => state.data.trendTabs,
       chainChartData: state => state.data.chainChartData,
       chainTabs: state => state.data.chainTabs,
+      locationChartData: state => state.data.locationChartData,
+      locationTabs: state => state.data.locationTabs
     })
   },
   async mounted() {
@@ -172,10 +193,12 @@ export default {
     }
     await this.goTrendChartData()
     await this.goChainChartData()
+    await this.goLocationChartData()
   },
   methods: {
     ...mapActions("data", ["goTrendChartData"]),
     ...mapActions("data", ["goChainChartData"]),
+    ...mapActions("data", ["goLocationChartData"]),
     goHome() {
       router.push("/")
     },
@@ -378,9 +401,9 @@ export default {
               scales: {
                 yAxes: [{
                     ticks: {
-                        max: 5.00,
-                        min: 0,
-                        stepSize: 1.00
+                        max: 3.90,
+                        min: 3.50,
+                        stepSize: 0.02
                     }
                 }]
               }
@@ -449,16 +472,150 @@ export default {
               scales: {
                 yAxes: [{
                     ticks: {
-                        max: 5.00,
-                        min: 0,
-                        stepSize: 1.00
+                        max: 4.10,
+                        min: 3.60,
+                        stepSize: 0.05
                     }
                 }]
               }
             }
         });
       }
-    }
+    },
+    
+    // showChainDetail() {
+    //   if (this.chainDetail == false) {
+    //     this.chainDetail = true
+    //   } else {
+    //     this.chainDetail = false
+    //   }
+    // },
+    changeLocationFlag(idx) {
+      if (idx == 0) {
+        this.locationFlag = true
+      } else {
+        this.locationFlag = false
+      }
+    },
+    setLocationReset() {
+      this.locationReset = true
+    },
+    deleteLocation() {
+      this.locationReset = true
+      for (let i = 0; i < this.locationTabs.length; ++i) {
+        let target = document.getElementById(`locationBtn${i}`)
+        target.style = ""
+        target = document.getElementById("report_box_location_btn")
+        target.style = ""
+      }
+    },
+
+    drawLocationChart(i) {
+      var ctx = document.getElementById(`locationchart${i}`).getContext('2d');
+      var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'line',
+          // The data for our dataset
+          data: {
+              labels: this.locationChartData[`${this.locationTabs[i]}`]["index"],
+              datasets: [{
+                label: '강남구',
+                backgroundColor: 'red',
+                borderColor: 'red',
+                data: this.locationChartData[`${this.locationTabs[i]}`]["강남구"],
+                fill: false,
+                borderWidth: 2,
+                pointBorderWidth: 0.5,
+              },{
+                label: '구로구',
+                backgroundColor: 'orange',
+                borderColor: 'orange',
+                data: this.locationChartData[`${this.locationTabs[i]}`]["구로구"],
+                fill: false,
+                borderWidth: 2,
+                pointBorderWidth: 0.5,
+              },{
+                label: '마포구',
+                backgroundColor: 'yellow',
+                borderColor: 'yellow',
+                data: this.locationChartData[`${this.locationTabs[i]}`]["마포구"],
+                fill: false,
+                borderWidth: 2,
+                pointBorderWidth: 0.5,
+              },{
+                label: '용산구',
+                backgroundColor: 'green',
+                borderColor: 'green',
+                data: this.locationChartData[`${this.locationTabs[i]}`]["용산구"],
+                fill: false,
+                borderWidth: 2,
+                pointBorderWidth: 0.5,
+              },{
+                label: '중구',
+                backgroundColor: 'blue',
+                borderColor: 'blue',
+                data: this.locationChartData[`${this.locationTabs[i]}`]["중구"],
+                fill: false,
+                borderWidth: 2,
+                pointBorderWidth: 0,
+              }
+              ],
+          },
+          // Configuration options go here
+          options: {
+            title: {
+                display: true,
+                text: this.locationTabs[i],
+                fontSize: 24,
+                padding: 20,
+            },
+            scales: {
+              xAxes: [{
+                gridLines: {
+                  borderDash: [5]
+                },
+              }],
+              yAxes: [{
+                // display: false,
+                gridLines: {
+                  borderDash: [5]
+                },
+                  ticks: {
+                      max: 6,
+                      min: 0,
+                      stepSize: 1,
+                      reverse: true
+                  }
+              }]
+            },
+            elements: {
+                line: {
+                    tension: 0 // disables bezier curves
+                }
+            }
+          }
+      });
+    },
+
+    async showLocation(idx) {
+      await this.setLocationReset()
+      this.locationReset = false
+      await this.changeLocationFlag(idx)
+      if (idx == 0) {
+        var target = document.getElementById(`locationBtn0`)
+        var nontarget = document.getElementById(`locationBtn1`)
+      } else {
+        target = document.getElementById(`locationBtn1`)
+        nontarget = document.getElementById(`locationBtn0`)
+      }
+      target.style.color = "white"
+      target.style.backgroundColor = "black"
+      nontarget.style = ""
+      // console.log(this.locationReset)
+      // console.log(this.locationChartData)
+      // console.log(this.locationTabs)
+      this.drawLocationChart(idx)
+    },
   }
 }
 </script>
@@ -605,5 +762,35 @@ export default {
   margin: auto;
   background-color: gray;
   padding: 30px 20px;
+}
+#report_box_location_btn {
+  display: inline-block;
+  border: 1px solid black;
+  width: 25vw;
+  font-size: 1.3vw;
+  padding: 2px;
+}
+.report_box_location_btn_text {
+  cursor: pointer;
+}
+.report_box_location_btn_text:hover {
+  background-color: black;
+  color: white;
+}
+#report_box_location_btn_reset {
+  display: inline-block;
+  border: 1px solid black;
+  width: 25vw;
+  font-size: 1.3vw;
+  padding: 2px;
+  background-color: gray;
+  color: white;
+}
+#report_box_location_btn_text_reset {
+  cursor: pointer;
+}
+.report_box_location_imgs {
+  width: 35vw;
+  margin: 1vw;
 }
 </style>

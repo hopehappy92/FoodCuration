@@ -56,4 +56,16 @@ export default {
   padding: 20px;
   text-align: center;
 }
+
+@media screen and (max-width: 600px) {
+  #register {
+    background-image: none;
+    background-color: black;
+  }
+  #regiform {
+    padding: 10px;
+    width: 80%;
+  }
+
+}
 </style>

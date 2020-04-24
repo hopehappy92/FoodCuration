@@ -76,6 +76,28 @@ const state = {
   chainTabs: [
     "비체인/체인/전체 평점 비교",
     "체인점 평점 순위"
+  ],
+  locationChartData: {
+    나이대별: {
+      index: [],
+      강남구: [],
+      구로구: [],
+      마포구: [],
+      용산구: [],
+      중구: []
+    },
+    시간대별: {
+      index: [],
+      강남구: [],
+      구로구: [],
+      마포구: [],
+      용산구: [],
+      중구: []
+    },
+  },
+  locationTabs: [
+    "나이대별",
+    "시간대별"
   ]
 };
 
@@ -703,6 +725,21 @@ const actions = {
       }
       state.chainChartData[`${state.chainTabs[i]}`]["score"] = dataset[`${state.chainTabs[i]}`]["score"]
     }
+  },
+
+  async goLocationChartData({commit}) {
+    const res = await api.getLocationChartData()
+    // console.log(res)
+    const dataset = res.data
+    for (let i = 0; i < state.locationTabs.length; ++i) {
+      state.locationChartData[`${state.locationTabs[i]}`]["index"] = dataset[`${state.locationTabs[i]}`]["index"]
+      state.locationChartData[`${state.locationTabs[i]}`]["강남구"] = dataset[`${state.locationTabs[i]}`]["강남구"]
+      state.locationChartData[`${state.locationTabs[i]}`]["마포구"] = dataset[`${state.locationTabs[i]}`]["마포구"]
+      state.locationChartData[`${state.locationTabs[i]}`]["구로구"] = dataset[`${state.locationTabs[i]}`]["구로구"]
+      state.locationChartData[`${state.locationTabs[i]}`]["용산구"] = dataset[`${state.locationTabs[i]}`]["용산구"]
+      state.locationChartData[`${state.locationTabs[i]}`]["중구"] = dataset[`${state.locationTabs[i]}`]["중구"]
+    }
+    // console.log(state.locationChartData)
   }
 };
 

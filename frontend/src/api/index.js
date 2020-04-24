@@ -64,7 +64,7 @@ export default {
   getChainChartData() {
     return http.get(`${apiUrl}/compare_with_chain`)
   },
-  getRecommendStore(params) {
-    return http.get(`${apiUrl}/recommend_by_store_id/${params}`)
+  getLocationChartData() {
+    return http.get(`${apiUrl}/district_by_age_time`)
   }
 };
