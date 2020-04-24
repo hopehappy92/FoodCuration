@@ -590,8 +590,8 @@ def user_based_cf(self):
 
     추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
     '''
-    user = CustomUser.objects.get(id=15)
-    # user = CustomUser.objects.get(id=self.user.id)
+    # user = CustomUser.objects.get(id=15)
+    user = CustomUser.objects.get(id=self.user.id)
     # user = CustomUser.objects.get(id=15)
     if user.review_count > 9:
         alg_name = Algorithm.objects.get(id=1).alg_name
