@@ -61,5 +61,8 @@ export default {
   },
   getChainChartData() {
     return http.get(`${apiUrl}/compare_with_chain`)
+  },
+  getLocationChartData() {
+    return http.get(`${apiUrl}/district_by_age_time`)
   }
 };

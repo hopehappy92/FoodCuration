@@ -197,4 +197,33 @@ export default {
 .nav_inner_right > li > button {
   color: white;
 }
+
+@media screen and (max-width: 600px) {
+  #home_header {
+    height: 100px;
+  }
+  #home_header_search {
+    margin-top: 10px;
+  }
+  #home_header_search_input_before {
+    height: 40px;
+  }
+  #home_header_search_input {
+    line-height: 40px;
+    width: 45vw;
+    font-size: 17px;
+  }
+  #home_header_search_btn {
+    height: 40px;
+    width: 60px;
+    font-size: 17px;
+    transform: translateY(6%);
+  }
+  #home_header_search_input_after {
+    height: 40px;
+  }
+  .nav_inner_right {
+    padding-right: 0px;
+  }
+}
 </style>
