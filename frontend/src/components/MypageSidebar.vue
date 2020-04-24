@@ -2,7 +2,6 @@
   <div>
     <div id="my_sidebar">
       <div class="my_sidebar_box">
-        <!-- <img id="user_img" src="../../public/images/regi_bg.png" alt="user_img"> -->
         <div id="user_nickname">
           {{ user_name }}
         </div>
@@ -155,14 +154,6 @@ export default {
   padding: 20px;
   margin-bottom: 20px;
 }
-#user_img {
-  width: 10vw;
-  height: 10vw;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
-  margin-top: 30px;
-  margin-bottom: 20px;
-}
 #user_nickname {
   font-size: 20px;
   margin-bottom: 10px;
@@ -202,6 +193,36 @@ export default {
   transition: all .5s;
   display: block;
   width: 90%;
+}
+
+@media screen and (max-width: 600px) {
+  #my_sidebar {
+    width: 100%;
+    float: none;
+  }
+  .my_sidebar_box {
+    padding: 0px;
+    background-color: rgb(255, 255, 255);
+  }
+  #user_nickname {
+    font-size: 18px;
+    margin-bottom: 0px;
+  }
+  #user_id {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  #user_gender_age {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  #user_categories {
+    padding: 5px;
+  }
+  .user_category {
+    font-size: 14px;
+    margin: 5px;
+  }
 }
 
 </style>

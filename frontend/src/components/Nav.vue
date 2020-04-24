@@ -2,7 +2,7 @@
   <div>
     <div class="nav">
       <div class="nav_inner_left" @click="goHome()">
-        <img id="home_header_header_logo_img" src="../../public/images/logo_black.png" alt="Logo" />
+        <img id="home_header_header_logo_img" src="../../public/images/logo_black.png" alt="Logo">
         <!-- <i class="fab fa-drupal" />
         <span>Food Curation</span>-->
       </div>
@@ -11,7 +11,6 @@
           v-model="storeName"
           type="text"
           placeholder="  식당명으로 맛집을 검색해보세요"
-          v-model="storeName"
           @keyup="enterKey(storeName)"
         >
         <i class="fas fa-search" @click="goSearchPage(storeName)" />
@@ -183,5 +182,48 @@ input:focus {
   position: absolute;
   top: -6px;
   left: 0px;
+}
+
+@media screen and (max-width: 600px) {
+  .nav {
+    width: 100vw;
+    height: 85px;;
+    border-bottom: none;
+  }
+  .nav_innder_middle {
+    width: 64%;
+    display: flex;
+    margin-left: 0px;
+    position: absolute;
+    left: 80px;
+    top: 20px;
+  }
+  .nav_innder_middle > input {
+    width: 100%;
+  }
+  
+  .nav_inner_right {
+    padding-right: 10px;
+    padding-left: 10px;
+    width: 80px;
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 20px;
+  }
+  .nav_inner_right > li {
+    padding: 0px;
+    margin-bottom: 5px;
+    width: 100px;
+  }
+  .nav_menu {
+    font-family: "Do Hyeon", sans-serif;
+    font-size: 12px;
+  }
+  #home_header_header_logo_img {
+    width: 80px;
+    top: 13px;
+  }
+
 }
 </style>

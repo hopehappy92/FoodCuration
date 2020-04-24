@@ -5,7 +5,7 @@
       <img v-else :src="images" alt="image" class="home_body_card_img">
       <div class="home_body_card_hover">
         <div class="home_body_card_text">
-          <div style="font-size: 1.4vw; margin-bottom: 5px;">{{ name }}</div>
+          <div id="home_body_card_title">{{ name }}</div>
           <div class="home_body_card_desc">평점 : {{ avgScore.toFixed(1) }}</div>
           <div class="home_body_card_desc">리뷰 갯수 : {{ reviewCount }}</div>
           <div class="home_body_card_desc">지역 : {{ area }}</div>
@@ -112,7 +112,26 @@ import router from "../router"
   padding: 4px 8px;
   margin-top: 2px;
 }
+#home_body_card_title {
+  font-size: 1.4vw;
+  margin-bottom: 5px;
+}
 .home_body_card_desc {
   margin-bottom: 2px;
+}
+
+@media screen and (max-width: 600px) {
+  .home_body_card_img {
+    height: 225px;
+  }
+  .home_body_card_hover {
+    padding-top: 10vw;
+  }
+  .home_body_card_btn {
+    margin-top: 10px;
+  }
+  #home_body_card_title {
+    font-size: 20px;
+  }
 }
 </style>
