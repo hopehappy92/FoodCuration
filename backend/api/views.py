@@ -154,6 +154,18 @@ with open('df_all_tob_list.p', 'rb') as file:
 with open('chain_result_list.p', 'rb') as file:
     chain_result_list = pickle.load(file)
 
+with open('age_time_list.p', 'rb') as file:
+    age_time_list = pickle.load(file)
+
+@api_view(['GET'])
+def district_by_age_time(self):
+    global age_time_list
+    age_time_dict = {
+        "나이대별": age_time_list[0],
+        "시간대별": age_time_list[1],
+    }
+    return Response(age_time_dict)
+
 @api_view(['GET'])
 def compare_with_chain(self):
     global chain_result_list

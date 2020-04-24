@@ -108,10 +108,20 @@ district_top5_list = list(district_top5)
 df_district_top5 = df_all[df_all["district"].isin(district_top5_list)]
 df_district_top5_by_age = df_district_top5.groupby(["age", "district"])[["all_payment", "customers"]].sum()
 df_district_top5_by_age_10 = df_district_top5_by_age[df_district_top5_by_age.index.get_level_values(0)=="1.10대"]
-df_district_top5_by_age_20 = df_district_top5_by_age[df_district_top5_by_age.index.get_level_values(0)=="2.20대"]
-print(df_district_top5_by_age_10.rank(method='min', ascending=False).reset_index().set_index(["district"]))
-print(df_district_top5_by_age_20.rank(method='min', ascending=False).reset_index().set_index(["district"]))
 
+df_all_age = df_district_top5_by_age_10.rank(method='min', ascending=False).reset_index().set_index(["district"])["all_payment"].rename(columns={"all_payment":"10대"})
+
+age_list = ["2.20대", "3.30대", "4.40대", "5.50대", "6.60대", "7.70대이상"]
+for i in age_list:
+    df_district_top5_by_age_i = df_district_top5_by_age[df_district_top5_by_age.index.get_level_values(0)==i]
+    df_i_age = df_district_top5_by_age_i.rank(method='min', ascending=False).reset_index().set_index(["district"])["all_payment"].rename(columns={"all_payment":i})
+    df_all_age = pd.concat([df_all_age, df_i_age], axis=1)
+
+# 결과
+df_all_age_result = df_all_age.T
+df_all_age_result.index = ["10대", "20대", "30대", "40대", "50대", "60대", "70대이상"]
+all_age_real_result = df_all_age_result.reset_index()
+print(all_age_real_result)
 
 
 
@@ -122,4 +132,31 @@ print(df_district_top5_by_age_20.rank(method='min', ascending=False).reset_index
 #     print(df_by_time[df_by_time.index.get_level_values(1)==i].sort_values(by="all_payment", ascending=False).head(n=3))
 # print(df_all_payment_by_time)
 
+# 지역별 시간대에 따른 소비량(결제량) 순위 --- 2
+district_top5 = df_all.groupby(["district"])[["all_payment", "customers"]].sum().sort_values(by="all_payment", ascending=False).head(n=5).index
+district_top5_list = list(district_top5)
+df_district_top5 = df_all[df_all["district"].isin(district_top5_list)]
+df_district_top5_by_time = df_district_top5.groupby(["time", "district"])[["all_payment", "customers"]].sum()
+df_district_top5_by_time_0 = df_district_top5_by_time[df_district_top5_by_time.index.get_level_values(0)==0]
 
+df_all_time = df_district_top5_by_time_0.rank(method='min', ascending=False).reset_index().set_index(["district"])["all_payment"].rename(columns={"all_payment":"0시"})
+
+time_list = list(range(1, 24))
+for i in time_list:
+    df_district_top5_by_time_i = df_district_top5_by_time[df_district_top5_by_time.index.get_level_values(0)==i]
+    df_i_time = df_district_top5_by_time_i.rank(method='min', ascending=False).reset_index().set_index(["district"])["all_payment"].rename(columns={"all_payment":i})
+    df_all_time = pd.concat([df_all_time, df_i_time], axis=1)
+
+# 결과
+df_all_time_result = df_all_time.T
+df_all_time_result.index = list(range(0, 24))
+all_time_real_result = df_all_time_result.reset_index()
+print(all_time_real_result)
+
+
+age_time_list = []
+age_time_list.append(all_age_real_result)
+age_time_list.append(all_time_real_result)
+
+with open('age_time_list.p', 'wb') as file:
+    pickle.dump(age_time_list, file)

@@ -57,6 +57,7 @@ urlpatterns = [
     path('user_based_cf', views.user_based_cf, name="user_based_cf"),
     path('trend_by_tob', views.trend_by_tob, name="trend_by_tob"),
     path('compare_with_chain', views.compare_with_chain, name="compare_with_chain"),
+    path('district_by_age_time', views.district_by_age_time, name="district_by_age_time"),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
     path('token/refresh/', refresh_jwt_token),
