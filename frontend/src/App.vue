@@ -2,9 +2,10 @@
   <v-app id="app">
     <!-- <toolbar /> -->
     <!-- <drawer /> -->
-    <Nav v-if="onRegister == false" style="height: 86px;" />
+    <Nav v-if="onNav == false" style="height: 83px;" />
+    <!-- <HomeHeader v-if="onNav == false" style="height: 200px;"></HomeHeader> -->
     <route-view />
-    <!-- <go-top /> -->
+    <go-top />
   </v-app>
 </template>
 
@@ -13,7 +14,7 @@
 // import Toolbar from "@/components/Toolbar";
 import RouteView from "@/components/RouteView";
 import Nav from "@/components/Nav";
-// import GoTop from "@/components/GoTop";
+import GoTop from "@/components/GoTop";
 import { mapState } from "vuex";
 
 export default {
@@ -21,14 +22,14 @@ export default {
     // Drawer,
     // Toolbar,
     RouteView,
-    Nav
-    // GoTop
+    Nav,
+    GoTop
   },
   computed: {
     ...mapState({
-      onRegister: state => state.data.onRegisterFlag,
+      onNav: state => state.data.onNavFlag
     })
-  },
+  }
 };
 </script>
 

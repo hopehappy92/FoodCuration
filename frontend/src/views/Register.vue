@@ -14,15 +14,15 @@ export default {
     RegisterForm
   },
   methods: {
-    ...mapActions("data", ["checkRegister"])
+    ...mapActions("data", ["checkNavbar"])
   },
   mounted() {
     // console.log("aaa")
-    this.checkRegister()
+    this.checkNavbar()
   },
   destroyed() {
     // console.log("bbb")
-    this.checkRegister()
+    this.checkNavbar()
   }
 }
 </script>
@@ -55,5 +55,17 @@ export default {
   z-index: 2;
   padding: 20px;
   text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+  #register {
+    background-image: none;
+    background-color: black;
+  }
+  #regiform {
+    padding: 10px;
+    width: 80%;
+  }
+
 }
 </style>

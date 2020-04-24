@@ -12,6 +12,10 @@ class CustomUser(AbstractUser):
 
     #     return self.
     review_count = models.IntegerField(default=0)
+    category = models.CharField(max_length=200, null=True)
+    @property
+    def category_list(self):
+        return self.category.split("|") if self.category else []
     
 
 class Store(models.Model):
@@ -21,15 +25,18 @@ class Store(models.Model):
     area = models.CharField(max_length=100, null=True)
     tel = models.CharField(max_length=30, null=True)
     address = models.CharField(max_length=100, null=True)
-    latitude = models.FloatField(max_length=10, null=True)
-    longitude = models.FloatField(max_length=10, null=True)
+    latitude = models.FloatField(max_length=10, default=0.0)
+    longitude = models.FloatField(max_length=10, default=0.0)
     category = models.CharField(max_length=200, null=True)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_stores", blank=True)
-    location = models.IntegerField()
     review_count = models.IntegerField(default=0)
+    tag = models.CharField(max_length=200, null=True)
     @property
     def category_list(self):
         return self.category.split("|") if self.category else []
+    @property
+    def tag_list(self):
+        return self.tag.split("|") if self.tag else []
 
     def __str__(self):
         return self.store_name
@@ -54,8 +61,8 @@ class Review(models.Model):
     content = models.TextField()
     reg_time = models.DateTimeField()
 
-    def __str__(self):
-        return self.content
+    # def __str__(self):
+    #     return self.content
 
 
 class UserLikeStore(models.Model):
@@ -71,3 +78,10 @@ class StoreImage(models.Model):
     id = models.IntegerField(primary_key=True)
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     url = models.TextField()
+
+
+class Algorithm(models.Model):
+    id = models.IntegerField(primary_key=True)
+    alg_name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.alg_name

@@ -23,6 +23,7 @@
 
 <script>
 import axios from "axios";
+import { mapState, mapActions } from "vuex";
 export default {
   props: {
     reviewId: Number,
@@ -36,15 +37,14 @@ export default {
     };
   },
   methods: {
-    editDone() {
-      axios
-        .put(
-          `http://i02d106.p.ssafy.io:8765/api/store_reviews/${this.reviewId}`,
-          {
-            score: this.score,
-            content: this.eContent
-          }
-        )
+    ...mapActions("data", ["editReview"]),
+    editDone: async function() {
+      const params = {
+        id: this.reviewId,
+        score: this.score,
+        content: this.eContent
+      };
+      await this.editReview(params)
         .then(this.$emit("editReview"))
         .then((this.dialog = false));
     }
@@ -53,8 +53,11 @@ export default {
 </script>
 
 <style scoped>
+i {
+  font-size: 20px;
+}
 i:hover {
-  font-size: 18px;
+  font-size: 25px;
   cursor: pointer;
 }
 textarea {

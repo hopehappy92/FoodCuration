@@ -1029,3 +1029,42 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 }
 ```
 
+### algorithm_change
+
+현재 서버에서 협업필터링 기반 추천 시스템에 적용할 알고리즘을 선택하는 부분입니다.
+
+0번의 경우 svdpp, 1번의 경우 knn알고리즘을 적용하여 맛집을 추천해 줍니다.
+
+경로: api/algorithm_change
+
+메소드: PUT
+
+|      인자      | 필수 여부 |
+| :------------: | :-------: |
+| algorithm: INT |   True    |
+
+반환값: 지금부터 적용될 알고리즘 이름 String
+
+### algorithm_check
+
+현재 서버에서 협업필터링 기반 추천 시스템에 적용되어 있는 알고리즘을 확인하는 api입니다.
+
+경로: api/algorithm_check
+
+메소드: GET
+
+반환값: 현재 적용중인 알고리즘 이름 String
+
+### update_learning_dataframe
+
+현재 서버에서 협업필터링 기반 추천 시스템을 학습시키기 위한 데이터프레임을 갱신하는 api입니다.
+
+경로: api/update_learning_dataframe
+
+메소드: GET
+
+반환값: "갱신 완료"
+
+### relearning_current_model
+
+현재 서버에서 적용된 협업필터링 기반 추천 알고리즘을 재학습시키는 
