@@ -35,7 +35,7 @@
 
 <script>
 import api from "../api";
-import router from "@/router";
+import router from "../router";
 export default {
   props: {
     storeId: Number
@@ -79,6 +79,7 @@ export default {
   methods: {
     moveToStore(storeId) {
       console.log(storeId);
+      this.$router.push("/StoreDetail/" + storeId);
     }
   }
 };

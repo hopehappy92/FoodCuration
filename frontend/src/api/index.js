@@ -66,5 +66,8 @@ export default {
   },
   getLocationChartData() {
     return http.get(`${apiUrl}/district_by_age_time`)
+  },
+  getRecommendStore(params) {
+    return http.get(`${apiUrl}/recommend_by_store_id/${params}`)
   }
-};
+}
