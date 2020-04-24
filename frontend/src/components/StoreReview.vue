@@ -6,7 +6,7 @@
         <div class="review_container_left">{{review.username}}</div>
         <div class="review_container_middle">{{review.content}}</div>
         <div class="review_container_right">
-          <div v-if="review.user == myId">
+          <div v-if="review.username == myName" class="reviewRight">
             <updateReview :review-id="review.id" :content="review.content" @editReview="reRoad">
               <i slot="click" class="fas fa-edit" />
             </updateReview>
@@ -40,7 +40,7 @@ export default {
       reviews: [],
       pageSize: 10,
       pageNum: 0,
-      myId: localStorage.getItem("pk"),
+      myName: localStorage.getItem("username"),
       modal: false,
       avgScore: 0,
       reviewCnt: 0,
@@ -130,6 +130,7 @@ export default {
 .review_header {
   margin-top: 20px;
   font-family: "Do Hyeon", sans-serif;
+  font-size: 35px;
 }
 .review_container {
   display: flex;
@@ -152,7 +153,7 @@ export default {
   text-align: center;
 }
 .review_container_right > div > i:hover {
-  font-size: 18px;
+  font-size: 25px;
   cursor: pointer;
 }
 .review_container_right > div {
@@ -161,6 +162,7 @@ export default {
 }
 .review_container_right > div > i {
   margin-left: 10px;
+  font-size: 20px;
 }
 .btn-cover {
   margin-top: 1.5rem;
@@ -177,9 +179,14 @@ export default {
 .page-btn:hover {
   background: rgb(133, 132, 132);
   cursor: pointer;
+  transition: background-color 0.5s;
 }
 .btn-cover .page-count {
   padding: 0 1rem;
   font-family: "Yeon Sung", cursive;
+}
+.reviewRight {
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -12,7 +12,7 @@
           type="text"
           placeholder="  식당명으로 맛집을 검색해보세요"
           @keyup="enterKey(storeName)"
-        >
+        />
         <i class="fas fa-search" @click="goSearchPage(storeName)" />
       </div>
       <div v-if="islogined == false">

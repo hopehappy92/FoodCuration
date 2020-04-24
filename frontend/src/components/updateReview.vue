@@ -53,8 +53,11 @@ export default {
 </script>
 
 <style scoped>
+i {
+  font-size: 20px;
+}
 i:hover {
-  font-size: 18px;
+  font-size: 25px;
   cursor: pointer;
 }
 textarea {
