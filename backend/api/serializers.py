@@ -38,7 +38,8 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 class StoreSerializer(serializers.ModelSerializer):
     menues = MenuSerializer(source="menu_set", many=True)
-    images = ImageSerializer(source="storeimage_set", many=True)
+    # images = ImageSerializer(source="storeimage_set", many=True)
+    url = serializers.SerializerMethodField()
     class Meta:
         model = Store
         fields = [
@@ -53,8 +54,16 @@ class StoreSerializer(serializers.ModelSerializer):
             "category_list",
             "review_count",
             "menues",
-            "images",
+            # "images",
+            "tag",
+            "url",
         ]
+    def get_url(self, obj):
+        a = StoreImage.objects.filter(store_id=obj.id)
+        if a:
+            return a[0].url
+        else:
+            return ""
 
 class StoreSerializer2(serializers.ModelSerializer):
     class Meta:
@@ -149,6 +158,7 @@ class StoreDetailSerializer2(serializers.ModelSerializer):
     review_count = serializers.SerializerMethodField()
     avg_score = serializers.SerializerMethodField()
     images = ImageSerializer(source="storeimage_set", many=True)
+    url = serializers.SerializerMethodField()
     class Meta:
         model = Store
         fields = [
@@ -158,7 +168,14 @@ class StoreDetailSerializer2(serializers.ModelSerializer):
             "review_count",
             "avg_score",
             "images",
+            "url",
         ]
+    def get_url(self, obj):
+        a = StoreImage.objects.filter(store_id=obj.id)
+        if a:
+            return a[0].url
+        else:
+            return ""
 
     def get_review_count(self, obj):
         return obj.review_set.count()

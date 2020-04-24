@@ -694,9 +694,10 @@ const actions = {
       area: d.area,
       reviewCount: d.review_count,
       images: d.images,
-      avgScore: d.avg_score
-
+      avgScore: d.avg_score,
+      url: d.url
     }));
+
     mutations.setUserBasedRecommand(state, stores)
   },
 
