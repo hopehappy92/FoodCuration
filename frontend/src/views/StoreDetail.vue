@@ -51,7 +51,7 @@ export default {
   mounted(res) {
     axios
       .get(
-        `http://i02d106.p.ssafy.io:8765/api/stores/${this.$route.params.storeId}`
+        `https://i02d106.p.ssafy.io:8765/api/stores/${this.$route.params.storeId}`
       )
       .then(res => {
         console.log(res);
