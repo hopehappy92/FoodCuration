@@ -15,7 +15,6 @@
     <div id="home_body">
       <div v-if="isMobile == false">
         <!-- algo기반 추천 -->
-        
         <div v-if="check" id="home_body_recommand_algo">
           For You
         </div>
@@ -27,7 +26,7 @@
                 :name="userStores[i-1].name"
                 :review-count="userStores[i-1].reviewCount"
                 :area="userStores[i-1].area"
-                :images="userStores[i-1].images[0]['url']"
+                :images="userStores[i-1].url"
                 :avg-score="userStores[i-1].avgScore"
               />
             </div>
@@ -57,7 +56,7 @@
               :name="userStores[i-1].name"
               :review-count="userStores[i-1].reviewCount"
               :area="userStores[i-1].area"
-              :images="userStores[i-1].images[0]['url']"
+              :images="userStores[i-1].url"
               :avg-score="userStores[i-1].avgScore"
             />
           </div>
