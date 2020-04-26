@@ -1,9 +1,7 @@
 <template>
   <div>
     <Nav />
-    <div class="header">
-      <!-- 가게 사진들  -->
-    </div>
+    <div class="header"></div>
     <div class="main">
       <!-- 음식점 정보 -->
       <div class="main_content">
@@ -18,6 +16,7 @@
           :store-menu-list="storeMenuList"
           @add-to-review="updatedReview"
         />
+        <!-- 식당 태그 -->
         <!-- 리뷰 테이블 -->
         <StoreReview ref="updateReview" @avg="avgScore" />
         <br />
@@ -25,13 +24,17 @@
       </div>
       <!-- 오른쪽 기능 메뉴 -->
       <div class="aside">
-        <StoreLocation :longitude="longitude" :latitude="latitude" />
+        <div>
+          <StoreLocation :longitude="longitude" :latitude="latitude" />
+        </div>
         <br />
         <br />
         <DetailRecStores :storeId="storeId" />
       </div>
     </div>
-    <HomeFooter></HomeFooter>
+    <div class="footer">
+      <HomeFooter></HomeFooter>
+    </div>
   </div>
 </template>
 
@@ -120,6 +123,7 @@ export default {
 }
 .main_content {
   width: 50%;
+  height: 100%;
   display: flex;
   flex-flow: column nowrap;
   margin-left: 140px;
@@ -133,5 +137,26 @@ footer {
   height: 300px;
   width: 100%;
   background-color: rgb(15, 15, 15);
+}
+.mobile_map {
+  display: none;
+}
+@media screen and (max-width: 600px) {
+  .mobile_map {
+    display: block;
+  }
+  .main {
+    display: flex;
+    flex-flow: column nowrap;
+  }
+  .main_content {
+    width: 100%;
+    margin: 0;
+    margin-bottom: 40px;
+  }
+  .aside {
+    width: 100%;
+    margin: 0;
+  }
 }
 </style>
