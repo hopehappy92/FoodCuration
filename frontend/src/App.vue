@@ -4,7 +4,7 @@
     <!-- <drawer /> -->
     <Nav v-if="onNav == false" style="height: 83px;" />
     <!-- <HomeHeader v-if="onNav == false" style="height: 200px;"></HomeHeader> -->
-    <route-view />
+    <route-view :key="$route.fullPath" />
     <go-top />
   </v-app>
 </template>

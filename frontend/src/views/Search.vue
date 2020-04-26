@@ -412,6 +412,11 @@ input:focus {
   outline: none;
 }
 .bgControl {
-  height: 900px;
+  height: 100%;
+}
+@media screen and (max-width: 600px) {
+  .underlined::before {
+    left: 18px;
+  }
 }
 </style>

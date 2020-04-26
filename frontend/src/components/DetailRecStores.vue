@@ -4,17 +4,25 @@
     <div v-for="(store, i) in recStores" :key="i">
       <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
       <div style="display: flex; flex-flow: row;">
-        <img
-          v-if="store.url === ''"
-          class="recImages"
-          src="../../public/images/noImage1.jpg"
-          alt="gg"
-          style="width:300px;"
-        />
-        <img v-else class="recImages" :src="store.url" alt="이미지" style="width:200px;" />
+        <div>
+          <img
+            v-if="store.url === ''"
+            class="recImages"
+            src="../../public/images/noImage1.jpg"
+            alt="gg"
+            style="width:200px; height:150px;"
+          />
+          <img
+            v-else
+            class="recImages"
+            :src="store.url"
+            alt="이미지"
+            style="width:200px; height:150px;"
+          />
+        </div>
         <div class="store_summary">
           <div class="summary_top">
-            <span>{{store.store_name}}</span>
+            <span id="rec_name">{{store.store_name}}</span>
             <span id="rec_score">{{store.avg_score.toFixed(1)}}</span>
           </div>
           <div class="summary_bottom">
@@ -52,17 +60,23 @@ export default {
     api.getRecommendStore(params).then(res => {
       var picked = [];
       var max_length = res.data.length;
-      var cnt = 0;
+      var cnt = false;
       var flag = true;
-      while (cnt < 3) {
+      console.log(res);
+      console.log("굿굿");
+      while (cnt === false) {
         var ranNum = Math.floor(Math.random() * max_length);
-        if (picked.includes(ranNum)) {
-          continue;
-        } else {
+        if (ranNum > 0 && ranNum < 19) {
+          console.log(ranNum);
           picked.push(ranNum);
-          cnt++;
+          picked.push(ranNum + 1);
+          picked.push(ranNum - 1);
+          cnt = true;
+        } else {
+          continue;
         }
       }
+      console.log(picked);
       const recStores = [];
       for (var number of picked) {
         recStores.push(res.data[number]);
@@ -125,6 +139,12 @@ export default {
   margin-left: 10px;
   color: grey;
 }
+#rec_name {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .summary_bottom {
   margin-top: 10px;
   margin-left: 20px;
@@ -150,6 +170,11 @@ export default {
   border-radius: 20%;
   font-family: "Jua", sans-serif;
   color: rgb(241, 241, 241);
+  -webkit-animation: fadeIn 1s 1s infinite linear normal;
+  -moz-animation: fadeIn 1s 1s infinite linear normal;
+  -ms-animation: fadeIn 1s 1s infinite linear normal;
+  -o-animation: fadeIn 1s 1s infinite linear normal;
+  animation: fadeIn 1s 1s infinite linear normal;
 }
 .summary_bottom > div > button:hover {
   transition: background-color 0.5s;
@@ -172,6 +197,24 @@ export default {
   to {
     opacity: 0;
     transform: translateX(10px);
+  }
+}
+@keyframes fadeIn {
+  from {
+    background: rgb(185, 185, 185);
+  }
+  to {
+    background: rgb(121, 121, 121);
+  }
+}
+@media screen and (max-width: 600px) {
+  #rec_name {
+    display: inline-block;
+    width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>
