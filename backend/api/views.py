@@ -23,6 +23,7 @@ import requests
 from bs4 import BeautifulSoup
 from math import acos, cos, sin, radians
 from sklearn.cluster import KMeans
+from django.db.models import Avg
 
 
 
@@ -83,6 +84,9 @@ start_crawling_length = 100
 
 all_store = Store.objects.all()
 all_review = Review.objects.all()
+store_list = Store.objects.filter(review_count__gte=10)
+recommend_store = serializers.StoreDetailSerializer3(store_list, many=True)
+recommend_store = sorted(recommend_store.data, key=lambda x: x["avg_score"], reverse=True)[:10]
 
 def check_image(serializer):
     global get_image_dict
@@ -787,3 +791,21 @@ def relearning_kmeans(self):
         pickle.dump(cluster_list, f)
         pickle.dump(centroid, f)
     return Response('k_means 재 학습 완료')
+
+
+@api_view(['POST'])
+def recommend_by_current_location(self):
+    clat = self.data.get("latitude")
+    clon = self.data.get("longitude")
+    if not clat or not clon:
+        queryset = recommend_store
+    else:
+        a = []
+        for store in store_list:
+            lat = store.latitude
+            lon = store.longitude
+            if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < 10:
+                a.append(store)
+        serializer = serializers.StoreDetailSerializer3(a, many=True)
+        queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
+    return Response(queryset)
