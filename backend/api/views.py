@@ -234,6 +234,13 @@ class StoreViewSet(viewsets.ModelViewSet):
             models.Store.objects.all().filter(store_name__contains=name).order_by("id")
         )
         return queryset
+    
+    def destroy(self, request, pk=None):
+        if request.user.is_staff:
+            store = models.Store.objects.get(id=pk)
+            store.delete()
+            return Response("삭제 성공")
+        return Response("삭제 실패")
 
 
 class UserReviewSet(viewsets.ModelViewSet):
@@ -683,28 +690,29 @@ def recommend_by_store_id(self, store_id):
 
 @api_view(['POST'])
 def create_store(self):
-    print('asdfasdf')
-    try:
-        store_name = self.data.get("store_name")
-        branch = self.data.get("branch")
-        area = self.data.get("area")
-        tel = self.data.get("tel")
-        address = self.data.get("address")
-        latitude = self.data.get("latitude")
-        longitude = self.data.get("longitude")
-        category = self.data.get("category")
-        tag = self.data.get("tag")
-        menues = self.data.get("menues")
-        cid = Store.objects.all().order_by('-id')[0].id + 1
-        Store.objects.create(id=cid, store_name=store_name, branch=branch, area=area, tel=tel, address=address, latitude=latitude, longitude=longitude, category=category, tag=tag)
-    except:
-        return Response("매장 등록 실패")
-    for menu in menues:
+    if self.user.is_staff:
         try:
-            Menu.objects.create(store_id=cid, menu_name=menu["menu_name"], price=menu["price"])
+            store_name = self.data.get("store_name")
+            branch = self.data.get("branch")
+            area = self.data.get("area")
+            tel = self.data.get("tel")
+            address = self.data.get("address")
+            latitude = self.data.get("latitude")
+            longitude = self.data.get("longitude")
+            category = self.data.get("category")
+            tag = self.data.get("tag")
+            menues = self.data.get("menues")
+            cid = Store.objects.all().order_by('-id')[0].id + 1
+            Store.objects.create(id=cid, store_name=store_name, branch=branch, area=area, tel=tel, address=address, latitude=latitude, longitude=longitude, category=category, tag=tag)
         except:
             pass
-    return Response("매장 등록 완료")
+        for menu in menues:
+            try:
+                Menu.objects.create(store_id=cid, menu_name=menu["menu_name"], price=menu["price"])
+            except:
+                pass
+        return Response("매장 등록 완료")
+    return Response("매장 등록 실패")
 
 
 @api_view(['POST'])
