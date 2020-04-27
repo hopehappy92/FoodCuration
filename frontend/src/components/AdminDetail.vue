@@ -33,6 +33,9 @@
             <th>
               ADDRESS
             </th>
+            <th>
+              DELETE
+            </th>
           </tr>
           <tr v-for="(store, i) in stores" :key="i">
             <th>
@@ -49,6 +52,11 @@
             </th>
             <th>
               {{ store["address"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('store', store['id'])">
+                DELETE
+              </div>
             </th>
           </tr>
         </table>
@@ -75,6 +83,9 @@
             <th>
               REG_TIME
             </th>
+            <th>
+              DELETE
+            </th>
           </tr>
           <tr v-for="(review, i) in reviews" :key="i">
             <th>
@@ -91,6 +102,11 @@
             </th>
             <th>
               {{ review["reg_time"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('review', review['id'])">
+                DELETE
+              </div>
             </th>
           </tr>
         </table>
@@ -130,6 +146,10 @@ export default {
   methods: {
     goHome() {
       router.push("/")
+    },
+    del(type, pk) {
+      console.log("del")
+      console.log(type, pk)
     },
     ...mapActions("data", ["getStores"]),
     ...mapActions("data", ["getUserReview"]),
@@ -277,5 +297,12 @@ th{
 }
 tr:nth-child(even) {
   background-color: #ddd;
+}
+.deleteBtn {
+  border: 1px solid black;
+  padding: 1px;
+  text-align: center;
+  background-color: red;
+  color: white;
 }
 </style>

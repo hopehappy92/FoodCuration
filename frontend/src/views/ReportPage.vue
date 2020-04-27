@@ -13,6 +13,7 @@
     <div id="report_tabbox">
       <div v-for="(value, i) in tabs" :key="i" class="report_tab">
         <a :href="`#section${i+1}`" class="report_tab_a">
+          <!-- <a href="#section5"> -->
           {{ value }}
         </a>
       </div>
@@ -31,11 +32,73 @@
         <div class="sectionHeader">
           지역별 소비 순위
         </div>
+        <div class="sectionDetail">
+          지역별 소비량을 성별, 나이대별, 시간대별로 분석하였고, 서울내 소비 지역 top3를 산출하였다.  <br>
+          <b>성별 최대 소비 지역</b>의 차이는 지역에 따른 직장인 성별의 비중이 이유였다. <br>
+          또한 서울 내 <b>소비 지역 Top3</b>의 경우 대기업의 본사가 몰려있는 중구가 소비량이 가장 높았고, 강남구, 구로구 순이었다.
+          강남구의 경우 많은 유동인구와 높은 경제 수준이 이유였고, 구로구는 각종 공단이 위치해 있어서 국내 최대 유동인구 덕분이었다.  <br>
+          서울 소비 Top5의 지역의 <b>나이대별 소비 순위</b>는, 중구의 경우 20대 ~ 40대의 직장인들이 주 고객층이었고,
+          강남의 경우 10대, 20대의 소비량은 적었지만, 어느정도 경제력이 뒷받침 되기 시작하는 30대 이후로는 큰손들이 몰려 있어서 가파른 상승을 이루었다.
+          반면 용산의 경우 각종 놀이 시설과 전자상가, 아이파크몰 등으로 인해 10대의 소비량이 강세였으나, 20대 이후 부터는 소비량이 하락하였다.  <br>
+          <b>시간대별 순위</b>로는 중구와 강남이 대부분의 시간에서 1, 2위를 양분하였으나 일반적인 소비가 줄고 유흥의 소비 비중이 증가하는 새벽에는 구로구가 2위를 차지하였다.
+        </div>
+        <img src="../../public/images/report/consumption_gender.png" alt="consumption_gender" class="report_box_location_imgs">
+        <img src="../../public/images/report/consumption_top3.png" alt="consumption_top3" class="report_box_location_imgs">
+        <div v-for="(value, i) in locationTabs" id="report_box_location_btn" :key="i">
+          <div :id="`locationBtn${i}`" class="report_box_location_btn_text" @click="showLocation(i)">
+            {{ value }} 지역순위
+          </div>
+        </div>
+        <div id="report_box_location_btn_reset">
+          <div id="report_box_location_btn_text_reset" @click="deleteLocation()">
+            초기화
+          </div>
+        </div>
+        <canvas v-if="locationFlag == true && locationReset == false" id="locationchart0" />
+        <canvas v-else-if="locationFlag == false && locationReset == false" id="locationchart1" />
+      </div>
+
+
+
+
+      <div id="section3">
+        <div class="sectionHeader">
+          상권 추천
+        </div>
+        <div class="sectionDetail">
+          슈퍼마켓, 편의점 등 음식점과 소매업을 제외하고 업종 형태별 매출 순위를 지역별로 분석하였다. <br>
+          <b>도봉구</b>는 농, 수, 축협 판매장이 최대 매출을 보였고,
+          <b>동대문구</b>는 의류 도매시장의 존재로 기타의류가 최대 매출을 보였다. 
+          <b>동작구</b>는 특이하게 택시의 매출이 가장 높았다.
+          <b>은평구</b>는 비디오/게임방, 
+          <b>강북구</b>는 미용실,
+          <b>강동구</b>는 대형마트의 매출이 가장 높았다. <br>
+          <b>강남구</b>는 대형 사교육 업체가 몰려 있는 만큼 입시, 고시학원의 매출이 가장 높았고,
+          <b>강서구</b>는 김포공항을 옆에 두고 있어서 항공사의 매출이 가장 높았다. 
+          <b>금천구</b>는 가산디지털단지를 끼고 있어서 대형 쇼핑센터의 매출이 가장 높고,
+          <b>구로구</b>는 음식점과 소매업을 제외후엔 일반, 치과, 한방병원의 매출이 가장 높았다. <br>
+          <b>관악구</b>는 서울대를 끼고 있어서인지, 학습지의 매출이 가장 높고,
+          <b>광진구</b>는 건국대 주변으로 번화가가 형성되어 있어서 기성복의 매출이 가장 높았다. 
+          <b>종로구</b>는 구로구와 마찬가지로 일반, 치과, 한방병원의 매출이 가장 높았다.
+          <b>중랑구</b>는 비디오/게임방의 매출이 가장 높았고,
+          <b>중구</b>는 택시의 매출이 가장 높았다. 이를 토대로 강북의 택시 집합소는 중구, 강남은 동작구로 예상 할 수 있었다. <br>
+          <b>마포구</b>는 홍익대를 기점으로 기성복의 매출이 가장 높았고,
+          <b>노원구</b>는 서울 시내 가장 많은 인구수를 보유하고 있어서 대형마트의 매출이 가장 높았다.
+          <b>서초구</b>는 고속버스터미널, 센트럴시티, 남부터미널을 기반으로 고속/시외버스의 매출이 가장 높았고,
+          <b>서대문구</b>는 연세 세브란스 병원 덕분에 종합병원의 매출이 가장 높았다. <br>
+          <b>성북구</b>는 비디오/게임방이 가장 높고,
+          <b>송파구</b>는 롯데시티를 기반으로 백화점의 매출이 가장 높았다. 
+          <b>성동구</b>는 성수 공단을 제치고 입시, 고시학원의 매출이 가장 높았다. 
+          <b>양천구</b>는 목동을 기반으로 입시, 고시학원의 매출이 가장 높고,
+          <b>용산구</b>는 역시 전자제품의 메출이 가장 높았으며,
+          <b>영등포구</b>는 여의도와 타임스퀘어를 기반으로 전자제품의 매출이 두드러졌다.
+        </div>
         <div v-for="i in top3Location.length" :key="top3Location[i-1][0]" style="display: inline-block;">
-          <!-- {{ top3Location[i-1][1] }} -->
-          <div class="report_box_top3_location_text" @click="showTop3Location(i)">
+          <div :id="`top3Btn${i}`" class="report_box_top3_location_text" @click="showTop3Location(i)">
             {{ top3Location[i-1][0] }}
           </div>
+        </div>
+        <div v-for="i in top3Location.length" :key="top3Location[i-1][2]" style="display: inline-block;">
           <img :id="`top3Location${i}`" :src="`${top3Location[i-1][1]}`" :alt="`${top3Location[i-1][2]}`" class="report_box_top3_location_imgs">
         </div>
         <!-- <img src="../../public/images/report/dobong_top3.png" alt="dobong_top3" class="report_box_location_imgs">
@@ -63,30 +126,6 @@
         <img src="../../public/images/report/yangcheon_top3.png" alt="yangcheon_top3" class="report_box_location_imgs">
         <img src="../../public/images/report/yongsan_top3.png" alt="yongsan_top3" class="report_box_location_imgs">
         <img src="../../public/images/report/youngdeungpo_top3.png" alt="youngdeungpo_top3" class="report_box_location_imgs"> -->
-
-        <img src="../../public/images/report/consumption_gender.png" alt="consumption_gender" class="report_box_location_imgs">
-        <img src="../../public/images/report/consumption_top3.png" alt="consumption_top3" class="report_box_location_imgs">
-        <div v-for="(value, i) in locationTabs" id="report_box_location_btn" :key="i">
-          <div :id="`locationBtn${i}`" class="report_box_location_btn_text" @click="showLocation(i)">
-            {{ value }} 지역순위
-          </div>
-        </div>
-        <div id="report_box_location_btn_reset">
-          <div id="report_box_location_btn_text_reset" @click="deleteLocation()">
-            초기화
-          </div>
-        </div>
-        <canvas v-if="locationFlag == true && locationReset == false" id="locationchart0" />
-        <canvas v-else-if="locationFlag == false && locationReset == false" id="locationchart1" />
-      </div>
-
-
-
-
-      <div id="section3">
-        <div class="sectionHeader">
-          상권 추천
-        </div>
       </div>
 
 
@@ -94,6 +133,12 @@
       <div id="section4">
         <div class="sectionHeader">
           체인점 비교
+        </div>
+        <div class="sectionDetail">
+          사업 형태별 평점과 체인 사업자의 평점 순위를 비교하였다. <br>
+          <b>형태별 분석</b>에서 체인점의 경우 대중화와 수익성을 목표로 두었기에 평점은 낮은 경향을 보였다. <br>
+          <b>체인점</b>의 경우 선택지가 다양하고 불호가 낮은 타는 베스킨라빈스가 4.0으로 1위를 차지하였고, 명랑핫도그가 3.8로 10위에 자리잡았다.
+          상위 10개 중 5개가 카페, 디저트류인걸로 보아 후식류 체인점의 강세가 두드러졌다. 그리고 미스사이공의 경우 가성비에서 고점을 받은걸로 보인다.
         </div>
         <div v-for="(value, i) in chainTabs" id="report_box_chain_btn" :key="i">
           <div :id="`chainBtn${i}`" class="report_box_chain_btn_text" @click="showChain(i)">
@@ -129,6 +174,13 @@
       <div id="section5">
         <div class="sectionHeader">
           업종별 경향 비교
+        </div>
+        <div class="sectionDetail">
+          초단기, 단기 경향을 수치화하여 그래프로 나타낸 것으로 업종별 경향을 파악할 수 있게 하였다. <br>
+          모든 업종에서 두드러지게 나타나는 특성은 9/13 추석을 기점으로 하락세에서 상승세로 변한다는 점이다. <br>
+          <b>한식, 양식, 일식, 중식, 패스트푸드</b>의 경우 단기간 초회복을 이루었고, <b>제과/아이스크림, 커피/음료</b>의 경우 꾸준한 회복세를 보였다.
+          <b>헬스장</b>의 경우 추석을 기점으로 수직상승을 이루었고, 정확히 한달 후 비슷한 경향을 보였다.
+          그리고 <b>숙박, 미용/피부</b>의 경우 추석 이후 두드러지는 성장은 없었지만 주단위의 규칙성을 보여주었다.
         </div>
         <div v-for="(value, i) in trendTabs" id="report_box_trend_btn" :key="i">
           <div :id="`trendBtn${i}`" class="report_box_trend_btn_text" @click="showTrends(value)">
@@ -247,6 +299,7 @@ export default {
     })
   },
   async mounted() {
+    this.checkNavbar()
     for (let i = 0; i < 60; ++i) {
       this.lowerLine.push(20)
       this.upperLine.push(80)
@@ -255,7 +308,11 @@ export default {
     await this.goChainChartData()
     await this.goLocationChartData()
   },
+  destroyed() {
+    this.checkNavbar()
+  },
   methods: {
+        ...mapActions("data", ["checkNavbar"]),
     ...mapActions("data", ["goTrendChartData"]),
     ...mapActions("data", ["goChainChartData"]),
     ...mapActions("data", ["goLocationChartData"]),
@@ -678,7 +735,15 @@ export default {
     },
     showTop3Location(i) {
       var target = document.getElementById(`top3Location${i}`)
-      console.log(target.style.display)
+      var target2 = document.getElementById(`top3Btn${i}`)
+      // console.log(target2.style.color)
+      if (target2.style.color == "") {
+        target2.style.color = "white"
+        target2.style.backgroundColor = "black"
+      } else {
+        target2.style.color = ""
+        target2.style.backgroundColor = ""
+      }
       if (target.style.display) {
         target.style.display = ""
       } else {
@@ -709,6 +774,8 @@ export default {
 }
 #report_docs {
   padding: 40px;
+  text-align: center;
+  background-color: white;
 }
 #report_header {
   border: 5px solid black;
@@ -756,7 +823,11 @@ export default {
   font-weight: 600;
   margin: 40px 0 10px 0
 }
-
+.sectionDetail {
+  text-align: start;
+  font-size: 1.5vw;
+  margin-left: 20px;
+}
 #report_box_trend_btn_all {
   display: inline-block;
   width: 25vw;

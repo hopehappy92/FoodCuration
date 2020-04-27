@@ -16,7 +16,11 @@ const state = {
     address: "",
     lat: 0.0,
     lng: 0.0,
-    categories: []
+    categories: [],
+    images: [],
+    url: "",
+    reviewCount: 0,
+    avgScore: 0,
   },
   isStaff: false,
   userReviewList: [],
@@ -296,15 +300,13 @@ const actions = {
     // console.log(append)
     // console.log("data upper ", params)
     const resp = await api.getUserReview(params);
-    // console.log(resp.data)
+    console.log(resp.data)
     var reviews = []
     if (resp.data.results == false) {
       commit("setUserReviewList", reviews)
       return
     }
 
-    var sysdate = new Date(resp.data.results[0].reg_time)
-    // console.log(sysdate)
     function date_to_str(format) {
       var year = format.getFullYear();
       var month = format.getMonth() + 1;
@@ -319,7 +321,6 @@ const actions = {
       if (sec < 10) sec = '0' + sec;
       return year + "-" + month + "-" + date + " " + hour + ":" + min + ":" + sec;
     }
-    sysdate = date_to_str(sysdate)
 
     reviews = resp.data.results.map(d => ({
       id: d.id,
@@ -328,7 +329,7 @@ const actions = {
       user: d.user,
       score: d.score,
       content: d.content,
-      reg_time: sysdate,
+      reg_time: date_to_str(new Date(d.reg_time)),
       categories: d.category_list
     }));
 

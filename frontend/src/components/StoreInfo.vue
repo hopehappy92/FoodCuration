@@ -70,6 +70,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import http from "../api/http"
 // import { mdiHanger } from "@mdi/js";
 import axios from "axios";
 export default {
@@ -123,8 +124,8 @@ export default {
     },
     submit() {
       console.log(this.userId, this.$route.params.storeId);
-      axios
-        .post(`https://i02d106.p.ssafy.io:8765/api/store_reviews`, {
+      http
+        .post(`/api/store_reviews`, {
           store: this.$route.params.storeId,
           user: this.userId,
           score: this.score,

@@ -1,6 +1,6 @@
 <template>
-  <div id="report_main" :style="flag == true ? mainStyleTrue : mainStyleFalse">
-    <div v-if="flag==true" id="report_box">
+  <div id="report_main">
+    <div id="report_box">
       <div class="container-text">
         Report
       </div>
@@ -23,31 +23,16 @@
         </div>
       </div>
     </div>
-    <div v-else id="report_report">
-      <reportPage />
-    </div>
   </div>
 </template>
 
 <script>
-import ReportPage from "../components/ReportPage"
-
 import router from "../router"
 import { mapActions } from "vuex";
 
 export default {
-  components: {
-    ReportPage
-  },
   data() {
     return {
-      flag: true,
-      mainStyleTrue: {
-        backgroundColor: "black"
-      },
-      mainStyleFalse: {
-        backgroundColor: "white"
-      },
       isMobile: false
     }
   },
@@ -68,7 +53,7 @@ export default {
       router.push("/")
     },
     goReportPage() {
-      this.flag = false
+      router.push("/reportpage")
     },
     onResponsiveInverted() {
       if (window.innerWidth < 600) {
@@ -85,6 +70,7 @@ export default {
 #report_main {
   text-align: center;
   height: 100%;
+  background-color: black;
 }
 #report_box {
   border: 5px solid;
