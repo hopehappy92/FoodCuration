@@ -15,7 +15,7 @@
 import RouteView from "@/components/RouteView";
 import Nav from "@/components/Nav";
 import GoTop from "@/components/GoTop";
-import { mapState, mapActions } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -25,17 +25,14 @@ export default {
     Nav,
     GoTop
   },
-  destroyed() {
-    this.logout()
+  created() {
+    localStorage.clear()
   },
   computed: {
     ...mapState({
       onNav: state => state.data.onNavFlag
     })
   },
-  methods: {
-    ...mapActions("data", ["logout"])
-  }
 };
 </script>
 

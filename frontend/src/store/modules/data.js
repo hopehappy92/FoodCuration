@@ -102,7 +102,79 @@ const state = {
   locationTabs: [
     "나이대별",
     "시간대별"
-  ]
+  ],
+  generationChartData: {
+    "20대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    },
+    "30대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    },
+    "40대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    },
+    "50대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    }
+  },
+  generationTabs: [
+    "20대",
+    "30대",
+    "40대",
+    "50대"
+  ],
 };
 
 // actions
@@ -743,6 +815,32 @@ const actions = {
       state.locationChartData[`${state.locationTabs[i]}`]["중구"] = dataset[`${state.locationTabs[i]}`]["중구"]
     }
     // console.log(state.locationChartData)
+  },
+  
+  async goGenerationChartData({commit}) {
+    // console.log("aaaaaaaaaaaaaa")
+    const res = await api.getGenerationChartData()
+    // console.log(res)
+    const dataset = res.data
+    // console.log(dataset)
+    // console.log(state.generationTabs)
+    for (let i = 0; i <state.generationTabs.length; ++i) {
+      state.generationChartData[`${state.generationTabs[i]}`]["교육비"] = dataset[`${state.generationTabs[i]}`]["교육비"]
+      state.generationChartData[`${state.generationTabs[i]}`]["미용"] = dataset[`${state.generationTabs[i]}`]["미용"]
+      state.generationChartData[`${state.generationTabs[i]}`]["보험료"] = dataset[`${state.generationTabs[i]}`]["보힘료"]
+      state.generationChartData[`${state.generationTabs[i]}`]["생활용품"] = dataset[`${state.generationTabs[i]}`]["생활용품"]
+      state.generationChartData[`${state.generationTabs[i]}`]["세금 및 기타 요금"] = dataset[`${state.generationTabs[i]}`]["세금 및 기타 요금"]
+      state.generationChartData[`${state.generationTabs[i]}`]["식생활"] = dataset[`${state.generationTabs[i]}`]["식생활"]
+      state.generationChartData[`${state.generationTabs[i]}`]["여행 및 숙박"] = dataset[`${state.generationTabs[i]}`]["여행 및 숙박"]
+      state.generationChartData[`${state.generationTabs[i]}`]["유흥"] = dataset[`${state.generationTabs[i]}`]["유흥"]
+      state.generationChartData[`${state.generationTabs[i]}`]["의료"] = dataset[`${state.generationTabs[i]}`]["의료"]
+      state.generationChartData[`${state.generationTabs[i]}`]["자동차/주유"] = dataset[`${state.generationTabs[i]}`]["자동차/주유"]
+      state.generationChartData[`${state.generationTabs[i]}`]["취미"] = dataset[`${state.generationTabs[i]}`]["취미"]
+      state.generationChartData[`${state.generationTabs[i]}`]["택시비"] = dataset[`${state.generationTabs[i]}`]["택시비"]
+      state.generationChartData[`${state.generationTabs[i]}`]["통신비"] = dataset[`${state.generationTabs[i]}`]["통신비"]
+      state.generationChartData[`${state.generationTabs[i]}`]["패션잡화"] = dataset[`${state.generationTabs[i]}`]["패션잡화"]
+    }
+    // console.log(state.generationChartData)
   }
 };
 

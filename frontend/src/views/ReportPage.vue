@@ -12,18 +12,53 @@
     </div>
     <div id="report_tabbox">
       <div v-for="(value, i) in tabs" :key="i" class="report_tab">
-        <a :href="`#section${i+1}`" class="report_tab_a">
-          <!-- <a href="#section5"> -->
+        <a :href="`#section${i}`" class="report_tab_a">
           {{ value }}
         </a>
       </div>
     </div>
     <div id="report_box">
-      <div id="section1">
-        <div id="section1Header">
+      <div id="section0">
+        <div id="section0Header">
           개요
         </div>
-        
+        <div id="WC">
+          asdf
+        </div>
+        <div class="sectionDetail">
+          ['카페', '커피', '빵', '칼', '까스', '돈', '돈까스', '토', '마카', '케', '냉', '층', '빔', '떡', '테리어', '박', '인테리어', '호', '석', '비빔', '창', '술', '마카롱
+          ', '닭', '향', '만두', '음료', '국수', '락', '관', '티', '밀', '순대', '작', '림', '스타', '순', '근처', '칼국수', '급', '맥', '냉면', '브', '레', '골', '최고', '노
+          ', '떼', '아주', '주차', '막', '즐', '요리', '떡볶이', '디', '득', '볶이', '파스', '꼭', '파스타', '럭', '어가', '영', '이크', '해물', '글', '양념', '목', '다가', '맥주', '위치', '촉', '김치', '하나', '베', '코', '수육', '행', '테이블', '라떼', '백', '크림', '갈비', '능', '식이', '바로', '디저트', '산', '혼', '짐', '장님', '삼
+          ', '머', '튀김', '사진', '곱', '케이크', '예약', '좌', '주시', '날', '등', '볼', '국밥', '가능', '우동', '구이', '내부', '복', '육수', '송', '온', '제주', '카레', '종', '잔', '대기', '연', '밑', '담', '류', '회', '며', '사장', '완', '매우', '키', '안주', '추가', '데이트', '초', '찍', '찌', '아이', '볶음', '품', '외', '좌석', '통', '재방', '짬', '민', '밑반찬', '충', '츠', '콤', '짬뽕', '움', '인분', '하니', '재료', '쫀득', '블', '무난', '만족', '진짜', '보통', '어보', '엄', '얼', '변', '쌀', '돈가스', '가스', '공간', '곱창', '꼬', '광', '뽕', '반찬', '정식', '짜장', '이지', '의사', '숨', '가면', '채', '고급', '속', '동네', '볶음밥', '찜', '둘', '새
+          우', '삭', '포', '약', '화', '자리', '찌개', '기본', '보고', '고소', '적당', '태', '준', '셔', '면서', '깃', '팅', '루', '소스', '대로', '혼자', '버', '자주', '식사
+          ', '편이', '또', '신선', '리가', '점심', '전체', '간이', '식당', '가게', '모두', '김밥', '잡', '접', '메밀', '테이', '쫄', '대비', '치즈', '색', '골목', '애', '맛나
+          ', '군', '줄', '주차장', '종류', '라서', '쉬', '녀', '알', '콩', '물이', '설', '수동', '생선', '자기', '친구', '걸', '전문', '된장', '기름', '취', '돼지', '쪽', '처
+          음', '손님', '침', '해주', '넉', '웨이팅', '다음', '다만', '만원', '특별', '가지', '코스', '업', '앞', '웨이', '퀄리티', '최', '누', '바다', '퀄리', '꽃', '울', '바
+          지', '옥', '손', '체적', '탕', '한번', '다시', '바지락', '수도', '포장', '발', '유명', '냄새', '어도', '조림', '부터', '꽤', '덜', '먹기', '특이', '힘', '기도', '옛
+          날', '가족', '탕수육', '쫄깃', '죽']
+        </div>
+      </div>
+
+
+      <div id="section1">
+        <div class="sectionHeader">
+          나이별 소비 순위
+        </div>
+        <b />
+        <div class="sectionDetail">
+          <b>20대</b> : 패션, 미용, 취미, 유흥, 등 여가활동에 많은 금액을 투자함. 자기 보유 차량이 없는 특징때문에 택시비에 많은 지출을 함. 자기개발, 타다, 카카오 모빌리티 등에 높은 관심도를 보일 것. <br>
+          <b>30대</b> : 보험, 자차관련 지출이 폭발적으로 증가하고 생활 관련 지출이 증가함. 사회인으로서 생활이 안정되면서 서비스들에 갖는 관심도가 증가함. <br>
+          <b>40대</b> : 20대에 관심을 가졌던 부분들에서 가장 큰 폭으로 하락한 나이대. 교육비, 보험료 지출이 다시 한 번 상승하는 모습이며, 이는 자식들의 지출을 대변함. 가족을 자극하는 마케팅이 필요함. <br>
+          <b>50대</b> : 전체적으로 40대와 비슷한 양상을 보이지만 소득이 감소하며 이는 통신비, 취미, 미용 관련 비용이 하락함.
+        </div>
+        <div v-for="(value, i) in generationTabs" id="report_box_generation_btn" :key="value">
+          <div :id="`generationBtn${i}`" class="report_box_generation_btn_text" @click="showGeneration(i)">
+            {{ value }}
+          </div>
+        </div>
+        <div v-for="(value, i) in generationTabs" id="report_box_generation_charts" :key="i">
+          <canvas :id="`generationChart${i}`" class="report_box_generation_chart" />
+        </div>
       </div>
       
 
@@ -49,13 +84,8 @@
             {{ value }} 지역순위
           </div>
         </div>
-        <div id="report_box_location_btn_reset">
-          <div id="report_box_location_btn_text_reset" @click="deleteLocation()">
-            초기화
-          </div>
-        </div>
-        <canvas v-if="locationFlag == true && locationReset == false" id="locationchart0" />
-        <canvas v-else-if="locationFlag == false && locationReset == false" id="locationchart1" />
+        <canvas id="locationchart0" class="report_box_location_chart" />
+        <canvas id="locationchart1" class="report_box_location_chart" />
       </div>
 
 
@@ -63,7 +93,7 @@
 
       <div id="section3">
         <div class="sectionHeader">
-          상권 추천
+          상권 분석
         </div>
         <div class="sectionDetail">
           슈퍼마켓, 편의점 등 음식점과 소매업을 제외하고 업종 형태별 매출 순위를 지역별로 분석하였다. <br>
@@ -148,9 +178,6 @@
         <div id="report_box_chain_btn_text_detail" @click="showChainDetail()">
           그래프 보는법
         </div>
-        <div id="report_box_chain_btn" class="report_box_chain_btn_text" @click="deleteChain()">
-          초기화
-        </div>
         <div v-if="chainDetail">
           <div id="report_box_chain_read_box">
             <b style="font-size: 32px; color: white;">비체인 / 체인 / 전체 평점비교</b><br>
@@ -167,8 +194,8 @@
             </div>
           </div>
         </div>
-        <canvas v-if="chainFlag == true && chainReset == false" id="chainchart1" class="report_box_chain_chart" />
-        <canvas v-else-if="chainFlag == false && chainReset == false" id="chainchart2" class="report_box_chain_chart" />
+        <canvas id="chainchart1" class="report_box_chain_chart" />
+        <canvas id="chainchart2" class="report_box_chain_chart" />
       </div>
 
       <div id="section5">
@@ -183,23 +210,13 @@
           그리고 <b>숙박, 미용/피부</b>의 경우 추석 이후 두드러지는 성장은 없었지만 주단위의 규칙성을 보여주었다.
         </div>
         <div v-for="(value, i) in trendTabs" id="report_box_trend_btn" :key="i">
-          <div :id="`trendBtn${i}`" class="report_box_trend_btn_text" @click="showTrends(value)">
+          <div :id="`trendBtn${i}`" class="report_box_trend_btn_text" @click="showTrends(i)">
             {{ value }}
-          </div>
-        </div>
-        <div id="report_box_trend_btn_all">
-          <div class="report_box_trend_btn_text" @click="showTrends('all')">
-            전체 비교
           </div>
         </div>
         <div id="report_box_trend_btn_all">
           <div id="report_box_trend_btn_text_detail" @click="showTrendsDetail()">
             그래프 보는법
-          </div>
-        </div>
-        <div id="report_box_trend_btn_all">
-          <div class="report_box_trend_btn_text" @click="deleteTrends()">
-            초기화
           </div>
         </div>
         <div v-if="trendsDetail == true" id="report_box_trends_read">
@@ -220,15 +237,11 @@
           </div>
         </div>
         <div>
-          <canvas v-if="trendFlag == false && trendreset == false" :id="`trendchart${trendNumber}`" class="report_box_trend_chart" />
-          <div v-else-if="trendFlag == true && trendreset == false">
-            <div v-for="(value, i) in trendTabs" id="report_box_trend_all_chart" :key="i">
-              <canvas :id="`trendchart${i}`" class="report_box_trend_chart" />
-            </div>
+          <div v-for="(value, i) in trendTabs" id="report_box_trend_all_chart" :key="i">
+            <canvas :id="`trendchart${i}`" class="report_box_trend_chart" />
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -242,6 +255,7 @@ export default {
     return {
       tabs: [
         "개요",
+        "나이별",
         "지역별",
         "상권 추천",
         "체인점",
@@ -276,16 +290,8 @@ export default {
       ],
       lowerLine: [],
       upperLine: [],
-      trendNumber: -1,
-      trendFlag: -1,
-      trendreset: false,
       trendsDetail: false,
-      chainFlag: -1,
-      chainReset: true,
       chainDetail: false,
-      locationFlag: -1,
-      locationReset: false,
-      locationDetail: false,
     }
   },
   computed: {
@@ -295,11 +301,50 @@ export default {
       chainChartData: state => state.data.chainChartData,
       chainTabs: state => state.data.chainTabs,
       locationChartData: state => state.data.locationChartData,
-      locationTabs: state => state.data.locationTabs
+      locationTabs: state => state.data.locationTabs,
+      generationChartData: state => state.data.generationChartData,
+      generationTabs: state => state.data.generationTabs,
     })
   },
   async mounted() {
     this.checkNavbar()
+    console.log("워드클라우드");
+    setTimeout(() => {
+      var tags = [
+        '카페', '커피', '빵', '칼', '까스', '돈', '돈까스', '토', '마카', '케', '냉', '층', 
+        '빔', '떡', '테리어', '박', '인테리어', '호', '석', '비빔', '창', '술', '마카롱', '닭',
+        '향', '만두', '음료', '국수', '락', '관', '티', '밀', '순대', '작', '림', '스타', '순',
+        '근처', '칼국수', '급', '맥', '냉면', '브', '레', '골', '최고', '노', '떼', '아주', '주차',
+        '막', '즐', '요리', '떡볶이', '디', '득', '볶이', '파스', '꼭', '파스타', '럭', '어가', '영', 
+        '이크', '해물', '글', '양념', '목', '다가', '맥주', '위치', '촉', '김치', '하나', '베', '코', 
+        '수육', '행', '테이블', '라떼', '백', '크림', '갈비', '능', '식이', '바로', '디저트', '산', '혼', 
+        '짐', '장님', '삼', '머', '튀김', '사진', '곱', '케이크', '예약', '좌', '주시', '날', '등', '볼', 
+        '국밥', '가능', '우동', '구이', '내부', '복', '육수', '송', '온', '제주', '카레', '종', '잔', '대기', 
+        '연', '밑', '담', '류', '회', '며', '사장', '완', '매우', '키', '안주', '추가', '데이트', '초', '찍', 
+        '찌', '아이', '볶음', '품', '외', '좌석', '통', '재방', '짬', '민', '밑반찬', '충', '츠', '콤', '짬뽕', 
+        '움', '인분', '하니', '재료', '쫀득', '블', '무난', '만족', '진짜', '보통', '어보', '엄', '얼', '변', '쌀', 
+        '돈가스', '가스', '공간', '곱창', '꼬', '광', '뽕', '반찬', '정식', '짜장', '이지', '의사', '숨', '가면', '채', 
+        '고급', '속', '동네', '볶음밥', '찜', '둘', '새우', '삭', '포', '약', '화', '자리', '찌개', '기본', '보고', 
+        '고소', '적당', '태', '준', '셔', '면서', '깃', '팅', '루', '소스', '대로', '혼자', '버', '자주', '식사', 
+        '편이', '또', '신선', '리가', '점심', '전체', '간이', '식당', '가게', '모두', '김밥', '잡', '접', '메밀', 
+        '테이', '쫄', '대비', '치즈', '색', '골목', '애', '맛나', '군', '줄', '주차장', '종류', '라서', '쉬', '녀', 
+        '알', '콩', '물이', '설', '수동', '생선', '자기', '친구', '걸', '전문', '된장', '기름', '취', '돼지', '쪽', 
+        '처음', '손님', '침', '해주', '넉', '웨이팅', '다음', '다만', '만원', '특별', '가지', '코스', '업', '앞', '웨이', 
+        '퀄리티', '최', '누', '바다', '퀄리', '꽃', '울', '바지', '옥', '손', '체적', '탕', '한번', '다시', '바지락', '수도', 
+        '포장', '발', '유명', '냄새', '어도', '조림', '부터', '꽤', '덜', '먹기', '특이', '힘', '기도', '옛날', '가족', '탕수육', '쫄깃', '죽'
+        ]
+      console.log(tags);
+      var word_array = [];
+      for (var i = 0; i < tags.length; i++) {
+        let tmp = { text: tags[i], weight: 300 - i * 1.5 };
+        word_array.push(tmp);
+      }
+      console.log(word_array);
+      $(function() {
+        // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
+        $("#WC").jQCloud(word_array);
+      });
+    }, 1000)
     for (let i = 0; i < 60; ++i) {
       this.lowerLine.push(20)
       this.upperLine.push(80)
@@ -307,15 +352,18 @@ export default {
     await this.goTrendChartData()
     await this.goChainChartData()
     await this.goLocationChartData()
+    await this.goGenerationChartData()
+      
   },
   destroyed() {
     this.checkNavbar()
   },
   methods: {
-        ...mapActions("data", ["checkNavbar"]),
+    ...mapActions("data", ["checkNavbar"]),
     ...mapActions("data", ["goTrendChartData"]),
     ...mapActions("data", ["goChainChartData"]),
     ...mapActions("data", ["goLocationChartData"]),
+    ...mapActions("data", ["goGenerationChartData"]),
     goHome() {
       router.push("/")
     },
@@ -326,15 +374,10 @@ export default {
         this.trendsDetail = false
       }
     },
-    changeTrendNumber(i) {
-      this.trendNumber = i
-    },
     drawLineChart(i) {
-      var ctx = document.getElementById(`trendchart${this.trendNumber}`).getContext('2d');
+      var ctx = document.getElementById(`trendchart${i}`).getContext('2d');
       var chart = new Chart(ctx, {
-          // The type of chart we want to create
           type: 'line',
-          // The data for our dataset
           data: {
               labels: this.trendChartData[`${this.trendTabs[i]}`]["label"],
               datasets: [{
@@ -372,7 +415,6 @@ export default {
               }
               ],
           },
-          // Configuration options go here
           options: {
             title: {
                 display: true,
@@ -393,61 +435,21 @@ export default {
           }
       });
     },
-    deleteTrends() {
-      // console.log("aaaaaaaaaaa")
-      this.trendreset = true
-      for (let i = 0; i < this.trendTabs.length; ++i) {
-        let target = document.getElementById(`trendBtn${i}`)
-        target.style = ""
-        target = document.getElementById("report_box_trend_btn_all")
-        target.style = ""
-      }
-    },
-    setTrendReset() {
-      this.trendreset = true
-    },
-    async showTrends(value) {
-      await this.setTrendReset()
-      this.trendreset = false
-      // console.log(this.chartData)
-      if (value == "all") {
-        this.trendFlag = true
-        for (let i = 0; i < this.trendTabs.length; ++i) {
-          // console.log(i)
-          await this.changeTrendNumber(i)
-          this.drawLineChart(i)
-        }
-        let target = document.getElementById("report_box_trend_btn_all")
-        // console.log(target)
-        if (target.style.length == 0) {
-          target.style.color = "white"
-          target.style.backgroundColor = "black"
-        }
-        for (let i = 0; i < this.trendTabs.length; ++i) {
-          target = document.getElementById(`trendBtn${i}`)
-          target.style = ""
-        }
+    async showTrends(idx) {
+      console.log(idx)
+      var target = document.getElementById(`trendBtn${idx}`)
+      if (target.style.color == "") {
+        target.style.color = "white"
+        target.style.backgroundColor = "black"
+        document.getElementById(`trendchart${idx}`).style.display = "block"
       } else {
-        this.trendFlag = false
-        for (let i = 0; i < this.trendTabs.length; ++i) {
-          if (this.trendTabs[i] == value) {
-            await this.changeTrendNumber(i)
-            this.drawLineChart(i)
-            let target = document.getElementById(`trendBtn${i}`)
-            // console.log(target)
-            if (target.style.length == 0) {
-              target.style.color = "white"
-              target.style.backgroundColor = "black"
-            }
-          } else {
-            let target = document.getElementById(`trendBtn${i}`)
-            target.style = ""
-            target = document.getElementById("report_box_trend_btn_all")
-            target.style = ""
-          }
-        }
+        target.style.color = ""
+        target.style.backgroundColor = ""
+        document.getElementById(`trendchart${idx}`).style.display = "none"
       }
+      this.drawLineChart(idx)
     },
+    
     showChainDetail() {
       if (this.chainDetail == false) {
         this.chainDetail = true
@@ -455,43 +457,18 @@ export default {
         this.chainDetail = false
       }
     },
-    changeChainFlag(idx) {
-      if (idx == 0) {
-        this.chainFlag = true
-      } else {
-        this.chainFlag = false
-      }
-    },
-    setChainReset() {
-      this.chainReset = true
-    },
-    deleteChain() {
-      this.chainReset = true
-      for (let i = 0; i < this.chainTabs.length; ++i) {
-        let target = document.getElementById(`chainBtn${i}`)
-        target.style = ""
-        target = document.getElementById("report_box_chain_btn")
-        target.style = ""
-      }
-    },
     async showChain(idx) {
-      await this.setChainReset()
-      this.chainReset = false
-      // console.log(idx)
-
-      if (idx == 0) {
-        var target = document.getElementById(`chainBtn0`)
-        var nontarget = document.getElementById(`chainBtn1`)
+      var target = document.getElementById(`chainBtn${idx}`)
+      if (target.style.color == "") {
+        target.style.color = "white"
+        target.style.backgroundColor = "black"
+        document.getElementById(`chainchart${idx+1}`).style.display = "block"
       } else {
-        target = document.getElementById(`chainBtn1`)
-        nontarget = document.getElementById(`chainBtn0`)
-      }
-      target.style.color = "white"
-      target.style.backgroundColor = "black"
-      nontarget.style = ""
-      
+        target.style.color = ""
+        target.style.backgroundColor = ""
+        document.getElementById(`chainchart${idx+1}`).style.display = "none"
+      }      
       if (idx === 0) {
-        await this.changeChainFlag(idx)
         var ctx = document.getElementById(`chainchart1`).getContext('2d');
         var chart = new Chart(ctx, {
             type: 'bar',
@@ -513,7 +490,6 @@ export default {
                   data: [this.chainChartData[`${this.chainTabs[0]}`]["score"][2]],
                 }],
             },
-            // Configuration options go here
             options: {
               scales: {
                 yAxes: [{
@@ -527,7 +503,6 @@ export default {
             }
         });
       } else {
-        await this.changeChainFlag(idx)
         var ctx2 = document.getElementById(`chainchart2`).getContext('2d');
         var chart2 = new Chart(ctx2, {
             type: 'bar',
@@ -584,7 +559,6 @@ export default {
                   data: [this.chainChartData[`${this.chainTabs[1]}`]["score"][9]],
                 }],
             },
-            // Configuration options go here
             options: {
               scales: {
                 yAxes: [{
@@ -599,40 +573,11 @@ export default {
         });
       }
     },
-    
-    // showChainDetail() {
-    //   if (this.chainDetail == false) {
-    //     this.chainDetail = true
-    //   } else {
-    //     this.chainDetail = false
-    //   }
-    // },
-    changeLocationFlag(idx) {
-      if (idx == 0) {
-        this.locationFlag = true
-      } else {
-        this.locationFlag = false
-      }
-    },
-    setLocationReset() {
-      this.locationReset = true
-    },
-    deleteLocation() {
-      this.locationReset = true
-      for (let i = 0; i < this.locationTabs.length; ++i) {
-        let target = document.getElementById(`locationBtn${i}`)
-        target.style = ""
-        target = document.getElementById("report_box_location_btn")
-        target.style = ""
-      }
-    },
 
     drawLocationChart(i) {
       var ctx = document.getElementById(`locationchart${i}`).getContext('2d');
       var chart = new Chart(ctx, {
-          // The type of chart we want to create
           type: 'line',
-          // The data for our dataset
           data: {
               labels: this.locationChartData[`${this.locationTabs[i]}`]["index"],
               datasets: [{
@@ -678,7 +623,6 @@ export default {
               }
               ],
           },
-          // Configuration options go here
           options: {
             title: {
                 display: true,
@@ -693,7 +637,6 @@ export default {
                 },
               }],
               yAxes: [{
-                // display: false,
                 gridLines: {
                   borderDash: [5]
                 },
@@ -707,7 +650,7 @@ export default {
             },
             elements: {
                 line: {
-                    tension: 0 // disables bezier curves
+                    tension: 0
                 }
             }
           }
@@ -715,28 +658,21 @@ export default {
     },
 
     async showLocation(idx) {
-      await this.setLocationReset()
-      this.locationReset = false
-      await this.changeLocationFlag(idx)
-      if (idx == 0) {
-        var target = document.getElementById(`locationBtn0`)
-        var nontarget = document.getElementById(`locationBtn1`)
+      var target = document.getElementById(`locationBtn${idx}`)
+      if (target.style.color == "") {
+        target.style.color = "white"
+        target.style.backgroundColor = "black"
+        document.getElementById(`locationchart${idx}`).style.display = "block"
       } else {
-        target = document.getElementById(`locationBtn1`)
-        nontarget = document.getElementById(`locationBtn0`)
+        target.style.color = ""
+        target.style.backgroundColor = ""
+        document.getElementById(`locationchart${idx}`).style.display = "none"
       }
-      target.style.color = "white"
-      target.style.backgroundColor = "black"
-      nontarget.style = ""
-      // console.log(this.locationReset)
-      // console.log(this.locationChartData)
-      // console.log(this.locationTabs)
       this.drawLocationChart(idx)
     },
     showTop3Location(i) {
       var target = document.getElementById(`top3Location${i}`)
       var target2 = document.getElementById(`top3Btn${i}`)
-      // console.log(target2.style.color)
       if (target2.style.color == "") {
         target2.style.color = "white"
         target2.style.backgroundColor = "black"
@@ -749,9 +685,84 @@ export default {
       } else {
         target.style.display = "inline-block"
       }
-      // console.log(target.style.display)
-      // target.style.display = "inline-block"
-      // console.log(target.style.display)
+    },
+
+    drawGenerationChart(idx) {
+      var ctx = document.getElementById(`generationChart${idx}`).getContext('2d');
+      var chart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: [
+              "교육비", "미용", "보험료", "생활용품", "세금 및 기타 요금", "식생활", "여행 및 숙박", "유흥",
+              "의료", "자동차/주유", "취미", "택시비", "통신비", "패션잡화"
+            ],
+              datasets: [{
+                backgroundColor: [
+                  'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple',
+                  'pink', 'yellogreen', 'forestgreen', 'tomato', 'gold', 'olive', 'brown'
+                ],
+                data: [
+                  (this.generationChartData[`${this.generationTabs[idx]}`]["교육비"][0]),
+                  this.generationChartData[`${this.generationTabs[idx]}`]["미용"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["보험료"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["생활용품"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["세금 및 기타 요금"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["식생활"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["여행 및 숙박"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["유흥"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["의료"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["자동차/주유"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["취미"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["택시비"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["통신비"][0],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["패션잡화"][0]
+                ],
+              },
+              {
+                backgroundColor: [
+                  'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple',
+                  'pink', 'yellogreen', 'forestgreen', 'tomato', 'gold', 'olive', 'brown'
+                ],
+                data: [
+                  (this.generationChartData[`${this.generationTabs[idx]}`]["교육비"][1]),
+                  this.generationChartData[`${this.generationTabs[idx]}`]["미용"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["보험료"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["생활용품"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["세금 및 기타 요금"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["식생활"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["여행 및 숙박"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["유흥"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["의료"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["자동차/주유"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["취미"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["택시비"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["통신비"][1],
+                  this.generationChartData[`${this.generationTabs[idx]}`]["패션잡화"][1]
+                ],
+              }],
+          },
+          options: {
+            title: {
+                display: true,
+                text: this.generationTabs[idx],
+                fontSize: 24,
+                padding: 20,
+            },
+          }
+      });
+    },
+    showGeneration(idx) {
+      var target = document.getElementById(`generationBtn${idx}`)
+      if (target.style.color == "") {
+        target.style.color = "white"
+        target.style.backgroundColor = "black"
+        document.getElementById(`generationChart${idx}`).style.display = "block"
+      } else {
+        target.style.color = ""
+        target.style.backgroundColor = ""
+        document.getElementById(`generationChart${idx}`).style.display = "none"
+      }
+      this.drawGenerationChart(idx)
     },
   }
 }
@@ -787,12 +798,12 @@ export default {
 }
 .report_tab {
   display: inline-block;
-  width: 200px;
-  height: 60px;
-  font-size: 24px;
+  width: 13vw;
+  height: 4vw;
+  font-size: 1.8vw;
+  font-weight: 500;
   padding: 10px;
   border: 1px solid black;
-  /* cursor: pointer; */
 }
 .report_tab_a {
   text-decoration: none;
@@ -811,7 +822,7 @@ export default {
   height: 100%;
   padding: 20px;
 }
-#section1Header {
+#section0Header {
   text-align: start;
   font-size: 2.5vw;
   font-weight: 600;
@@ -830,7 +841,7 @@ export default {
 }
 #report_box_trend_btn_all {
   display: inline-block;
-  width: 25vw;
+  width: 18vw;
   border: 1px solid black;
   padding: 2px;
   font-size: 1.3vw;
@@ -839,7 +850,7 @@ export default {
 #report_box_trend_btn {
   display: inline-block;
   border: 1px solid black;
-  width: 15vw;
+  width: 18vw;
   font-size: 1.3vw;
   padding: 2px;
 }
@@ -853,8 +864,11 @@ export default {
 .report_box_trend_chart {
   border: 1px solid black;
   margin: 10px auto;
+  width: 100%;
+  display: none;
 }
 #report_box_trend_btn_text_detail {
+  width: 18vw;
   cursor: pointer;
   background-color: gray;
   color: white;
@@ -867,14 +881,14 @@ export default {
   padding: 20px;
 }
 
-#report_box_trend_all_chart {
+/* #report_box_trend_all_chart {
   display: inline-block;
   width: 38vw;
-}
+} */
 #report_box_chain_btn {
   display: inline-block;
   border: 1px solid black;
-  width: 18vw;
+  width: 25vw;
   font-size: 1.3vw;
   padding: 2px;
 }
@@ -886,13 +900,15 @@ export default {
   color: white;
 }
 .report_box_chain_chart {
+  display: none;
+  width: 100%;
   border: 1px solid black;
-  margin: 10px auto;
+  margin-top: 10px;
 }
 #report_box_chain_btn_text_detail {
   display: inline-block;
   border: 1px solid black;
-  width: 18vw;
+  width: 25vw;
   font-size: 1.3vw;
   padding: 2px;
   background-color: gray;
@@ -909,7 +925,7 @@ export default {
 #report_box_location_btn {
   display: inline-block;
   border: 1px solid black;
-  width: 25vw;
+  width: 35vw;
   font-size: 1.3vw;
   padding: 2px;
 }
@@ -945,5 +961,34 @@ export default {
   border: 1px solid black;
   width: 15vw;
   display: inline-block;
+}
+#report_box_generation_btn {
+  display: inline-block;
+  border: 1px solid black;
+  width: 18vw;
+  font-size: 1.3vw;
+  padding: 2px;
+}
+.report_box_generation_btn_text {
+  cursor: pointer;
+}
+.report_box_generation_btn_text:hover {
+  background-color: black;
+  color: white;
+}
+#report_box_generation_charts {
+  width: 100%;
+}
+.report_box_generation_chart {
+  display: none;
+  border: 1px solid black;
+  margin-top: 10px;
+  width: 100%;
+}
+.report_box_location_chart {
+  display: none;
+  width: 100%;
+  border: 1px solid black;
+  margin-top: 10px;
 }
 </style>

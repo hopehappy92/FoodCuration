@@ -40,7 +40,7 @@ export default {
     return http.get(`${apiUrl}/get_store_reviews_by_store_id/${params}`, params)
   },
   writeReview(params) {
-    return http.post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, params)
+    return http.post(`${apiUrl}/store_reviews`, params)
   },
   setUserCategory(params) {
     const headers = {
@@ -69,5 +69,8 @@ export default {
   },
   getRecommendStore(params) {
     return http.get(`${apiUrl}/recommend_by_store_id/${params}`)
+  },
+  getGenerationChartData(params) {
+    return http.get(`${apiUrl}/generation_consumption`)
   }
 }
