@@ -31,8 +31,8 @@ from plotly import tools
 #     })
 
 # # 컬럼값 처리, 서울로 필터링
-# df_09 = csv_data_09[(csv_data_09["가맹점_시도명"] == "서울")][["가맹점_시군구명", "성별", "연령", "승인시간대1", "가맹점업종코드", "결제금액"]]
-# df_10 = csv_data_10[(csv_data_10["가맹점_시도명"] == "서울")][["가맹점_시군구명", "성별", "연령", "승인시간대1", "가맹점업종코드", "결제금액"]]
+# df_09 = csv_data_09[(csv_data_09["가맹점_시도명"] == "서울") & ((csv_data_09["성별"] == "1.남성") | (csv_data_09["성별"] == "2.여성"))][["가맹점_시군구명", "성별", "연령", "승인시간대1", "가맹점업종코드", "결제금액"]]
+# df_10 = csv_data_10[(csv_data_10["가맹점_시도명"] == "서울") & ((csv_data_10["성별"] == "1.남성") | (csv_data_10["성별"] == "2.여성"))][["가맹점_시군구명", "성별", "연령", "승인시간대1", "가맹점업종코드", "결제금액"]]
 # df_all = pd.concat([df_09, df_10])
 
 
@@ -65,101 +65,189 @@ from plotly import tools
 
 # 기업하고 기타 뺴야됨
 
+# # 읽기
+# with open('df_age_generation.p', 'rb') as file:
+#     df_all = pickle.load(file)
+# print('읽어왔다')
+
+
+# def get_people(df_all, age, divider):
+    
+#     gen_df = df_all[df_all['generation']==age]
+#     sum = 0
+
+#     food_df = gen_df[((gen_df['type_code']>2001) & (gen_df['type_code']<2200)) | ((gen_df['type_code']>2400) & (gen_df['type_code']<2500))]
+#     sum +=int(food_df["all_payment"].sum())
+#     print('--------food 정보 출력 완료')
+
+#     living_df = gen_df[((gen_df['type_code']>3000) & (gen_df['type_code']<3500)) | ((gen_df['type_code']>6100) & (gen_df['type_code']<6111)) | ((gen_df['type_code']>1100) & (gen_df['type_code']<1200))]
+#     sum +=int(living_df["all_payment"].sum())
+#     print('--------living 정보 출력 완료')
+
+#     fashion_df = gen_df[((gen_df['type_code']>1000) & (gen_df['type_code']<1100)) | ((gen_df['type_code']>1200) & (gen_df['type_code']<1300))]
+#     sum +=int(fashion_df["all_payment"].sum())
+#     print('--------fashion 정보 출력 완료')
+
+#     car_df = gen_df[((gen_df['type_code']>5500) & (gen_df['type_code']<5700))]
+#     sum +=int(car_df["all_payment"].sum())
+#     print('-----------자동차 주유 정보 출력 완료')
+
+#     edu_df = gen_df[((gen_df['type_code']>8106) & (gen_df['type_code']<8200)) | ((gen_df['type_code']>6113) & (gen_df['type_code']<6200))]
+#     sum +=int(edu_df["all_payment"].sum())
+#     print('-------------교육비 정보 출력 완료')
+
+#     taxi_df = gen_df[(gen_df['type_code']==5306)]
+#     sum +=int(taxi_df["all_payment"].sum())
+#     print('------------택시비 출력 완료')
+
+#     travel_df = gen_df[((gen_df['type_code']>5000) & (gen_df['type_code']<5306)) | ((gen_df['type_code']>5306) & (gen_df['type_code']<5405))]
+#     sum +=int(travel_df["all_payment"].sum())
+#     print('------------여행 및 숙박 정보 출력 완료')
+
+#     call_df = gen_df[(gen_df['type_code']==8212)]
+#     sum +=int(call_df["all_payment"].sum())
+#     print('-----------통신비 정보 출력 완료')
+
+#     charge_df = gen_df[((gen_df['type_code']>8000) & (gen_df['type_code']<8100)) | ((gen_df['type_code']>8205) & (gen_df['type_code']<8222))]
+#     sum +=int(charge_df["all_payment"].sum())
+#     print('---------- 세금 및 기타 요금 출력 완료')
+
+#     medical_df = gen_df[((gen_df['type_code']>7000) & (gen_df['type_code']<7100))]
+#     sum +=int(medical_df["all_payment"].sum())
+#     print('-------------- 의료 정보 출력 완료')
+
+#     beauty_df = gen_df[((gen_df['type_code']>7100) & (gen_df['type_code']<7200))]
+#     sum +=int(beauty_df["all_payment"].sum())
+#     print('-------------- 미용 정보 출력 완료')
+
+#     hobby_df = gen_df[((gen_df['type_code']>6000) & (gen_df['type_code']<6300))]
+#     sum +=int(hobby_df["all_payment"].sum())
+#     print('-------------- 취미 정보 출력 완료')
+
+#     nightlife_df = gen_df[(gen_df['type_code']==2299) | (gen_df['type_code']==2312) | (gen_df['type_code']==2317) | (gen_df['type_code']==4113) | (gen_df['type_code']==7104) | (gen_df['type_code']==7299)]
+#     sum +=int(nightlife_df["all_payment"].sum())
+#     print('---------------  유흥 정보 출력 완료')
+
+#     sum /= divider
+#     return int(sum)
+
+# print(get_people(df_all, '2.20대', 1222000))
+# print(get_people(df_all, '3.30대', 2023000))
+# print(get_people(df_all, '4.40대', 2379000))
+# print(get_people(df_all, '5.50대', 2135000))
+
+# get_people로 추측한 추정 이용 고객 수입니다.
+# list = [280224, 246964, 290639, 310272]
+
+
+# def get_portion(df_all, age, people):
+#     list = []
+#     gen_df = df_all[df_all['generation']==age]
+
+#     food_df = gen_df[((gen_df['type_code']>2001) & (gen_df['type_code']<2200)) | ((gen_df['type_code']>2400) & (gen_df['type_code']<2500))]
+#     list.append(int(food_df["all_payment"].sum()/people))
+
+#     living_df = gen_df[((gen_df['type_code']>3000) & (gen_df['type_code']<3500)) | ((gen_df['type_code']>6100) & (gen_df['type_code']<6111)) | ((gen_df['type_code']>1100) & (gen_df['type_code']<1200))]
+#     list.append(int(living_df["all_payment"].sum()/people))
+
+#     fashion_df = gen_df[((gen_df['type_code']>1000) & (gen_df['type_code']<1100)) | ((gen_df['type_code']>1200) & (gen_df['type_code']<1300))]
+#     list.append(int(fashion_df["all_payment"].sum()/people))
+
+#     car_df = gen_df[((gen_df['type_code']>5500) & (gen_df['type_code']<5700))]
+#     list.append(int(car_df["all_payment"].sum()/people))
+
+#     edu_df = gen_df[(((gen_df['type_code']>8106) & (gen_df['type_code']<8200)) | ((gen_df['type_code']>6113) & (gen_df['type_code']<6200)))]
+#     list.append(int(edu_df["all_payment"].sum()/people))
+    
+#     taxi_df = gen_df[(gen_df['type_code']==5306)]
+#     list.append(int(taxi_df["all_payment"].sum()/people))
+
+#     travel_df = gen_df[((gen_df['type_code']>5000) & (gen_df['type_code']<5306)) | ((gen_df['type_code']>5306) & (gen_df['type_code']<5405))]
+#     list.append(int(travel_df["all_payment"].sum()/people))
+
+#     call_df = gen_df[(gen_df['type_code']==8212)]
+#     list.append(int(call_df["all_payment"].sum()/people))
+
+#     insurance_df = gen_df[(gen_df['type_code']>8000) & (gen_df['type_code']<8100)]
+#     list.append(int(insurance_df["all_payment"].sum()/people))
+
+#     charge_df = gen_df[((gen_df['type_code']>8205) & (gen_df['type_code']<8216)) | ((gen_df['type_code']>8216) & (gen_df['type_code']<8222))]
+#     list.append(int(charge_df["all_payment"].sum()/people))
+
+#     medical_df = gen_df[((gen_df['type_code']>7000) & (gen_df['type_code']<7100))]
+#     list.append(int(medical_df["all_payment"].sum()/people))
+
+#     beauty_df = gen_df[((gen_df['type_code']>7100) & (gen_df['type_code']<7200))]
+#     list.append(int(beauty_df["all_payment"].sum()/people))
+
+#     hobby_df = gen_df[((gen_df['type_code']>6000) & (gen_df['type_code']<6300))]
+#     list.append(int(hobby_df["all_payment"].sum()/people))
+
+#     nightlife_df = gen_df[(gen_df['type_code']==2299) | (gen_df['type_code']==2312) | (gen_df['type_code']==2317) | (gen_df['type_code']==4113) | (gen_df['type_code']==7104) | (gen_df['type_code']==7299)]
+#     list.append(int(nightlife_df["all_payment"].sum()/people))
+
+
+#     return list
+
+# columns = ['식생활', '생활용품', '패션잡화' , '자동차/주유', '교육비', '택시비', '여행 및 숙박', '통신비', '보힘료', '세금 및 기타 요금', '의료', '미용', '취미', '유흥']
+
+# row1 = get_portion(df_all, '2.20대', 280224)
+# row2 = get_portion(df_all, '3.30대', 246964)
+# row3 = get_portion(df_all, '4.40대', 290639)
+# row4 = get_portion(df_all, '5.50대', 310272)
+
+# print(row1)
+
+# c_row1 = [i/12220 for i in row1]
+# c_row2 = [i/20230 for i in row2]
+# c_row3 = [i/23790 for i in row3]
+# c_row4 = [i/21350 for i in row4]
+
+# dataframe = pd.DataFrame([row1, row2, row3, row4], columns=columns)
+# portion_dataframe = pd.DataFrame([c_row1, c_row2, c_row3, c_row4], columns=columns)
+
+# print(list(dataframe.loc[0]))
+# print(portion_dataframe)
+
+# generations = [0 for i in range(4)]
+# count1 = 0
+# count2 = 0
+# count3 = 0
+# count4 = 0
+# # for i in range(4):
+# for i in range(4):
+#     generations[i] = {}
+# print(type(generations[0]))
+# for j in range(14):
+#     t = (j+10)%14
+#     if j==13:
+#         generations[0][columns[t]] = [row1[t], round(100-count1,1)]
+#         generations[1][columns[t]] = [row2[t], round(100-count2,1)]
+#         generations[2][columns[t]] = [row3[t], round(100-count3,1)]
+#         generations[3][columns[t]] = [row4[t], round(100-count4,1)]
+#     else:
+#         count1 += round(c_row1[t],1)
+#         count2 += round(c_row2[t],1)
+#         count3 += round(c_row3[t],1)
+#         count4 += round(c_row4[t],1)
+#         generations[0][columns[t]] = [row1[t], round(c_row1[t],1)]
+#         generations[1][columns[t]] = [row2[t], round(c_row2[t],1)]
+#         generations[2][columns[t]] = [row3[t], round(c_row3[t],1)]
+#         generations[3][columns[t]] = [row4[t], round(c_row4[t],1)]
+
+# dic = {}
+# dic['20대'] = generations[0]
+# dic['30대'] = generations[1]
+# dic['40대'] = generations[2]
+# dic['50대'] = generations[3]
+
+# # 쓰기
+# with open('df_age_generation.p', 'wb') as file:
+#     pickle.dump(dic, file)
+
+
 # 읽기
 with open('df_age_generation.p', 'rb') as file:
-    df_all = pickle.load(file)
+    dic = pickle.load(file)
 print('읽어왔다')
-
-twenties_df = df_all
-# twenties_df = df_all[df_all['generation']=='2.20대']
-# print(twenties_df)
-print('--------20대 정보 출력 완료')
-
-
-
-
-# food_df = twenties_df[((twenties_df['type_code']>2001) & (twenties_df['type_code']<2200)) | ((twenties_df['type_code']>2400) & (twenties_df['type_code']<2500))]
-# print(food_df)
-# print('--------food 정보 출력 완료')
-
-
-# living_df = twenties_df[((twenties_df['type_code']>3000) & (twenties_df['type_code']<3500)) | ((twenties_df['type_code']>6100) & (twenties_df['type_code']<6111)) | ((twenties_df['type_code']>1100) & (twenties_df['type_code']<1200))]
-# print(living_df)
-# print('--------living 정보 출력 완료')
-
-# fashion_df = twenties_df[((twenties_df['type_code']>1000) & (twenties_df['type_code']<1100)) | ((twenties_df['type_code']>1200) & (twenties_df['type_code']<1300))]
-# print(fashion_df)
-# print('--------fashion 정보 출력 완료')
-
-# car_df = twenties_df[((twenties_df['type_code']>5500) & (twenties_df['type_code']<5700))]
-# print(car_df)
-# print('-----------자동차 주유 정보 출력 완료')
-
-# edu_df = twenties_df[((twenties_df['type_code']>8106) & (twenties_df['type_code']<8200)) | ((twenties_df['type_code']>6113) & (twenties_df['type_code']<6200))]
-# print(edu_df)
-# print('-------------교육비 정보 출력 완료')
-
-# travel_df = twenties_df[((twenties_df['type_code']>5000) & (twenties_df['type_code']<5405))]
-# print(travel_df)
-# print('------------여행 및 숙박 정보 출력 완료')
-
-# call_df = twenties_df[(twenties_df['type_code']==8212)]
-# print(call_df)
-# print('-----------통신비 정보 출력 완료')
-
-# charge_df = twenties_df[((twenties_df['type_code']>8000) & (twenties_df['type_code']<8100)) | ((twenties_df['type_code']>8205) & (twenties_df['type_code']<8222))]
-# print(charge_df)
-# print('---------- 세금 및 기타 요금 출력 완료')
-
-# medical_df = twenties_df[((twenties_df['type_code']>7000) & (twenties_df['type_code']<7100))]
-# print(medical_df)
-# print('-------------- 의료 정보 출력 완료')
-
-# beauty_df = twenties_df[((twenties_df['type_code']>7100) & (twenties_df['type_code']<7200))]
-# print(beauty_df)
-# print('-------------- 의료 정보 출력 완료')
-
-# hobby_df = twenties_df[((twenties_df['type_code']>6000) & (twenties_df['type_code']<6300))]
-# print(hobby_df)
-# print('-------------- 의료 정보 출력 완료')
-
-nightlife_df = twenties_df[(twenties_df['type_code']==2299) | (twenties_df['type_code']==2312) | (twenties_df['type_code']==2317) | (twenties_df['type_code']==4113) | (twenties_df['type_code']==7104) | (twenties_df['type_code']==7299)]
-print(nightlife_df)
-print('---------------  유흥 정보 출력 완료')
-
-
-
-
-
-
-
-
-
-
-
-
-
-# young_meal_df = df_all[(df_all['type_code'] != 2004) & ((df_all['generation'] == '2.20대') | (df_all['generation'] == '3.30대'))][['time', 'all_payment']]
-# old_meal_df = df_all[(df_all['type_code'] != 2004) & ((df_all['generation'] == '4.40대') | (df_all['generation'] == '5.50대'))][['time', 'all_payment']]
-
-# print('----------평균 밥값---------')
-# young_breakfast_df = young_meal_df[(young_meal_df['time']>5) & (young_meal_df['time']<11)]['all_payment']
-# young_breakfast_df = young_breakfast_df.sum()
-# print(int(young_breakfast_df[0] / young_breakfast_df[1]))
-# young_lunch_df = young_meal_df[(young_meal_df['time']>10) & (young_meal_df['time']<15)]['all_payment']
-# young_lunch_df = young_lunch_df.sum()
-# print(int(young_lunch_df[0] / young_lunch_df[1]))
-# young_dinner_df = young_meal_df[(young_meal_df['time']>16) & (young_meal_df['time']<21)]['all_payment', 'customers']
-# young_dinner_df = young_dinner_df.sum()
-# print(int(young_dinner_df[0] / young_dinner_df[1]))
-# print('--------------------------')
-
-
-# young_desert_df = df_all[(df_all['type_code'] == 2004) & ((df_all['generation'] == '2.20대') | (df_all['generation'] == '3.30대'))][['all_payment', 'customers']]
-# old_desert_df = df_all[(df_all['type_code'] == 2004) & ((df_all['generation'] == '4.40대') | (df_all['generation'] == '5.50대'))][['all_payment', 'customers']]
-# young_desert_df = young_desert_df.sum()
-# old_desert_df = old_desert_df.sum()
-# print('----------------')
-# print(int(young_desert_df[0] / young_desert_df[1]))
-# print(int(old_desert_df[0] / old_desert_df[1]))
-
+print(dic)

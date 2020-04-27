@@ -158,6 +158,14 @@ with open('chain_result_list.p', 'rb') as file:
 with open('age_time_list.p', 'rb') as file:
     age_time_list = pickle.load(file)
 
+with open('df_age_generation.p', 'rb') as file:
+    generation_dict = pickle.load(file) 
+
+@api_view(['GET'])
+def generation_consumption(self):
+    global generation_dict
+    return Response(generation_dict)
+
 @api_view(['GET'])
 def district_by_age_time(self):
     global age_time_list
