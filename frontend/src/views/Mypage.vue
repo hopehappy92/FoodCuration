@@ -175,14 +175,6 @@ export default {
   margin: 0 auto;
   text-align: center;
   padding: 60px 30px;
-
-  /* position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  padding: 20px;
-  text-align: center; */
 }
 #mypage_body {
   width: 75%;
@@ -213,5 +205,35 @@ export default {
   background-color: whitesmoke;
   margin-top: 20px;
   padding-top: 25px;
+}
+
+@media screen and (max-width: 600px) {
+  #mypage {
+    background-color: rgba(0,0,0,1);
+    background-image: none;
+  }
+  #mypageform {
+    padding: 20px 10px;
+  }
+  #mypage_body {
+    width: 100%;
+    float: none;
+  }
+  #mypage_sidebar {
+    position: unset;
+    top: 80px;
+    z-index: 100;
+  }
+  #mypage_body_header {
+    display: block;
+    position: sticky;
+    top: 85px;
+  }
+  .mypage_body_card {
+    /* display: block; */
+    /* width: 100%; */
+    /* background-color: whitesmoke; */
+    /* margin-top: 0px; */
+  }
 }
 </style>
