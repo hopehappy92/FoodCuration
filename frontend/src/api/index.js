@@ -40,18 +40,34 @@ export default {
     return http.get(`${apiUrl}/get_store_reviews_by_store_id/${params}`, params)
   },
   writeReview(params) {
-    return http.post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, params)
+    return http.post(`${apiUrl}/store_reviews`, params)
   },
   setUserCategory(params) {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
     }
-    return http.post(`${apiUrl}/set_user_category`, params, {headers})
+    return http.post(`${apiUrl}/set_user_category`, params, {
+      headers
+    })
   },
   getUserBasedRecommand() {
     const headers = {
       Authorization: "jwt " + localStorage.getItem("token")
     }
-    return http.get(`${apiUrl}/user_based_cf`, {headers})
+    return http.get(`${apiUrl}/user_based_cf`, {
+      headers
+    })
+  },
+  getTrendChartData() {
+    return http.get(`${apiUrl}/trend_by_tob`)
+  },
+  getChainChartData() {
+    return http.get(`${apiUrl}/compare_with_chain`)
+  },
+  getLocationChartData() {
+    return http.get(`${apiUrl}/district_by_age_time`)
+  },
+  getRecommendStore(params) {
+    return http.get(`${apiUrl}/recommend_by_store_id/${params}`)
   }
-};
+}

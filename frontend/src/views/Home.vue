@@ -6,30 +6,71 @@
     <div id="home_side">
       <homeSide />
     </div>
+    <div id="home_side_mobile" @click="goReport()">
+      <div style="border: 1px solid white;">
+        <div style="display: inline-block; font-size: 20px; margin-right: 10px;">F.C.A.R</div>
+        <div style="display: inline-block; font-size: 16px;">최고의 분석 리포트</div>
+      </div>
+    </div>
     <div id="home_body">
-      <!-- algo기반 추천 -->
-      <div v-if="check" id="home_body_recommand_algo">
-        For You
-      </div>
-      <VueSlickCarousel v-if="check == true" v-bind="settings">
-        <div v-for="i in userStores.length" :key="i">
-          <homeBody 
-            :name="userStores[i-1].name"
-            :review-count="userStores[i-1].reviewCount"
-            :area="userStores[i-1].area"
-            :images="userStores[i-1].images"
-          />
+      <div v-if="isMobile == false">
+        <!-- algo기반 추천 -->
+        
+        <div v-if="check" id="home_body_recommand_algo">
+          For You
         </div>
-      </VueSlickCarousel>
-      <!-- 전체 추천 -->
-      <div id="home_body_recommand_whole">
-        Of You
-      </div>
-      <VueSlickCarousel v-bind="settings">
-        <div v-for="i in 5" :key="i">
-          <homeBody />
+        <div v-if="check" id="home_body_recommand_algo_outter">
+          <VueSlickCarousel v-bind="settings">
+            <div v-for="i in userStores.length" :key="i">
+              <homeBody
+                :id="userStores[i-1].id"
+                :name="userStores[i-1].name"
+                :review-count="userStores[i-1].reviewCount"
+                :area="userStores[i-1].area"
+                :images="userStores[i-1].images[0]['url']"
+                :avg-score="userStores[i-1].avgScore"
+              />
+            </div>
+          </VueSlickCarousel>
         </div>
-      </VueSlickCarousel>
+        <!-- 전체 추천 -->
+        
+        <div id="home_body_recommand_whole">
+          Of You
+        </div>
+        <div id="home_body_recommand_whole_outer">
+          <VueSlickCarousel v-bind="settings">
+            <div v-for="i in 5" :key="i">
+              <homeBody />
+            </div>
+          </VueSlickCarousel>
+        </div>
+      </div>
+      <div v-else>
+        <div v-if="check" id="home_body_recommand_algo">
+          For You
+        </div>
+        <VueSlickCarousel v-if="check" v-bind="settings_mobile">
+          <div v-for="i in userStores.length" :key="i">
+            <homeBody
+              :id="userStores[i-1].id"
+              :name="userStores[i-1].name"
+              :review-count="userStores[i-1].reviewCount"
+              :area="userStores[i-1].area"
+              :images="userStores[i-1].images[0]['url']"
+              :avg-score="userStores[i-1].avgScore"
+            />
+          </div>
+        </VueSlickCarousel>
+        <div id="home_body_recommand_whole">
+          Of You
+        </div>
+        <VueSlickCarousel v-bind="settings_mobile">
+          <div v-for="i in 5" :key="i">
+            <homeBody />
+          </div>
+        </VueSlickCarousel>
+      </div>
     </div>
     <checkFavorite>
       <div id="checkFav" slot="load" />
@@ -47,6 +88,7 @@ import HomeBody from "../components/HomeBody"
 import HomeFooter from "../components/HomeFooter"
 import HomeSide from "../components/HomeSide"
 import { mapState, mapActions } from "vuex";
+import router from "../router"
 
 import VueSlickCarousel from 'vue-slick-carousel'
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
@@ -81,7 +123,18 @@ export default {
         swipeToSlide: true,
         arrows: false,
       },
-      check: false
+      settings_mobile: {
+        centerMode: true,
+        // centerPadding: "20px",
+        focusOnSelect: true,
+        infinite: true,
+        slidesToShow: 1,
+        speed: 500,
+        swipeToSlide: true,
+        arrows: false,
+      },
+      check: false,
+      isMobile: false,
     }
   },
   computed: {
@@ -94,57 +147,73 @@ export default {
     islogined: async function() {
       if (this.islogined == true) {
         if (localStorage.getItem("category_list").length == 0) {
-          // console.log("aaaaaaaaaaaa")
           this.dialog = true
           document.getElementById("checkFav").click();
         }
       }
-      await this.userBasedRecommand()
       this.check = true
     },
+    // test: function() {
+    //   console.log("aaaa")
+    // }
   },
   async mounted() {
-    this.checkNavbar()
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
+    await this.checkNavbar()
+    await this.userBasedCheck()
+    // console.log(this.test)
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResponsiveInverted);
   },
   destroyed() {
-    this.checkNavbar()
+    this.checkNavbar() 
   },
   methods: {
     ...mapActions("data", ["checkNavbar"]),
-    ...mapActions("data", ["userBasedRecommand"])
+    ...mapActions("data", ["userBasedRecommand"]),
+    async userBasedCheck() {
+      if (localStorage.getItem("pk")) {
+        await this.userBasedRecommand()
+        this.check = true
+      }
+    },
+    goReport() {
+      router.push("/report")
+    },
+    onResponsiveInverted() {
+      if (window.innerWidth < 600) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    }
   },
 };
 </script>
 
 <style scoped>
 #home {
-  /* background-image: url("../../public/images/home_bg2.jpg"); */
-  background-color: #303536;
+  background-color: black;
   height: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 #home_header {
   height: 250px;
 }
 #home_body {
-  /* background-color: rgb(0,0,0); */
-  /* background-color: #020202;  */
   color: white;
   font-weight: bold;
-  /* border: 3px solid #f1f1f1; */
   z-index: 2;
   padding: 20px;
-  /* text-align: center; */
   width: 70vw;
   margin: 0 auto;
 }
 #home_body_recommand_algo {
-  font-size: 24px;
+  font-size: 30px;
 }
 #home_body_recommand_whole {
-  font-size: 24px;
+  font-size: 30px;
   margin-top: 20px;
 }
 #home_footer {
@@ -153,16 +222,52 @@ export default {
 #home_side {
   float: right;
   width: 12vw;
-  /* border: 1px solid white; */
   position: sticky;
   right: 2vw;
   top: 1vw;
-  margin-top: 30px;
-  /* background-color: white; */
-  /* background-image: url("../../public/images/side_bg2.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover; */
+  margin-top: 10px;
   height: 500px;
+}
+#home_side_mobile {
+  display: none;
+}
+#home_body_recommand_algo_outter {
+  border: 3px solid white;
+  padding: 20px;
+}
+#home_body_recommand_whole_outer {
+  border: 3px solid white;
+  padding: 20px;
+}
+@media screen and (max-width: 600px) {
+  #home_header {
+    height: 150px;
+  }
+  #home_body {
+    padding: 5px;
+    width: 90vw;
+  }
+  #home_body_recommand_algo {
+    font-size: 20px;
+  }
+  #home_body_recommand_whole {
+    font-size: 20px;
+    margin-top: 10px;
+  }
+  #home_footer {
+    height: 100px;
+  }
+  #home_side {
+    display:none;
+  }
+  #home_side_mobile {
+    display: block;
+    width: 80vw;
+    margin: 20px auto 0 auto;
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+    text-align: center;
+  }
 }
 </style>

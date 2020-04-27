@@ -2,14 +2,15 @@
   <div>
     <div class="nav">
       <div class="nav_inner_left" @click="goHome()">
-        <i class="fab fa-drupal" />
-        <span>Food Curation</span>
+        <img id="home_header_header_logo_img" src="../../public/images/logo_black.png" alt="Logo">
+        <!-- <i class="fab fa-drupal" />
+        <span>Food Curation</span>-->
       </div>
-      <div class="nav_innder_middle" v-if="$store.state.data.navSearch">
+      <div v-if="$store.state.data.navSearch" class="nav_innder_middle">
         <input
-          type="text"
-          placeholder="  맛집을 찾아드립니다"
           v-model="storeName"
+          type="text"
+          placeholder="  식당명으로 맛집을 검색해보세요"
           @keyup="enterKey(storeName)"
         />
         <i class="fas fa-search" @click="goSearchPage(storeName)" />
@@ -44,16 +45,16 @@
 import router from "../router";
 import Login from "../components/Login";
 import { mapState, mapActions, mapMutations } from "vuex";
-import { mdiHanger } from "@mdi/js";
+// import { mdiHanger } from "@mdi/js";
 
 export default {
+  components: {
+    Login
+  },
   data() {
     return {
       storeName: ""
     };
-  },
-  components: {
-    Login
   },
   computed: {
     ...mapState({
@@ -105,7 +106,7 @@ export default {
   z-index: 100;
   width: 100%;
   padding-top: 15px;
-  padding-bottom: 15px;
+  padding-bottom: 20px;
   border-bottom: black solid 3px;
 }
 .nav_inner_left:hover {
@@ -125,6 +126,7 @@ export default {
 .nav_innder_middle {
   width: 30%;
   display: flex;
+  margin-left: 200px;
 }
 .nav_innder_middle > input {
   background: #f1f1f1;
@@ -174,5 +176,54 @@ input:focus {
 .nav_menu {
   font-family: "Do Hyeon", sans-serif;
   font-size: 18px;
+}
+#home_header_header_logo_img {
+  width: 150px;
+  position: absolute;
+  top: -6px;
+  left: 0px;
+}
+
+@media screen and (max-width: 600px) {
+  .nav {
+    width: 100vw;
+    height: 85px;;
+    border-bottom: none;
+  }
+  .nav_innder_middle {
+    width: 64%;
+    display: flex;
+    margin-left: 0px;
+    position: absolute;
+    left: 80px;
+    top: 20px;
+  }
+  .nav_innder_middle > input {
+    width: 100%;
+  }
+  
+  .nav_inner_right {
+    padding-right: 10px;
+    padding-left: 10px;
+    width: 80px;
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 20px;
+  }
+  .nav_inner_right > li {
+    padding: 0px;
+    margin-bottom: 5px;
+    width: 100px;
+  }
+  .nav_menu {
+    font-family: "Do Hyeon", sans-serif;
+    font-size: 12px;
+  }
+  #home_header_header_logo_img {
+    width: 80px;
+    top: 13px;
+  }
+
 }
 </style>

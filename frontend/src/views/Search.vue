@@ -42,9 +42,9 @@
                   </div>
                   <p v-if="location === 0" id="desc_map">탐색 범위를 선택하고 탐색하고 싶은 위치로 지도를 움직여주세요</p>
                   <div v-if="location === 0" id="disBody">
-                    <button @click.prevent="setDis(100)" id="btn1" @keydown.prevent>100m</button>
+                    <button @click.prevent="setDis(100)" id="btn1">100m</button>
                     <button @click.prevent="setDis(200)" id="btn2">200m</button>
-                    <button @click.prevent="setDis(300)" id="btn3">300m</button>
+                    <button @click.prevent="setDis(300)" id="btn3" class="underlined">300m</button>
                     <button @click.prevent="setDis(400)" id="btn4">400m</button>
                     <button @click.prevent="setDis(500)" id="btn5">500m</button>
                   </div>
@@ -54,6 +54,7 @@
                       :latitude="lat"
                       :longitude="lon"
                       :stores="stores"
+                      :dis="dis"
                       @child="changedLocation"
                     ></StoresLocation>
                   </v-flex>
@@ -126,7 +127,7 @@ export default {
     location: 1, //location 0이 위치가 있는거, 1이 현재 위치 없는 것
     sort_value: "",
     showMap: 0,
-    dis: 100,
+    dis: 300,
     options: [
       { text: "일반검색", value: 1 },
       { text: "주변검색", value: 2 }
@@ -153,7 +154,7 @@ export default {
     ...mapActions("data", ["getStores"]),
     ...mapActions("data", ["searchByLocation"]),
     ...mapMutations("data", ["checkNavSearch"]),
-    ...mapMutations("data", ["resetNavState"]),
+    ...mapMutations("data", ["resetNavState"], null, { root: true }),
     onSubmit: async function() {
       const params = {
         name: this.storeName,
@@ -184,13 +185,13 @@ export default {
       navigator.geolocation.getCurrentPosition(function(pos) {
         console.log(pos.coords.longitude, pos.coords.latitude);
         setTimeout(() => {
-          that.lat = pos.coords.latitude;
-          that.lon = pos.coords.longitude;
+          that.lat = Number(pos.coords.latitude);
+          that.lon = Number(pos.coords.longitude);
           that.location = 0;
           setTimeout(() => {
             that.$refs.showMap.showMap();
-          }, 1000);
-        }, 1000);
+          }, 500);
+        }, 500);
       });
     },
     noLocation() {
@@ -279,8 +280,6 @@ export default {
         } else {
           this.locationSubmit();
         }
-      } else {
-        console.log("dd");
       }
     }
   },
@@ -291,7 +290,9 @@ export default {
         console.log("들어왔다");
         this.storeName = this.$store.state.data.storeNameFromNav;
         this.onSubmit();
-        this.resetNavState();
+        setTimeout(() => {
+          this.resetNavState();
+        }, 500);
       }
     }, 500);
   }
@@ -341,6 +342,12 @@ export default {
   height: 2.5em;
   justify-content: center;
   font-size: 1em;
+}
+#disBody > button:hover {
+  width: 10em;
+  height: 2.5em;
+  justify-content: center;
+  font-weight: bold;
 }
 .underlined {
   text-decoration: none;
@@ -400,5 +407,6 @@ input:focus {
   outline: none;
 }
 .bgControl {
+  height: 900px;
 }
 </style>

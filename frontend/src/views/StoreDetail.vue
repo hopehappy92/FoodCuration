@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Nav></Nav>
+    <Nav />
     <div class="header">
       <!-- 가게 사진들  -->
     </div>
@@ -8,27 +8,30 @@
       <!-- 음식점 정보 -->
       <div class="main_content">
         <StoreInfo
-          :storeName="storeName"
-          :storeScore="storeScore"
-          :reviewCnt="reviewCnt"
-          :storeArea="storeArea"
-          :storeTel="storeTel"
-          :storeAddress="storeAddress"
-          :storeCategories="storeCategories"
-          :storeMenuList="storeMenuList"
+          :store-name="storeName"
+          :store-score="storeScore"
+          :review-cnt="reviewCnt"
+          :store-area="storeArea"
+          :store-tel="storeTel"
+          :store-address="storeAddress"
+          :store-categories="storeCategories"
+          :store-menu-list="storeMenuList"
           @add-to-review="updatedReview"
-        ></StoreInfo>
+        />
         <!-- 리뷰 테이블 -->
-        <StoreReview ref="updateReview" @avg="avgScore"></StoreReview>
+        <StoreReview ref="updateReview" @avg="avgScore" />
         <br />
         <br />
       </div>
       <!-- 오른쪽 기능 메뉴 -->
       <div class="aside">
-        <StoreLocation :longitude="longitude" :latitude="latitude"></StoreLocation>
+        <StoreLocation :longitude="longitude" :latitude="latitude" />
+        <br />
+        <br />
+        <DetailRecStores :storeId="storeId" />
       </div>
     </div>
-    <footer>.</footer>
+    <HomeFooter></HomeFooter>
   </div>
 </template>
 
@@ -39,14 +42,17 @@ import axios from "axios";
 import StoreLocation from "@/components/StoreLocation";
 import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
+import HomeFooter from "@/components/HomeFooter";
+import DetailRecStores from "@/components/DetailRecStores";
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
-  props: ["storeId"],
   components: {
     Nav,
     StoreLocation,
     StoreInfo,
-    StoreReview
+    StoreReview,
+    DetailRecStores,
+    HomeFooter
   },
   mounted(res) {
     axios
@@ -60,8 +66,8 @@ export default {
         this.storeAddress = res.data.address;
         this.storeTel = res.data.tel;
         this.storeCategories = res.data.category_list;
-        this.latitude = res.data.latitude;
-        this.longitude = res.data.longitude;
+        this.latitude = Number(res.data.latitude);
+        this.longitude = Number(res.data.longitude);
         this.reviewCnt = res.data.review_count;
         this.storeMenuList = res.data.menues;
       })
@@ -71,14 +77,15 @@ export default {
     return {
       storeName: "",
       storeScore: 0,
-      reviewCnt: "작성된 리뷰가 없습니다",
+      reviewCnt: 0,
       storeArea: "",
       storeTel: "",
       storeAddress: "",
       storeCategories: [],
       storeMenuList: [],
-      latitude: "",
-      longitude: ""
+      latitude: 0,
+      longitude: 0,
+      storeId: Number(this.$route.params.storeId)
     };
   },
   methods: {
@@ -87,7 +94,7 @@ export default {
       this.$refs.updateReview.reRoad();
     },
     avgScore(avgScore) {
-      this.storeScore = avgScore;
+      this.storeScore = Number(avgScore);
     }
   }
 };
@@ -106,14 +113,16 @@ export default {
 .aside {
   width: 30%;
   margin-left: 20px;
-  background-color: whitesmoke;
+  background-color: rgb(15, 15, 15);
   height: fit-content;
+  display: flex;
+  flex-flow: column;
 }
 .main_content {
-  width: 60%;
+  width: 50%;
   display: flex;
   flex-flow: column nowrap;
-  margin-left: 50px;
+  margin-left: 140px;
   background-color: whitesmoke;
   border-radius: 1%;
 }

@@ -40,5 +40,10 @@ export default [{
     path: "/report",
     view: "Report",
     name: "report"
+  },
+  {
+    path: "/adminpage",
+    view: "AdminPage",
+    name: "adminpage"
   }
 ];

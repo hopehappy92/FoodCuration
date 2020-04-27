@@ -81,4 +81,15 @@ export default {
     margin-bottom: -40px;
   }
 }
+@media screen and (max-width: 600px) {
+  #notfound_box {
+    width: 80vw;
+    height: 90%;;
+  }
+  #notfound_badgate {
+    font-size: 60px;
+    letter-spacing: 8px;
+    margin-top: 40vw;
+  }
+}
 </style>

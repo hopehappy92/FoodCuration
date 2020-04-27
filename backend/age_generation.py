@@ -1,7 +1,5 @@
 import pandas as pd
 import pickle
-import plotly.graph_objs as go
-from plotly import tools
 
 # # 2019-09.csv 불러오기 
 # csv_data_09 = pd.read_csv('../../data/2019-09.csv', encoding = 'CP949', 
