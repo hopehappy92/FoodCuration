@@ -29,8 +29,41 @@
 
       <div id="section2">
         <div class="sectionHeader">
-          지역별순위
+          지역별 소비 순위
         </div>
+        <div v-for="i in top3Location.length" :key="top3Location[i-1][0]" style="display: inline-block;">
+          <!-- {{ top3Location[i-1][1] }} -->
+          <div class="report_box_top3_location_text" @click="showTop3Location(i)">
+            {{ top3Location[i-1][0] }}
+          </div>
+          <img :id="`top3Location${i}`" :src="`${top3Location[i-1][1]}`" :alt="`${top3Location[i-1][2]}`" class="report_box_top3_location_imgs">
+        </div>
+        <!-- <img src="../../public/images/report/dobong_top3.png" alt="dobong_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/dongdaemoon_top3.png" alt="dongdaemoon_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/dongjak_top3.png" alt="dongjak_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/eunpeong_top3.png" alt="eunpeong_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/gangbook_top3.png" alt="gangbook_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/gangdong_top3.png" alt="gangdong_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/gangnam_top3.png" alt="gangnam_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/gangseo_top3.png" alt="gangseo_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/geumcheon_top3.png" alt="geumcheon_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/guro_top3.png" alt="png" class="report_box_location_imgs">
+        <img src="../../public/images/report/gwanak_top3.png" alt="png" class="report_box_location_imgs">
+        <img src="../../public/images/report/gwangjin_top3.png" alt="gwangjin_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/jongro_top3.png" alt="jongro_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/joongrang_top3.png" alt="joongrang_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/joongu_top3.png" alt="joongu_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/mapo_top3.png" alt="mapo_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/nowon_top3.png" alt="nowon_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/seocho_top3.png" alt="seocho_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/seodaemoon_top3.png" alt="seodaemoon_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/seongbook_top3.png" alt="seongbook_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/songpa_top3.png" alt="songpa_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/sungdong_top3.png" alt="sungdong_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/yangcheon_top3.png" alt="yangcheon_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/yongsan_top3.png" alt="yongsan_top3" class="report_box_location_imgs">
+        <img src="../../public/images/report/youngdeungpo_top3.png" alt="youngdeungpo_top3" class="report_box_location_imgs"> -->
+
         <img src="../../public/images/report/consumption_gender.png" alt="consumption_gender" class="report_box_location_imgs">
         <img src="../../public/images/report/consumption_top3.png" alt="consumption_top3" class="report_box_location_imgs">
         <div v-for="(value, i) in locationTabs" id="report_box_location_btn" :key="i">
@@ -161,6 +194,33 @@ export default {
         "상권 추천",
         "체인점",
         "업종별 경향"
+      ],
+      top3Location: [
+        ["도봉구", "/images/report/dobong_top3.png", "dobong_top3"],
+        ["동대문구", "/images/report/dongdaemoon_top3.png", "dongdaemoon_top3"],
+        ["동작구", "/images/report/dongjak_top3.png", "dongjak_top3"],
+        ["은평구", "/images/report/eunpeong_top3.png", "eunpeong_top3"],
+        ["강북구", "/images/report/gangbook_top3.png", "gangbook_top3"],
+        ["강동구", "/images/report/gangdong_top3.png", "gangdong_top3"],
+        ["강남구", "/images/report/gangnam_top3.png", "gangnam_top3"],
+        ["강서구", "/images/report/gangseo_top3.png", "gangseo_top3"],
+        ["금천구", "/images/report/geumcheon_top3.png", "geumcheon_top3"],
+        ["구로구", "/images/report/guro_top3.png", "guro_top3"],
+        ["관악구", "/images/report/gwanak_top3.png", "gwanak_top3"],
+        ["광진구", "/images/report/gwangjin_top3.png", "gwangjin_top3"],
+        ["종로구", "/images/report/jongro_top3.png", "jongro_top3"],
+        ["중랑구", "/images/report/joongrang_top3.png", "joongrang_top3"],
+        ["중구", "/images/report/joongu_top3.png", "joongu_top3"],
+        ["마포구", "/images/report/mapo_top3.png", "mapo_top3"],
+        ["노원구", "/images/report/nowon_top3.png", "nowon_top3"],
+        ["서초구", "/images/report/seocho_top3.png", "seocho_top3"],
+        ["서대문구", "/images/report/seodaemoon_top3.png", "seodaemoon_top3"],
+        ["성북구", "/images/report/seongbook_top3.png", "seongbook_top3"],
+        ["송파구", "/images/report/songpa_top3.png", "songpa_top3"],
+        ["성동구", "/images/report/sungdong_top3.png", "sungdong_top3"],
+        ["양천구", "/images/report/yangcheon_top3.png", "yangcheon_top3"],
+        ["용산구", "/images/report/yongsan_top3.png", "yongsan_top3"],
+        ["영등포구", "/images/report/youngdeungpo_top3.png", "youngdeungpo_top3"],
       ],
       lowerLine: [],
       upperLine: [],
@@ -616,6 +676,18 @@ export default {
       // console.log(this.locationTabs)
       this.drawLocationChart(idx)
     },
+    showTop3Location(i) {
+      var target = document.getElementById(`top3Location${i}`)
+      console.log(target.style.display)
+      if (target.style.display) {
+        target.style.display = ""
+      } else {
+        target.style.display = "inline-block"
+      }
+      // console.log(target.style.display)
+      // target.style.display = "inline-block"
+      // console.log(target.style.display)
+    },
   }
 }
 </script>
@@ -792,5 +864,15 @@ export default {
 .report_box_location_imgs {
   width: 35vw;
   margin: 1vw;
+}
+.report_box_top3_location_imgs {
+  width: 35vw;
+  margin: 1vw;
+  display: none;
+}
+.report_box_top3_location_text {
+  border: 1px solid black;
+  width: 15vw;
+  display: inline-block;
 }
 </style>

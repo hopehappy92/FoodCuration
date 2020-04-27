@@ -3,8 +3,8 @@
     <h2 class="review_header">리뷰 ({{ reviewCnt }})</h2>
     <div v-for="(review, index) in paginatedData" :key="index" class="review_main">
       <div class="review_container">
-        <div class="review_container_left">{{review.username}}</div>
-        <div class="review_container_middle">{{review.content}}</div>
+        <div class="review_container_left">{{ review.username }}</div>
+        <div class="review_container_middle">{{ review.content }}</div>
         <div class="review_container_right">
           <div v-if="review.username == myName" class="reviewRight">
             <updateReview :review-id="review.id" :content="review.content" @editReview="reRoad">
