@@ -22,21 +22,10 @@
         <div id="section0Header">
           개요
         </div>
-        <div id="WC">
-          asdf
-        </div>
         <div class="sectionDetail">
-          ['카페', '커피', '빵', '칼', '까스', '돈', '돈까스', '토', '마카', '케', '냉', '층', '빔', '떡', '테리어', '박', '인테리어', '호', '석', '비빔', '창', '술', '마카롱
-          ', '닭', '향', '만두', '음료', '국수', '락', '관', '티', '밀', '순대', '작', '림', '스타', '순', '근처', '칼국수', '급', '맥', '냉면', '브', '레', '골', '최고', '노
-          ', '떼', '아주', '주차', '막', '즐', '요리', '떡볶이', '디', '득', '볶이', '파스', '꼭', '파스타', '럭', '어가', '영', '이크', '해물', '글', '양념', '목', '다가', '맥주', '위치', '촉', '김치', '하나', '베', '코', '수육', '행', '테이블', '라떼', '백', '크림', '갈비', '능', '식이', '바로', '디저트', '산', '혼', '짐', '장님', '삼
-          ', '머', '튀김', '사진', '곱', '케이크', '예약', '좌', '주시', '날', '등', '볼', '국밥', '가능', '우동', '구이', '내부', '복', '육수', '송', '온', '제주', '카레', '종', '잔', '대기', '연', '밑', '담', '류', '회', '며', '사장', '완', '매우', '키', '안주', '추가', '데이트', '초', '찍', '찌', '아이', '볶음', '품', '외', '좌석', '통', '재방', '짬', '민', '밑반찬', '충', '츠', '콤', '짬뽕', '움', '인분', '하니', '재료', '쫀득', '블', '무난', '만족', '진짜', '보통', '어보', '엄', '얼', '변', '쌀', '돈가스', '가스', '공간', '곱창', '꼬', '광', '뽕', '반찬', '정식', '짜장', '이지', '의사', '숨', '가면', '채', '고급', '속', '동네', '볶음밥', '찜', '둘', '새
-          우', '삭', '포', '약', '화', '자리', '찌개', '기본', '보고', '고소', '적당', '태', '준', '셔', '면서', '깃', '팅', '루', '소스', '대로', '혼자', '버', '자주', '식사
-          ', '편이', '또', '신선', '리가', '점심', '전체', '간이', '식당', '가게', '모두', '김밥', '잡', '접', '메밀', '테이', '쫄', '대비', '치즈', '색', '골목', '애', '맛나
-          ', '군', '줄', '주차장', '종류', '라서', '쉬', '녀', '알', '콩', '물이', '설', '수동', '생선', '자기', '친구', '걸', '전문', '된장', '기름', '취', '돼지', '쪽', '처
-          음', '손님', '침', '해주', '넉', '웨이팅', '다음', '다만', '만원', '특별', '가지', '코스', '업', '앞', '웨이', '퀄리티', '최', '누', '바다', '퀄리', '꽃', '울', '바
-          지', '옥', '손', '체적', '탕', '한번', '다시', '바지락', '수도', '포장', '발', '유명', '냄새', '어도', '조림', '부터', '꽤', '덜', '먹기', '특이', '힘', '기도', '옛
-          날', '가족', '탕수육', '쫄깃', '죽']
+          최근 리뷰를 기반으로 TF-IDF 분석을 하였다.
         </div>
+        <div id="WC" style="width: 100%; height: 500px;" />
       </div>
 
 
@@ -156,6 +145,30 @@
         <img src="../../public/images/report/yangcheon_top3.png" alt="yangcheon_top3" class="report_box_location_imgs">
         <img src="../../public/images/report/yongsan_top3.png" alt="yongsan_top3" class="report_box_location_imgs">
         <img src="../../public/images/report/youngdeungpo_top3.png" alt="youngdeungpo_top3" class="report_box_location_imgs"> -->
+        <div class="sectionHeader">
+          상권 추천
+        </div>
+        <div class="sectionDetail">
+          각 지역 총 결제 금액을 가게수로 나누어, 지역 내 가게의 평균 결제 금액이 높은 순으로 나열하였다.<br>
+          서울시 내 인구 수가 가장 높은 노원구가 전체적인 부분에서 1위에 위치했다. <br>
+          <b>패스트푸드점</b>은 직장인들이 많이 위치한 종로에서 강세를 보였고,
+          <b>한식</b>은 고급화가 많이 이루어진 만큼, 서초구와 강남구에서 높은 평균 매출을 기록했다. 
+          특히 강남구는 패스트푸드를 제외한 모든 분야에서 순위권에 위치하였으며, 일반 주점에서는 1위를 기록하였다.<br>
+          <b>양식</b>은 여의도가 위치한 영등포에서 강세를 보였고,
+          <b>일식</b>은 예상외로 관악구가 2위에 자리잡았다. <br>
+          <b>주점</b>,
+          <b>제과점</b>에서는 서초구가 2위에 위치하였고, 
+          <b>중식</b>은 노원, 강남, 서초의 순서를 띄었다.
+          <b>커피/음료전문점</b>은 기업이 몰려있는 중구가 8개의 분야중 유일하게 나타났으며, 1위를 차지했다.
+        </div>
+        <div v-for="i in top3Cate.length" :key="top3Cate[i-1][0]" style="display: inline-block;">
+          <div :id="`top3CateBtn${i}`" class="report_box_top3_cate_text" @click="showTop3Cate(i)">
+            {{ top3Cate[i-1][0] }}
+          </div>
+        </div>
+        <div v-for="i in top3Cate.length" :key="top3Cate[i-1][2]" style="display: inline-block;">
+          <img :id="`top3Cate${i}`" :src="`${top3Cate[i-1][1]}`" :alt="`${top3Cate[i-1][2]}`" class="report_box_top3_cate_imgs">
+        </div>
       </div>
 
 
@@ -257,7 +270,7 @@ export default {
         "개요",
         "나이별",
         "지역별",
-        "상권 추천",
+        "상권",
         "체인점",
         "업종별 경향"
       ],
@@ -288,6 +301,16 @@ export default {
         ["용산구", "/images/report/yongsan_top3.png", "yongsan_top3"],
         ["영등포구", "/images/report/youngdeungpo_top3.png", "youngdeungpo_top3"],
       ],
+      top3Cate: [
+        ["패스트푸드", "/images/report/fastfood_top3.png", "fastfood_top3"],
+        ["한식", "/images/report/korea_top3.png", "korea_top3"],
+        ["양식", "/images/report/pasta_top3.png", "pasta_top3"],
+        ["일반주점", "/images/report/alchol_top3.png", "alchol_top3"],
+        ["일식/생선회집", "/images/report/sasimi_top3.png", "sasimi_top3"],
+        ["제과/아이스크림점", "/images/report/bread_top3.png", "bread_top3"],
+        ["중식", "/images/report/chinese_top3.png", "chinese_top3"],
+        ["커피/음료전문점", "/images/report/cafe_top3.png", "cafe_top3"],
+      ],
       lowerLine: [],
       upperLine: [],
       trendsDetail: false,
@@ -308,43 +331,25 @@ export default {
   },
   async mounted() {
     this.checkNavbar()
-    console.log("워드클라우드");
     setTimeout(() => {
       var tags = [
-        '카페', '커피', '빵', '칼', '까스', '돈', '돈까스', '토', '마카', '케', '냉', '층', 
-        '빔', '떡', '테리어', '박', '인테리어', '호', '석', '비빔', '창', '술', '마카롱', '닭',
-        '향', '만두', '음료', '국수', '락', '관', '티', '밀', '순대', '작', '림', '스타', '순',
-        '근처', '칼국수', '급', '맥', '냉면', '브', '레', '골', '최고', '노', '떼', '아주', '주차',
-        '막', '즐', '요리', '떡볶이', '디', '득', '볶이', '파스', '꼭', '파스타', '럭', '어가', '영', 
-        '이크', '해물', '글', '양념', '목', '다가', '맥주', '위치', '촉', '김치', '하나', '베', '코', 
-        '수육', '행', '테이블', '라떼', '백', '크림', '갈비', '능', '식이', '바로', '디저트', '산', '혼', 
-        '짐', '장님', '삼', '머', '튀김', '사진', '곱', '케이크', '예약', '좌', '주시', '날', '등', '볼', 
-        '국밥', '가능', '우동', '구이', '내부', '복', '육수', '송', '온', '제주', '카레', '종', '잔', '대기', 
-        '연', '밑', '담', '류', '회', '며', '사장', '완', '매우', '키', '안주', '추가', '데이트', '초', '찍', 
-        '찌', '아이', '볶음', '품', '외', '좌석', '통', '재방', '짬', '민', '밑반찬', '충', '츠', '콤', '짬뽕', 
-        '움', '인분', '하니', '재료', '쫀득', '블', '무난', '만족', '진짜', '보통', '어보', '엄', '얼', '변', '쌀', 
-        '돈가스', '가스', '공간', '곱창', '꼬', '광', '뽕', '반찬', '정식', '짜장', '이지', '의사', '숨', '가면', '채', 
-        '고급', '속', '동네', '볶음밥', '찜', '둘', '새우', '삭', '포', '약', '화', '자리', '찌개', '기본', '보고', 
-        '고소', '적당', '태', '준', '셔', '면서', '깃', '팅', '루', '소스', '대로', '혼자', '버', '자주', '식사', 
-        '편이', '또', '신선', '리가', '점심', '전체', '간이', '식당', '가게', '모두', '김밥', '잡', '접', '메밀', 
-        '테이', '쫄', '대비', '치즈', '색', '골목', '애', '맛나', '군', '줄', '주차장', '종류', '라서', '쉬', '녀', 
-        '알', '콩', '물이', '설', '수동', '생선', '자기', '친구', '걸', '전문', '된장', '기름', '취', '돼지', '쪽', 
-        '처음', '손님', '침', '해주', '넉', '웨이팅', '다음', '다만', '만원', '특별', '가지', '코스', '업', '앞', '웨이', 
-        '퀄리티', '최', '누', '바다', '퀄리', '꽃', '울', '바지', '옥', '손', '체적', '탕', '한번', '다시', '바지락', '수도', 
-        '포장', '발', '유명', '냄새', '어도', '조림', '부터', '꽤', '덜', '먹기', '특이', '힘', '기도', '옛날', '가족', '탕수육', '쫄깃', '죽'
-        ]
-      console.log(tags);
+        '카페', '커피', '빵', '돈', '돈까스', '마카롱', '케이크', '떡볶이',  '인테리어', '비빔밥', '술', '닭', '막창',
+        '향', '만두', '국수', '티', '밀떡', '순대', '칼국수', '맥주', '냉면', '라떼', '주차', '파스타', '해물', '양념', '위치', '김치', 
+        '수육', '테이블', '백종원', '크림', '갈비', '덮밥', '디저트', '삼겹살', '튀김', '사진', '곱창',  '예약', 
+        '국밥', '우동', '구이', '육수', '제주', '카레', '회', '안주', '데이트','볶음', '짬뽕', 
+        '쌀떡', '정식', '짜장', '고급', '동네', '볶음밥', '찜', '새우', '찌개', '기본','신선', '점심', '간이', '김밥', '메밀', 
+        '치즈', '골목', '전문', '된장', '돼지', '쪽갈비', '코스', '퀄리티', '탕', '바지락', '포장', '조림', '가족', '탕수육',  '죽'
+      ]
       var word_array = [];
       for (var i = 0; i < tags.length; i++) {
-        let tmp = { text: tags[i], weight: 300 - i * 1.5 };
+        let tmp = { text: tags[i], weight: tags.length - i * 5 };
         word_array.push(tmp);
       }
-      console.log(word_array);
       $(function() {
-        // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
         $("#WC").jQCloud(word_array);
       });
     }, 1000)
+
     for (let i = 0; i < 60; ++i) {
       this.lowerLine.push(20)
       this.upperLine.push(80)
@@ -686,6 +691,22 @@ export default {
         target.style.display = "inline-block"
       }
     },
+    showTop3Cate(idx) {
+      var target2 = document.getElementById(`top3CateBtn${idx}`)
+      var target = document.getElementById(`top3Cate${idx}`)
+      if (target2.style.color == "") {
+        target2.style.color = "white"
+        target2.style.backgroundColor = "black"
+      } else {
+        target2.style.color = ""
+        target2.style.backgroundColor = ""
+      }
+      if (target.style.display) {
+        target.style.display = ""
+      } else {
+        target.style.display = "inline-block"
+      }
+    },
 
     drawGenerationChart(idx) {
       var ctx = document.getElementById(`generationChart${idx}`).getContext('2d');
@@ -793,7 +814,7 @@ export default {
   width: 50vw;
   height: 100px;
   margin: 10px auto;
-  font-size: 48px;
+  font-size: 3vw;
   padding: 10px;
 }
 .report_tab {
@@ -961,6 +982,26 @@ export default {
   border: 1px solid black;
   width: 15vw;
   display: inline-block;
+}
+.report_box_top3_location_text:hover {
+  color: white;
+  background-color: black;
+  cursor: pointer;
+}
+.report_box_top3_cate_imgs {
+  width: 35vw;
+  margin: 1vw;
+  display: none;
+}
+.report_box_top3_cate_text {
+  border: 1px solid black;
+  width: 18vw;
+  display: inline-block;
+}
+.report_box_top3_cate_text:hover {
+  color: white;
+  background-color: black;
+  cursor: pointer;
 }
 #report_box_generation_btn {
   display: inline-block;

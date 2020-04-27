@@ -140,19 +140,19 @@ export default {
       reviewpage: state => state. data.userReviewPage,
     })
   },
-  async mounted() {
-     
-  },
   methods: {
     goHome() {
       router.push("/")
     },
     del(type, pk) {
-      console.log("del")
-      console.log(type, pk)
+      const params = [
+        type, pk
+      ]
+      this.adminDelete(params)
     },
     ...mapActions("data", ["getStores"]),
     ...mapActions("data", ["getUserReview"]),
+    ...mapActions("data", ["adminDelete"]),
     async showUsers() {
       var target = document.getElementById("tab3").style
       var else1 = document.getElementById("tab1").style

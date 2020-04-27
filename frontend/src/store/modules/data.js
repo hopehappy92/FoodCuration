@@ -17,10 +17,10 @@ const state = {
     lat: 0.0,
     lng: 0.0,
     categories: [],
-    images: [],
-    url: "",
-    reviewCount: 0,
-    avgScore: 0,
+    // images: [],
+    // url: "",
+    // reviewCount: 0,
+    // avgScore: 0,
   },
   isStaff: false,
   userReviewList: [],
@@ -372,7 +372,7 @@ const actions = {
     // console.log(append)
     // console.log("data upper ", params)
     const resp = await api.getUserReview(params);
-    console.log(resp.data)
+    // console.log(resp.data)
     var reviews = []
     if (resp.data.results == false) {
       commit("setUserReviewList", reviews)
@@ -841,7 +841,44 @@ const actions = {
       state.generationChartData[`${state.generationTabs[i]}`]["패션잡화"] = dataset[`${state.generationTabs[i]}`]["패션잡화"]
     }
     // console.log(state.generationChartData)
-  }
+  },
+  async adminDelete({commit}, params) {
+    // console.log(params)
+    if (params[0] == "store") {
+      // console.log("st")
+      let resp = await api.adminDeleteStore(params[1])
+      // console.log(resp)
+      if (resp.status == 200) {
+        alert("삭제 성공")
+        // console.log(state.storeSearchList[0]["id"])
+        let tmp = state.storeSearchList
+        state.storeSearchList = []
+        for (let i = 0; i < tmp.length; ++i) {
+          if (tmp[i]["id"] == params[1]) {
+            continue
+          }
+          state.storeSearchList.push(tmp[i])
+        }
+      }
+    } else if (params[0] == "review") {
+      // console.log("re")
+      let resp = await api.adminDeleteReview(params[1])
+      // console.log(resp)
+      if (resp.status == 200) {
+        alert("삭제 성공")
+        let tmp = state.userReviewList
+        state.userReviewList = []
+        for (let i = 0; i < tmp.length; ++i) {
+          if (tmp[i]["id"] == params[1]) {
+            continue
+          }
+          state.userReviewList.push(tmp[i])
+        }
+      }
+    } else {
+      console.log("user")
+    }
+  },
 };
 
 // mutations
