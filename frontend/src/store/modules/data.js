@@ -553,6 +553,7 @@ const actions = {
     let check = false
     localStorage.clear()
     router.push("/")
+    window.location.reload(true)
     commit("setIsLoggined", check)
     commit("setIsStaff", check)
   },

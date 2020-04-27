@@ -33,7 +33,6 @@
           </VueSlickCarousel>
         </div>
         <!-- 전체 추천 -->
-        
         <div id="home_body_recommand_whole">
           Of You
         </div>
@@ -195,6 +194,7 @@ export default {
 <style scoped>
 #home {
   background-color: black;
+  /* background-color: white; */
   height: 100%;
 }
 #home_header {
