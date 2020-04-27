@@ -25,6 +25,9 @@ export default {
     Nav,
     GoTop
   },
+  created(){
+    localStorage.clear();
+  },
   computed: {
     ...mapState({
       onNav: state => state.data.onNavFlag
