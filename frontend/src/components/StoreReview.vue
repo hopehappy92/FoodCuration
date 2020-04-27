@@ -31,6 +31,7 @@ import router from "@/router";
 import axios from "axios";
 import { mapState, mapActions } from "vuex";
 import updateReview from "@/components/updateReview";
+import http from "../api/http"
 export default {
   components: {
     updateReview
@@ -62,9 +63,12 @@ export default {
     }
   },
   mounted() {
-    axios
+    const headers = {
+        Authorization: 'jwt ' + localStorage.getItem("token")
+    };
+    http
       .get(
-        `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+        `/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
       )
       .then(res => {
         console.log(res.data);
@@ -96,9 +100,9 @@ export default {
     // },
     reRoad() {
       setTimeout(() => {
-        axios
+        http
           .get(
-            `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+            `/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
           )
           .then(res => {
             this.reviews = res.data.reverse();
@@ -115,10 +119,13 @@ export default {
       this.modal = true;
     },
     deleteReview(review_id) {
+      const headers = {
+          Authorization: 'jwt ' + localStorage.getItem("token")
+      };
       console.log(review_id);
-      axios
+      http
         .delete(
-          `https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`
+          `/api/store_reviews/${review_id}`, {headers}
         )
         .then(this.reRoad());
     }
