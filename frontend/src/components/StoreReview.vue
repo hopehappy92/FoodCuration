@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="review_header">리뷰 ({{ reviewCnt }})</h2>
+    <h2 class="review_header" id="moveToWrite">리뷰 ({{ reviewCnt }})</h2>
     <div v-for="(review, index) in paginatedData" :key="index" class="review_main">
       <div class="review_container">
         <div class="review_container_left">{{ review.username }}</div>
@@ -18,10 +18,15 @@
         </div>
       </div>
     </div>
-    <div class="btn-cover">
+    <div class="btn-cover" v-if="checkReview">
       <button :disabled="pageNum === 0" class="page-btn" @click="prevPage">이전</button>
       <span class="page-count">{{ pageNum + 1 }} / {{ pageCount }} 페이지</span>
       <button :disabled="pageNum >= pageCount - 1" class="page-btn" @click="nextPage">다음</button>
+    </div>
+    <div v-else class="noReview">
+      <p>아직 이 음식점에 등록된 리뷰가 없습니다.</p>
+      <p>첫번째 리뷰의 주인공이 되어 보세요!</p>
+      <button @click="writeReview">리뷰 작성</button>
     </div>
   </div>
 </template>
@@ -29,6 +34,7 @@
 <script>
 import router from "@/router";
 import axios from "axios";
+import http from "../api/http";
 import { mapState, mapActions } from "vuex";
 import updateReview from "@/components/updateReview";
 export default {
@@ -44,7 +50,8 @@ export default {
       modal: false,
       avgScore: 0,
       reviewCnt: 0,
-      userName: ""
+      userName: "",
+      checkReview: false
     };
   },
   computed: {
@@ -62,7 +69,7 @@ export default {
     }
   },
   mounted() {
-    axios
+    http
       .get(
         `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
       )
@@ -72,6 +79,7 @@ export default {
         if (res.data.length) {
           var value = 0;
           let allScore = 0;
+          this.checkReview = true;
           while (value < res.data.length) {
             allScore = allScore + res.data[value].score;
             value++;
@@ -96,7 +104,7 @@ export default {
     // },
     reRoad() {
       setTimeout(() => {
-        axios
+        http
           .get(
             `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
           )
@@ -116,11 +124,18 @@ export default {
     },
     deleteReview(review_id) {
       console.log(review_id);
-      axios
+      const headers = {
+        Authorization: "jwt" + localStorage.getItem("token")
+      };
+      http
         .delete(
-          `https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`
+          `https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`,
+          headers
         )
         .then(this.reRoad());
+    },
+    writeReview() {
+      this.$emit("writeReview");
     }
   }
 };
@@ -188,5 +203,31 @@ export default {
 .reviewRight {
   display: flex;
   justify-content: center;
+}
+.noReview {
+  border-style: double;
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+}
+.noReview > p {
+  font-size: 20px;
+  text-align: center;
+  font-family: "Jua", sans-serif;
+  color: rgb(172, 171, 171);
+}
+.noReview > button {
+  text-align: center;
+  color: white;
+  font-family: "Jua", sans-serif;
+  width: 10em;
+  height: 3em;
+  background: rgb(189, 189, 189);
+  margin-bottom: 10px;
+  border-radius: 20%;
+}
+.noReview > button:hover {
+  transition: background-color 0.5s;
+  background: rgb(133, 132, 132);
 }
 </style>

@@ -4,7 +4,7 @@
     <div class="header"></div>
     <div class="main">
       <!-- 음식점 정보 -->
-      <div class="main_content">
+      <div class="main_content" id="moveToWrite">
         <StoreInfo
           :store-name="storeName"
           :store-score="storeScore"
@@ -15,10 +15,11 @@
           :store-categories="storeCategories"
           :store-menu-list="storeMenuList"
           @add-to-review="updatedReview"
+          ref="write"
         />
         <!-- 식당 태그 -->
         <!-- 리뷰 테이블 -->
-        <StoreReview ref="updateReview" @avg="avgScore" />
+        <StoreReview ref="updateReview" @avg="avgScore" @writeReview="writeReview" />
         <br />
         <br />
       </div>
@@ -28,6 +29,9 @@
           <StoreLocation :longitude="longitude" :latitude="latitude" />
         </div>
         <br />
+        <div v-if="tags !== null">
+          <StoreWC :tags="tags" :storeName="storeName"></StoreWC>
+        </div>
         <br />
         <DetailRecStores :storeId="storeId" />
       </div>
@@ -47,6 +51,7 @@ import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
 import HomeFooter from "@/components/HomeFooter";
 import DetailRecStores from "@/components/DetailRecStores";
+import StoreWC from "@/components/StoreWC";
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   components: {
@@ -55,7 +60,8 @@ export default {
     StoreInfo,
     StoreReview,
     DetailRecStores,
-    HomeFooter
+    HomeFooter,
+    StoreWC
   },
   mounted(res) {
     axios
@@ -73,6 +79,7 @@ export default {
         this.longitude = Number(res.data.longitude);
         this.reviewCnt = res.data.review_count;
         this.storeMenuList = res.data.menues;
+        this.tags = res.data.tag;
       })
       .then(this.checkNavSearch(0));
   },
@@ -88,7 +95,8 @@ export default {
       storeMenuList: [],
       latitude: 0,
       longitude: 0,
-      storeId: Number(this.$route.params.storeId)
+      storeId: Number(this.$route.params.storeId),
+      tags: ""
     };
   },
   methods: {
@@ -98,6 +106,11 @@ export default {
     },
     avgScore(avgScore) {
       this.storeScore = Number(avgScore);
+    },
+    writeReview() {
+      console.log("clicked");
+      this.$refs.write.write();
+      document.getElementById("moveToWrite").scrollIntoView();
     }
   }
 };

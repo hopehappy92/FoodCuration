@@ -10,15 +10,8 @@
             class="recImages"
             src="../../public/images/noImage1.jpg"
             alt="gg"
-            style="width:200px; height:150px;"
           />
-          <img
-            v-else
-            class="recImages"
-            :src="store.url"
-            alt="이미지"
-            style="width:200px; height:150px;"
-          />
+          <img v-else class="recImages" :src="store.url" alt="이미지" />
         </div>
         <div class="store_summary">
           <div class="summary_top">
@@ -121,7 +114,7 @@ export default {
 #rec_title {
   text-align: center;
   font-family: "Do Hyeon", sans-serif;
-  font-size: 40px;
+  font-size: 30px;
   font-style: italic;
 }
 .summary_top {
@@ -210,11 +203,18 @@ export default {
 @media screen and (max-width: 600px) {
   #rec_name {
     display: inline-block;
-    width: 120px;
+    width: 24vw;
     overflow: hidden;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  #rec_title {
+    font-size: 10vw;
+  }
+  .recImages {
+    width: 45vw;
+    height: 150px;
   }
 }
 </style>
