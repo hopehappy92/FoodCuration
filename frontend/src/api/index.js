@@ -87,5 +87,14 @@ export default {
       Authorization: "jwt " + localStorage.getItem("token")
     }
     return http.delete(`${apiUrl}/store_reviews/${params}`, {headers})
+  },
+  getAllRecommand(params) {
+    return http.post(`${apiUrl}/recommend_by_current_location`, params)
+  },
+  tokencheck(params) {
+    return http.post(`${apiUrl}/token/verify/`, params)
+  },
+  getUsers(params) {
+    return http.post
   }
 }

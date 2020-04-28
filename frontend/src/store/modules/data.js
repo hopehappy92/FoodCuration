@@ -17,10 +17,10 @@ const state = {
     lat: 0.0,
     lng: 0.0,
     categories: [],
-    // images: [],
-    // url: "",
-    // reviewCount: 0,
-    // avgScore: 0,
+    images: [],
+    url: "",
+    reviewCount: 0,
+    avgScore: 0,
   },
   isStaff: false,
   userReviewList: [],
@@ -32,7 +32,9 @@ const state = {
   navSearch: true,
   searchFromNav: false,
   storeNameFromNav: '',
-  userBasedList: [],
+  userBasedList: [0],
+  mainAllList: [0],
+  mainEmptyFlag: false,
   trendChartData: {
     의류: {label: [], data1: [], data2: []},
     악세사리류: {label: [], data1: [], data2: []},
@@ -775,6 +777,41 @@ const actions = {
     mutations.setUserBasedRecommand(state, stores)
   },
 
+  async allRecommand({commit}, params) {
+    // console.log(params)
+    const resp = await api.getAllRecommand(params)
+    // console.log(resp)
+    if (resp.data == "") {
+      // console.log("aaaaaaaaaaaaaa")
+      // state.allRecommand = [0]
+      state.mainEmptyFlag = true
+      const res = await api.getAllRecommand()
+      const store = res.data.map(d => ({
+        id: d.id,
+        name: d.store_name,
+        area: d.area,
+        reviewCount: d.review_count,
+        images: d.images,
+        avgScore: d.avg_score,
+        url: d.url
+      }));
+      mutations.setAllRecommand(state, store)
+      return
+    }
+    state.mainEmptyFlag = false
+    const stores = resp.data.map(d => ({
+      id: d.id,
+      name: d.store_name,
+      area: d.area,
+      reviewCount: d.review_count,
+      images: d.images,
+      avgScore: d.avg_score,
+      url: d.url
+    }));
+    mutations.setAllRecommand(state, stores)
+    // console.log(state.mainAllList)
+  },
+
   async goTrendChartData({commit}) {
     const res = await api.getTrendChartData()
     const dataset = res.data
@@ -879,6 +916,21 @@ const actions = {
       console.log("user")
     }
   },
+  async tokenVerify({commit}, params) {
+    // console.log(params)
+    await api.tokencheck(params)
+    .then(res => {
+      // console.log(res)
+    })
+    .catch(err => {
+      alert("세션이 만료되었습니다.")
+      actions.logout(commit)
+    })
+  },
+  async getUserData({commit}, params) {
+    const resp = await api.getUsers(params)
+    console.log(resp)
+  }
 };
 
 // mutations
@@ -942,6 +994,9 @@ const mutations = {
   },
   setIsStaff(state, check) {
     state.isStaff = check
+  },
+  setAllRecommand(state, stores) {
+    state.mainAllList = stores.map(s => s)
   }
 };
 
