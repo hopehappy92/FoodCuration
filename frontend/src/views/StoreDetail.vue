@@ -119,7 +119,9 @@ export default {
 <style scoped>
 .header {
   background: url("../../public/images/header.jpg");
-  height: 200px;
+  /* height: 200px;; */
+  height: 100px;
+  background-position: center;
   filter: brightness(30%);
 }
 .main {

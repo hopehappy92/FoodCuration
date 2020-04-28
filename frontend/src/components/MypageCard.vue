@@ -65,7 +65,7 @@ export default {
         id: this.id,
         store: this.store,
         store_name: this.storeName,
-        user: this.user,
+        user_id: localStorage.getItem("pk"),
         score: this.score,
         content: this.content,
         reg_time: this.regTime

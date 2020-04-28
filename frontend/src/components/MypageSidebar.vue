@@ -150,7 +150,7 @@ export default {
   /* background-color: rgba(255, 255, 255, 0.9); */
 }
 .my_sidebar_box {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: white;
   padding: 20px;
   margin-bottom: 20px;
 }

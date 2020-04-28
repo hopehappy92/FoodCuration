@@ -363,7 +363,11 @@ const actions = {
       address: d.address,
       lat: d.latitude,
       lng: d.longitude,
-      categories: d.category_list
+      categories: d.category_list,
+      images: d.images,
+      url: d.url,
+      reviewCount: d.review_count,
+      avgScore: d.avg_score,
     }));
 
     if (append) {
@@ -676,7 +680,7 @@ const actions = {
     // console.log(params)
     await api.reviewUpdate(params)
       .then(res => {
-        // console.log(res)
+        // console.log("bbbbbbb", res)
       })
       .catch(err => {
         console.log(err)
@@ -736,6 +740,7 @@ const actions = {
   async writeReview({
     commit
   }, params) {
+    console.log(params)
     await api.writeReview(params)
       .then(res => {
         // console.log(res)

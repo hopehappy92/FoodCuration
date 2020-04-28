@@ -109,7 +109,7 @@ export default {
         store: this.$route.params.storeId,
         user: this.userId,
         score: this.score,
-        content: this.content
+        content: this.content,
       };
       await this.writeReview(params)
         .then(this.$emit("add-to-review"))

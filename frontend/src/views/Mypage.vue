@@ -194,7 +194,7 @@ export default {
 .mypage_body_card {
   display: block;
   width: 100%;
-  background-color: whitesmoke;
+  background-color: white;
   margin-top: 10px;
 }
 #no_content {
@@ -202,7 +202,7 @@ export default {
   font-size: 30px;
   height: 100px;
   width: 100%;
-  background-color: whitesmoke;
+  background-color: white;
   margin-top: 20px;
   padding-top: 25px;
 }

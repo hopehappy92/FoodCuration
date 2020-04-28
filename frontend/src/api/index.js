@@ -27,7 +27,6 @@ export default {
     return http.delete(`${apiUrl}/user_reviews/${params}`)
   },
   reviewUpdate(params) {
-    // console.log(params)
     return http.put(`${apiUrl}/user_reviews/${params["id"]}`, params)
   },
   getStoresByLocation(params) {
