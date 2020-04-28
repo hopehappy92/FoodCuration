@@ -305,7 +305,6 @@ class StoreReviewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         # 리뷰를 작성하는 함수입니다.
-        print('asdf')
         if request.user.is_authenticated:
             data = request.data
             store = Store.objects.get(id=data["store"])
@@ -316,21 +315,7 @@ class StoreReviewSet(viewsets.ModelViewSet):
             user.review_count += 1
             user.save()
             return Response("작성 성공")
-        else:
-            return Response("작성 실패")
-        # data = request.data
-        # store = Store.objects.get(id=data["store"])
-        # store_name = store.store_name
-        # user = CustomUser.objects.get(id=data["user"])
-        # # 받아온 데이터를 이용해서 Review를 작성합니다.
-        # models.Review.objects.create(store_id=data["store"], user_id=data["user"], content=data["content"], score=data["score"], reg_time=datetime.datetime.now(), store_name=store_name)
-        
-        # 작성이 완료되었다면 매장과 유저의 review_count를 1씩 추가합니다.
-        # store.review_count += 1
-        # store.save()
-        # user.review_count += 1
-        # user.save()
-        return Response("작성 성공")
+        return Response("작성 실패")
 
     def update(self, request, pk=None):
         '''
