@@ -70,9 +70,10 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import http from "../api/http"
 // import { mdiHanger } from "@mdi/js";
 import axios from "axios";
-import http from "../api/http"
+
 export default {
   props: {
     storeName: String,
@@ -125,16 +126,19 @@ export default {
     submit() {
       console.log(this.userId, this.$route.params.storeId);
       const headers = {
-        Authorization: 'jwt ' + localStorage.getItem("token")
+        Authorization: "jwt" + localStorage.getItem("token")
       };
       http
-        .post(`/api/store_reviews`, {
-          store: this.$route.params.storeId,
-          user: this.userId,
-          score: this.score,
-          content: this.content
-        },
-        {headers})
+        .post(
+          `https://i02d106.p.ssafy.io:8765/api/store_reviews`,
+          {
+            store: this.$route.params.storeId,
+            user: this.userId,
+            score: this.score,
+            content: this.content
+          },
+          {headers}
+        )
         .then(this.$emit("add-to-review"))
         .then((this.dialog = false));
     },
@@ -142,7 +146,7 @@ export default {
       console.log(localStorage.getItem("pk"));
       console.log(this.$route.params.storeId);
       const headers = {
-        Authorization: 'jwt ' + localStorage.getItem("token")
+        Authorization: "jwt" + localStorage.getItem("token")
       };
       http
         .post(
