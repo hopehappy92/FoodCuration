@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="review_header" id="moveToWrite">리뷰 ({{ reviewCnt }})</h2>
+    <h2 id="moveToWrite" class="review_header">리뷰 ({{ reviewCnt }})</h2>
     <div v-for="(review, index) in paginatedData" :key="index" class="review_main">
       <div class="review_container">
         <div class="review_container_left">{{ review.username }}</div>
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <div class="btn-cover" v-if="checkReview">
+    <div v-if="checkReview" class="btn-cover">
       <button :disabled="pageNum === 0" class="page-btn" @click="prevPage">이전</button>
       <span class="page-count">{{ pageNum + 1 }} / {{ pageCount }} 페이지</span>
       <button :disabled="pageNum >= pageCount - 1" class="page-btn" @click="nextPage">다음</button>
@@ -71,7 +71,7 @@ export default {
   mounted() {
     http
       .get(
-        `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+        `/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
       )
       .then(res => {
         console.log(res.data);
@@ -106,7 +106,7 @@ export default {
       setTimeout(() => {
         http
           .get(
-            `https://i02d106.p.ssafy.io:8765/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
+            `/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
           )
           .then(res => {
             this.reviews = res.data.reverse();
@@ -123,14 +123,13 @@ export default {
       this.modal = true;
     },
     deleteReview(review_id) {
-      console.log(review_id);
       const headers = {
-        Authorization: "jwt" + localStorage.getItem("token")
+          Authorization: 'jwt ' + localStorage.getItem("token")
       };
+      console.log(review_id);
       http
         .delete(
-          `https://i02d106.p.ssafy.io:8765/api/store_reviews/${review_id}`,
-          headers
+          `/api/store_reviews/${review_id}`, {headers}
         )
         .then(this.reRoad());
     },

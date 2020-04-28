@@ -88,23 +88,23 @@ export default {
   data() {
     return {
       timeOut: false,
-      before: true,
-      main: false,
-      // before: false,
-      // main: true,
+      // before: true,
+      // main: false,
+      before: false,
+      main: true,
       admin: false
     }
   },
   async mounted() {
     await this.checkNavbar()
-    setTimeout(() => {
-      this.timeOut = true
-      this.before = false
-    }, 2000)
-    setTimeout(() => {
-      this.timeOut = false
-      this.main = true
-    }, 10000)
+    // setTimeout(() => {
+    //   this.timeOut = true
+    //   this.before = false
+    // }, 2000)
+    // setTimeout(() => {
+    //   this.timeOut = false
+    //   this.main = true
+    // }, 10000)
   },
   destroyed() {
     this.checkNavbar()

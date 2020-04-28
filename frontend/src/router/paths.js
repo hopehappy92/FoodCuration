@@ -42,6 +42,11 @@ export default [{
     name: "report"
   },
   {
+    path: "/reportpage",
+    view: "ReportPage",
+    name: "reportpage"
+  },
+  {
     path: "/adminpage",
     view: "AdminPage",
     name: "adminpage"

@@ -33,6 +33,9 @@
             <th>
               ADDRESS
             </th>
+            <th>
+              DELETE
+            </th>
           </tr>
           <tr v-for="(store, i) in stores" :key="i">
             <th>
@@ -49,6 +52,11 @@
             </th>
             <th>
               {{ store["address"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('store', store['id'])">
+                DELETE
+              </div>
             </th>
           </tr>
         </table>
@@ -75,6 +83,9 @@
             <th>
               REG_TIME
             </th>
+            <th>
+              DELETE
+            </th>
           </tr>
           <tr v-for="(review, i) in reviews" :key="i">
             <th>
@@ -91,6 +102,11 @@
             </th>
             <th>
               {{ review["reg_time"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('review', review['id'])">
+                DELETE
+              </div>
             </th>
           </tr>
         </table>
@@ -124,15 +140,19 @@ export default {
       reviewpage: state => state. data.userReviewPage,
     })
   },
-  async mounted() {
-     
-  },
   methods: {
     goHome() {
       router.push("/")
     },
+    del(type, pk) {
+      const params = [
+        type, pk
+      ]
+      this.adminDelete(params)
+    },
     ...mapActions("data", ["getStores"]),
     ...mapActions("data", ["getUserReview"]),
+    ...mapActions("data", ["adminDelete"]),
     async showUsers() {
       var target = document.getElementById("tab3").style
       var else1 = document.getElementById("tab1").style
@@ -277,5 +297,12 @@ th{
 }
 tr:nth-child(even) {
   background-color: #ddd;
+}
+.deleteBtn {
+  border: 1px solid black;
+  padding: 1px;
+  text-align: center;
+  background-color: red;
+  color: white;
 }
 </style>

@@ -70,9 +70,10 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import http from "../api/http"
 // import { mdiHanger } from "@mdi/js";
 import axios from "axios";
-import http from "../api/http";
+
 export default {
   props: {
     storeName: String,
@@ -136,7 +137,7 @@ export default {
             score: this.score,
             content: this.content
           },
-          headers
+          {headers}
         )
         .then(this.$emit("add-to-review"))
         .then((this.dialog = false));
@@ -149,12 +150,12 @@ export default {
       };
       http
         .post(
-          `https://i02d106.p.ssafy.io:8765/api/like_store`,
+          `/api/like_store`,
           {
             customuser_id: localStorage.getItem("pk"),
             store_id: this.$route.params.storeId
           },
-          headers
+          {headers}
         )
         .then(res => {
           console.log(res);
