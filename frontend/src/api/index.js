@@ -46,11 +46,17 @@ export default {
     return http.post(`${apiUrl}/store_reviews`, params)
   },
   setUserCategory(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
     return http.post(`${apiUrl}/set_user_category`, params, {
       headers
     })
   },
   getUserBasedRecommand() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
     return http.get(`${apiUrl}/user_based_cf`, {
       headers
     })
@@ -71,9 +77,15 @@ export default {
     return http.get(`${apiUrl}/generation_consumption`)
   },
   adminDeleteStore(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
     return http.delete(`${apiUrl}/stores/${params}`, {headers})
   },
   adminDeleteReview(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
     return http.delete(`${apiUrl}/store_reviews/${params}`, {headers})
   }
 }

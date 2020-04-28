@@ -26,7 +26,7 @@ export default {
     GoTop
   },
   created() {
-    localStorage.clear()
+    // localStorage.clear()
   },
   computed: {
     ...mapState({
