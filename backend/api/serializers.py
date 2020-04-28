@@ -38,7 +38,8 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 class StoreSerializer(serializers.ModelSerializer):
     menues = MenuSerializer(source="menu_set", many=True)
-    images = ImageSerializer(source="storeimage_set", many=True)
+    # images = ImageSerializer(source="storeimage_set", many=True)
+    url = serializers.SerializerMethodField()
     class Meta:
         model = Store
         fields = [
@@ -53,9 +54,16 @@ class StoreSerializer(serializers.ModelSerializer):
             "category_list",
             "review_count",
             "menues",
-            "images",
+            # "images",
             "tag",
+            "url",
         ]
+    def get_url(self, obj):
+        a = StoreImage.objects.filter(store_id=obj.id)
+        if a:
+            return a[0].url
+        else:
+            return ""
 
 class StoreSerializer2(serializers.ModelSerializer):
     class Meta:
@@ -150,6 +158,7 @@ class StoreDetailSerializer2(serializers.ModelSerializer):
     review_count = serializers.SerializerMethodField()
     avg_score = serializers.SerializerMethodField()
     images = ImageSerializer(source="storeimage_set", many=True)
+    url = serializers.SerializerMethodField()
     class Meta:
         model = Store
         fields = [
@@ -159,7 +168,14 @@ class StoreDetailSerializer2(serializers.ModelSerializer):
             "review_count",
             "avg_score",
             "images",
+            "url",
         ]
+    def get_url(self, obj):
+        a = StoreImage.objects.filter(store_id=obj.id)
+        if a:
+            return a[0].url
+        else:
+            return ""
 
     def get_review_count(self, obj):
         return obj.review_set.count()
@@ -169,7 +185,34 @@ class StoreDetailSerializer2(serializers.ModelSerializer):
             return obj.review_set.aggregate(Avg('score'))["score__avg"]
         return 0
 
+class StoreDetailSerializer3(serializers.ModelSerializer):
+    avg_score = serializers.SerializerMethodField()
+    images = ImageSerializer(source="storeimage_set", many=True)
+    url = serializers.SerializerMethodField()
+    class Meta:
+        model = Store
+        fields = [
+            "id",
+            "store_name",
+            "area",
+            "review_count",
+            "avg_score",
+            "images",
+            "url",
+        ]
+    def get_url(self, obj):
+        a = StoreImage.objects.filter(store_id=obj.id)
+        if a:
+            return a[0].url
+        else:
+            return ""
 
+    def get_avg_score(self, obj):
+        if obj.review_set.count():
+            return obj.review_set.aggregate(Avg('score'))["score__avg"]
+        return 0
+
+        
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser

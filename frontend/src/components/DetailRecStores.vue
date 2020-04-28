@@ -1,13 +1,21 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="flag">
     <p id="rec_title">"이 식당들은 어때요??"</p>
     <div v-for="(store, i) in recStores" :key="i">
       <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
       <div style="display: flex; flex-flow: row;">
-        <img class="recImages" src="../../public/images/noImage1.jpg" alt="이미지" />
+        <div>
+          <img
+            v-if="store.url === ''"
+            class="recImages"
+            src="../../public/images/noImage1.jpg"
+            alt="gg"
+          />
+          <img v-else class="recImages" :src="store.url" alt="이미지" />
+        </div>
         <div class="store_summary">
           <div class="summary_top">
-            <span>{{store.store_name}}</span>
+            <span id="rec_name">{{store.store_name}}</span>
             <span id="rec_score">{{store.avg_score.toFixed(1)}}</span>
           </div>
           <div class="summary_bottom">
@@ -45,35 +53,38 @@ export default {
     api.getRecommendStore(params).then(res => {
       var picked = [];
       var max_length = res.data.length;
-      var cnt = 0;
+      var cnt = false;
       var flag = true;
-      while (cnt < 3) {
+      console.log(res);
+      console.log("굿굿");
+      while (cnt === false) {
         var ranNum = Math.floor(Math.random() * max_length);
-        if (picked.includes(ranNum)) {
-          continue;
-        } else {
+        if (ranNum > 0 && ranNum < 19) {
+          console.log(ranNum);
           picked.push(ranNum);
-          cnt++;
+          picked.push(ranNum + 1);
+          picked.push(ranNum - 1);
+          cnt = true;
+        } else {
+          continue;
         }
       }
+      console.log(picked);
       const recStores = [];
-      for (var number = 0; number < picked.length; number++) {
-        if (res.data[picked[number]].images.length === 0) {
-          console.log("dddd");
-          res.data[picked[number]].images.push(this.noImage + number + ".jpg");
-        }
-        console.log(picked[number]);
-        console.log(res.data[picked[number]]);
-        recStores.push(res.data[picked[number]]);
+      for (var number of picked) {
+        recStores.push(res.data[number]);
       }
       this.recStores = recStores;
+      this.flag = true;
+      console.log("ddd");
       console.log(recStores);
     });
   },
   data() {
     return {
       recStores: Array,
-      noImage: "../../public/images/noImage"
+      noImage: "../../public/images/noImage1",
+      flag: false
     };
   },
   methods: {
@@ -92,7 +103,7 @@ export default {
   width: 100%;
 }
 .recImages {
-  width: 180px;
+  width: 200px;
   height: 150px;
 }
 .store_summary {
@@ -103,7 +114,7 @@ export default {
 #rec_title {
   text-align: center;
   font-family: "Do Hyeon", sans-serif;
-  font-size: 40px;
+  font-size: 30px;
   font-style: italic;
 }
 .summary_top {
@@ -120,6 +131,12 @@ export default {
   font-family: "Do Hyeon", sans-serif;
   margin-left: 10px;
   color: grey;
+}
+#rec_name {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .summary_bottom {
   margin-top: 10px;
@@ -146,6 +163,11 @@ export default {
   border-radius: 20%;
   font-family: "Jua", sans-serif;
   color: rgb(241, 241, 241);
+  -webkit-animation: fadeIn 1s 1s infinite linear normal;
+  -moz-animation: fadeIn 1s 1s infinite linear normal;
+  -ms-animation: fadeIn 1s 1s infinite linear normal;
+  -o-animation: fadeIn 1s 1s infinite linear normal;
+  animation: fadeIn 1s 1s infinite linear normal;
 }
 .summary_bottom > div > button:hover {
   transition: background-color 0.5s;
@@ -168,6 +190,31 @@ export default {
   to {
     opacity: 0;
     transform: translateX(10px);
+  }
+}
+@keyframes fadeIn {
+  from {
+    background: rgb(185, 185, 185);
+  }
+  to {
+    background: rgb(121, 121, 121);
+  }
+}
+@media screen and (max-width: 600px) {
+  #rec_name {
+    display: inline-block;
+    width: 24vw;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #rec_title {
+    font-size: 10vw;
+  }
+  .recImages {
+    width: 45vw;
+    height: 150px;
   }
 }
 </style>

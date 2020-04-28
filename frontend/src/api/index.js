@@ -3,6 +3,9 @@ import http from "./http"
 
 const apiUrl = "/api";
 const regiUrl = "/rest-auth";
+const headers = {
+  Authorization: "jwt " + localStorage.getItem("token")
+}
 
 export default {
   getStores(params) {
@@ -40,7 +43,7 @@ export default {
     return http.get(`${apiUrl}/get_store_reviews_by_store_id/${params}`, params)
   },
   writeReview(params) {
-    return http.post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, params)
+    return http.post(`${apiUrl}/store_reviews`, params)
   },
   setUserCategory(params) {
     const headers = {
@@ -69,5 +72,29 @@ export default {
   },
   getRecommendStore(params) {
     return http.get(`${apiUrl}/recommend_by_store_id/${params}`)
+  },
+  getGenerationChartData(params) {
+    return http.get(`${apiUrl}/generation_consumption`)
+  },
+  adminDeleteStore(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.delete(`${apiUrl}/stores/${params}`, {headers})
+  },
+  adminDeleteReview(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.delete(`${apiUrl}/store_reviews/${params}`, {headers})
+  },
+  getAllRecommand(params) {
+    return http.post(`${apiUrl}/recommend_by_current_location`, params)
+  },
+  tokencheck(params) {
+    return http.post(`${apiUrl}/token/verify/`, params)
+  },
+  getUsers(params) {
+    return http.post
   }
 }

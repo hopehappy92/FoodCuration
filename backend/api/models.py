@@ -59,7 +59,7 @@ class Review(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     score = models.IntegerField()
     content = models.TextField()
-    reg_time = models.DateTimeField()
+    reg_time = models.DateTimeField(auto_now_add=True)
 
     # def __str__(self):
     #     return self.content

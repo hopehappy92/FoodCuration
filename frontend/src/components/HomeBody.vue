@@ -1,7 +1,7 @@
 <template>
   <div class="home_body_card">
     <div class="container">
-      <img v-if="images == ''" src="../../public/images/icons/user.png" class="home_body_card_img" alt="image">
+      <img v-if="images == ''" src="../../public/images/noImage0.jpg" class="home_body_card_img" alt="image">
       <img v-else :src="images" alt="image" class="home_body_card_img">
       <div class="home_body_card_hover">
         <div class="home_body_card_text">

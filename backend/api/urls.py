@@ -58,6 +58,7 @@ urlpatterns = [
     path('trend_by_tob', views.trend_by_tob, name="trend_by_tob"),
     path('compare_with_chain', views.compare_with_chain, name="compare_with_chain"),
     path('district_by_age_time', views.district_by_age_time, name="district_by_age_time"),
+    path('generation_consumption', views.generation_consumption, name="generation_consumption"),
     path('token/', obtain_jwt_token),
     path('token/verify/', verify_jwt_token),
     path('token/refresh/', refresh_jwt_token),
@@ -73,4 +74,5 @@ urlpatterns = [
     path('create_store', views.create_store, name="create_store"),
     path('set_user_category', views.set_user_category, name="set_user_category"),
     path('recommend_by_store_id/<int:store_id>', views.recommend_by_store_id, name="recommend_by_store_id"),
+    path('recommend_by_current_location', views.recommend_by_current_location, name="recommend_by_current_location"),
 ]

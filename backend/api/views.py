@@ -23,6 +23,7 @@ import requests
 from bs4 import BeautifulSoup
 from math import acos, cos, sin, radians
 from sklearn.cluster import KMeans
+from django.db.models import Avg
 
 
 
@@ -83,6 +84,9 @@ start_crawling_length = 100
 
 all_store = Store.objects.all()
 all_review = Review.objects.all()
+store_list = Store.objects.filter(review_count__gte=10)
+recommend_store = serializers.StoreDetailSerializer3(store_list, many=True)
+recommend_store = sorted(recommend_store.data, key=lambda x: x["avg_score"], reverse=True)[:10]
 
 def check_image(serializer):
     global get_image_dict
@@ -157,6 +161,14 @@ with open('chain_result_list.p', 'rb') as file:
 
 with open('age_time_list.p', 'rb') as file:
     age_time_list = pickle.load(file)
+
+with open('df_age_generation.p', 'rb') as file:
+    generation_dict = pickle.load(file) 
+
+@api_view(['GET'])
+def generation_consumption(self):
+    global generation_dict
+    return Response(generation_dict)
 
 @api_view(['GET'])
 def district_by_age_time(self):
@@ -234,6 +246,13 @@ class StoreViewSet(viewsets.ModelViewSet):
             models.Store.objects.all().filter(store_name__contains=name).order_by("id")
         )
         return queryset
+    
+    def destroy(self, request, pk=None):
+        if request.user.is_staff:
+            store = models.Store.objects.get(id=pk)
+            store.delete()
+            return Response("삭제 성공")
+        return Response("삭제 실패")
 
 
 class UserReviewSet(viewsets.ModelViewSet):
@@ -286,25 +305,31 @@ class StoreReviewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         # 리뷰를 작성하는 함수입니다.
-        # if request.user.is_authenticated:
-        #     data = request.data
-        #     review = models.Review.objects.create(store_id=data["store"], user_id=request.user.id, content=data["content"], score=data["score"], reg_time=datetime.datetime.now())
-        #     return Response("작성 성공")
-        # else:
-        #     return Response("작성 실패")
-        data = request.data
-        store = Store.objects.get(id=data["store"])
-        store_name = store.store_name
-        user = CustomUser.objects.get(id=data["user"])
-
-        # 받아온 데이터를 이용해서 Review를 작성합니다.
-        models.Review.objects.create(store_id=data["store"], user_id=data["user"], content=data["content"], score=data["score"], reg_time=datetime.datetime.now(), store_name=store_name)
+        print('asdf')
+        if request.user.is_authenticated:
+            data = request.data
+            store = Store.objects.get(id=data["store"])
+            user = request.user
+            review = models.Review.objects.create(store=store, user=user, content=data["content"], score=data["score"])
+            store.review_count += 1
+            store.save()
+            user.review_count += 1
+            user.save()
+            return Response("작성 성공")
+        else:
+            return Response("작성 실패")
+        # data = request.data
+        # store = Store.objects.get(id=data["store"])
+        # store_name = store.store_name
+        # user = CustomUser.objects.get(id=data["user"])
+        # # 받아온 데이터를 이용해서 Review를 작성합니다.
+        # models.Review.objects.create(store_id=data["store"], user_id=data["user"], content=data["content"], score=data["score"], reg_time=datetime.datetime.now(), store_name=store_name)
         
         # 작성이 완료되었다면 매장과 유저의 review_count를 1씩 추가합니다.
-        store.review_count += 1
-        store.save()
-        user.review_count += 1
-        user.save()
+        # store.review_count += 1
+        # store.save()
+        # user.review_count += 1
+        # user.save()
         return Response("작성 성공")
 
     def update(self, request, pk=None):
@@ -323,15 +348,28 @@ class StoreReviewSet(viewsets.ModelViewSet):
         '''
         받아온 pk에 해당하는 리뷰를 삭제합니다.
         '''
-        review = models.Review.objects.get(id=pk)
-        user = models.CustomUser.objects.get(id=review.user_id)
-        store = models.Store.objects.get(id=review.store_id)
-        review.delete()
-        user.review_count -= 1
-        user.save()
-        store.review_count -= 1
-        store.save()
-        return Response("삭제 성공")
+        if request.user.is_authenticated:
+            review = models.Review.objects.get(id=pk)
+            user = review.user
+            store = review.store
+            if user.id == review.user_id:
+                review.delete()
+                user.review_count -= 1
+                user.save()
+                store.review_count -= 1
+                store.save()
+                return Response("삭제 성공")
+        elif request.user.is_staff:
+            review = models.Review.objects.get(id=pk)
+            user = review.user
+            store = review.store
+            review.delete()
+            user.review_count -= 1
+            user.save()
+            store.review_count -= 1
+            store.save()
+            return Response("삭제 성공")
+        return Response("삭제 실패")
 
 
 @api_view(['GET'])
@@ -590,8 +628,8 @@ def user_based_cf(self):
 
     추천 아이템은 20개이며 프론트에서 임의의 아이템을 선정하게 합니다.
     '''
-    user = CustomUser.objects.get(id=15)
-    # user = CustomUser.objects.get(id=self.user.id)
+    # user = CustomUser.objects.get(id=15)
+    user = CustomUser.objects.get(id=self.user.id)
     # user = CustomUser.objects.get(id=15)
     if user.review_count > 9:
         alg_name = Algorithm.objects.get(id=1).alg_name
@@ -664,28 +702,29 @@ def recommend_by_store_id(self, store_id):
 
 @api_view(['POST'])
 def create_store(self):
-    print('asdfasdf')
-    try:
-        store_name = self.data.get("store_name")
-        branch = self.data.get("branch")
-        area = self.data.get("area")
-        tel = self.data.get("tel")
-        address = self.data.get("address")
-        latitude = self.data.get("latitude")
-        longitude = self.data.get("longitude")
-        category = self.data.get("category")
-        tag = self.data.get("tag")
-        menues = self.data.get("menues")
-        cid = Store.objects.all().order_by('-id')[0].id + 1
-        Store.objects.create(id=cid, store_name=store_name, branch=branch, area=area, tel=tel, address=address, latitude=latitude, longitude=longitude, category=category, tag=tag)
-    except:
-        return Response("매장 등록 실패")
-    for menu in menues:
+    if self.user.is_staff:
         try:
-            Menu.objects.create(store_id=cid, menu_name=menu["menu_name"], price=menu["price"])
+            store_name = self.data.get("store_name")
+            branch = self.data.get("branch")
+            area = self.data.get("area")
+            tel = self.data.get("tel")
+            address = self.data.get("address")
+            latitude = self.data.get("latitude")
+            longitude = self.data.get("longitude")
+            category = self.data.get("category")
+            tag = self.data.get("tag")
+            menues = self.data.get("menues")
+            cid = Store.objects.all().order_by('-id')[0].id + 1
+            Store.objects.create(id=cid, store_name=store_name, branch=branch, area=area, tel=tel, address=address, latitude=latitude, longitude=longitude, category=category, tag=tag)
         except:
             pass
-    return Response("매장 등록 완료")
+        for menu in menues:
+            try:
+                Menu.objects.create(store_id=cid, menu_name=menu["menu_name"], price=menu["price"])
+            except:
+                pass
+        return Response("매장 등록 완료")
+    return Response("매장 등록 실패")
 
 
 @api_view(['POST'])
@@ -752,3 +791,21 @@ def relearning_kmeans(self):
         pickle.dump(cluster_list, f)
         pickle.dump(centroid, f)
     return Response('k_means 재 학습 완료')
+
+
+@api_view(['POST'])
+def recommend_by_current_location(self):
+    clat = self.data.get("latitude")
+    clon = self.data.get("longitude")
+    if not clat or not clon:
+        queryset = recommend_store
+    else:
+        a = []
+        for store in store_list:
+            lat = store.latitude
+            lon = store.longitude
+            if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < 10:
+                a.append(store)
+        serializer = serializers.StoreDetailSerializer3(a, many=True)
+        queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
+    return Response(queryset)
