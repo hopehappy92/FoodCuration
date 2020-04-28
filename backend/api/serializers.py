@@ -197,6 +197,20 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
+class UserSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "username",
+            "is_staff",
+            "email",
+            "age",
+            "gender",
+            "review_count",
+            "category",
+        ]
+
 class LikeUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserLikeStore
