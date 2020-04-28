@@ -40,7 +40,7 @@
                       @change="selectOption"
                     />
                   </div>
-                  <p v-if="location === 0" id="desc_map">탐색 범위를 선택하고 탐색하고 싶은 위치로 지도를 움직여주세요</p>
+                  <p v-if="location === 0" id="desc_map">탐색하고 싶은 위치로 지도를 움직이고 범위를 선택해주세요</p>
                   <div v-if="location === 0" id="disBody">
                     <button @click.prevent="setDis(100)" id="btn1">100m</button>
                     <button @click.prevent="setDis(200)" id="btn2">200m</button>
@@ -232,6 +232,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 200:
           btn1.classList.toggle("underlined", false);
@@ -239,6 +240,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 300:
           btn1.classList.toggle("underlined", false);
@@ -246,6 +248,7 @@ export default {
           btn3.classList.toggle("underlined", true);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 400:
           btn1.classList.toggle("underlined", false);
@@ -253,6 +256,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", true);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 500:
           btn1.classList.toggle("underlined", false);
@@ -260,6 +264,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", true);
+          this.locationSubmit();
           break;
         default:
           console.log("뭔일이고?");

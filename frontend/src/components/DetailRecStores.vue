@@ -1,10 +1,17 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="flag">
     <p id="rec_title">"이 식당들은 어때요??"</p>
     <div v-for="(store, i) in recStores" :key="i">
       <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
       <div style="display: flex; flex-flow: row;">
-        <img class="recImages" src="../../public/images/noImage1.jpg" alt="이미지" />
+        <img
+          v-if="store.url === ''"
+          class="recImages"
+          src="../../public/images/noImage1.jpg"
+          alt="gg"
+          style="width:300px;"
+        />
+        <img v-else class="recImages" :src="store.url" alt="이미지" style="width:200px;" />
         <div class="store_summary">
           <div class="summary_top">
             <span>{{store.store_name}}</span>
@@ -57,23 +64,20 @@ export default {
         }
       }
       const recStores = [];
-      for (var number = 0; number < picked.length; number++) {
-        if (res.data[picked[number]].images.length === 0) {
-          console.log("dddd");
-          res.data[picked[number]].images.push(this.noImage + number + ".jpg");
-        }
-        console.log(picked[number]);
-        console.log(res.data[picked[number]]);
-        recStores.push(res.data[picked[number]]);
+      for (var number of picked) {
+        recStores.push(res.data[number]);
       }
       this.recStores = recStores;
+      this.flag = true;
+      console.log("ddd");
       console.log(recStores);
     });
   },
   data() {
     return {
       recStores: Array,
-      noImage: "../../public/images/noImage"
+      noImage: "../../public/images/noImage1",
+      flag: false
     };
   },
   methods: {
@@ -92,7 +96,7 @@ export default {
   width: 100%;
 }
 .recImages {
-  width: 180px;
+  width: 200px;
   height: 150px;
 }
 .store_summary {
