@@ -95,6 +95,6 @@ export default {
     return http.post(`${apiUrl}/token/verify/`, params)
   },
   getUsers(params) {
-    return http.post
+    return http.get(`${apiUrl}/user`)
   }
 }

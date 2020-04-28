@@ -35,6 +35,7 @@ const state = {
   userBasedList: [0],
   mainAllList: [0],
   mainEmptyFlag: false,
+  userList: [],
   trendChartData: {
     의류: {label: [], data1: [], data2: []},
     악세사리류: {label: [], data1: [], data2: []},
@@ -930,6 +931,8 @@ const actions = {
   async getUserData({commit}, params) {
     const resp = await api.getUsers(params)
     console.log(resp)
+    const users = [123]
+    commit("setUserList", users)
   }
 };
 
@@ -997,6 +1000,9 @@ const mutations = {
   },
   setAllRecommand(state, stores) {
     state.mainAllList = stores.map(s => s)
+  },
+  setUserList(state, users) {
+    state.userList = users.map(s => s)
   }
 };
 

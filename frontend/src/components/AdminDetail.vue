@@ -64,6 +64,7 @@
           더보기
         </div>
       </div>
+      
       <div v-if="reviewFlag == true">
         <!-- {{ reviews }} -->
         <table>
@@ -114,6 +115,58 @@
           더보기
         </div>
       </div>
+
+      <div v-if="userFlag == true">
+        {{ users }}
+        <!-- <table>
+          <tr>
+            <th>
+              ID
+            </th>
+            <th>
+              STORE_NAME
+            </th>
+            <th>
+              SCORE
+            </th>
+            <th>
+              CONTENT
+            </th>
+            <th>
+              REG_TIME
+            </th>
+            <th>
+              DELETE
+            </th>
+          </tr>
+          <tr v-for="(review, i) in reviews" :key="i">
+            <th>
+              {{ review["id"] }}
+            </th>
+            <th>
+              {{ review["store_name"] }}
+            </th>
+            <th>
+              {{ review["score"] }}
+            </th>
+            <th>
+              {{ review["content"] }}
+            </th>
+            <th>
+              {{ review["reg_time"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('review', review['id'])">
+                DELETE
+              </div>
+            </th>
+          </tr>
+        </table>
+        <div class="loadMore" @click="reviewLoadMore()">
+          더보기
+        </div> -->
+      </div>
+
     </div>
   </div>
 </template>
@@ -138,6 +191,7 @@ export default {
       page: state => state.data.storeSearchPage,
       reviews: state => state.data.userReviewList,
       reviewpage: state => state. data.userReviewPage,
+      users: state => state.data.userList
     })
   },
   methods: {
