@@ -72,7 +72,6 @@
 import { mapState, mapActions } from "vuex";
 import http from "../api/http"
 // import { mdiHanger } from "@mdi/js";
-import axios from "axios";
 
 export default {
   props: {
@@ -123,25 +122,25 @@ export default {
         this.dialog = false;
       }
     },
-    submit() {
-      console.log(this.userId, this.$route.params.storeId);
-      const headers = {
-        Authorization: "jwt" + localStorage.getItem("token")
-      };
-      http
-        .post(
-          `https://i02d106.p.ssafy.io:8765/api/store_reviews`,
-          {
-            store: this.$route.params.storeId,
-            user: this.userId,
-            score: this.score,
-            content: this.content
-          },
-          {headers}
-        )
-        .then(this.$emit("add-to-review"))
-        .then((this.dialog = false));
-    },
+    // submit() {
+    //   console.log(this.userId, this.$route.params.storeId);
+    //   const headers = {
+    //     Authorization: "jwt" + localStorage.getItem("token")
+    //   };
+    //   http
+    //     .post(
+    //       `/api/store_reviews`,
+    //       {
+    //         store: this.$route.params.storeId,
+    //         user: this.userId,
+    //         score: this.score,
+    //         content: this.content
+    //       },
+    //       {headers}
+    //     )
+    //     .then(this.$emit("add-to-review"))
+    //     .then((this.dialog = false));
+    // },
     pushLike() {
       console.log(localStorage.getItem("pk"));
       console.log(this.$route.params.storeId);

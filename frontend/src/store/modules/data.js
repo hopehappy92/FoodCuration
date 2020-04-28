@@ -22,6 +22,16 @@ const state = {
     reviewCount: 0,
     avgScore: 0,
   },
+  user: {
+    id: "",
+    username: "",
+    age: 0,
+    category: [],
+    email: "",
+    gender: "",
+    is_staff: false,
+    review_count: 0,
+  },
   isStaff: false,
   userReviewList: [],
   reviewListForCate: [],
@@ -35,6 +45,7 @@ const state = {
   userBasedList: [0],
   mainAllList: [0],
   mainEmptyFlag: false,
+  userList: [],
   trendChartData: {
     의류: {label: [], data1: [], data2: []},
     악세사리류: {label: [], data1: [], data2: []},
@@ -913,7 +924,22 @@ const actions = {
         }
       }
     } else {
-      console.log("user")
+      const data = {
+        id: params[1]
+      }
+      let resp = await api.deleteUser(data)
+      // console.log(resp)
+      if (resp.data == "삭제 성공") {
+        alert("삭제 성공")
+        let tmp = state.userList
+        state.userList = []
+        for (let i = 0; i < tmp.length; ++i) {
+          if (tmp[i]["id"] == params[1]) {
+            continue
+          }
+          state.userList.push(tmp[i])
+        }
+      }
     }
   },
   async tokenVerify({commit}, params) {
@@ -929,7 +955,42 @@ const actions = {
   },
   async getUserData({commit}, params) {
     const resp = await api.getUsers(params)
-    console.log(resp)
+    // console.log(resp)
+    const users = resp.data.map(d => ({
+      id: d.id,
+      username: d.username,
+      age: d.age,
+      category: d.category,
+      email: d.email,
+      gender: d.gender,
+      is_staff: d.is_staff,
+      review_count: d.review_count,
+    }))
+    // console.log(users)
+    commit("setUserList", users)
+  },
+  async setUserStaff({commit}, params) {
+    const data = {
+      id: params
+    }
+    const resp = await api.changeUserStaff(data)
+    // console.log(resp)
+    if (resp.data == "권한 변경 성공") {
+      alert("권한 변경 성공")
+      let tmp = state.userList
+      state.userList = []
+      for (let i = 0; i < tmp.length; ++i) {
+        if (tmp[i]["id"] == params) {
+          // console.log(tmp[i])
+          if (tmp[i]["is_staff"]) {
+            tmp[i]["is_staff"] = false
+          } else {
+            tmp[i]["is_staff"] = true
+          }
+        }
+        state.userList.push(tmp[i])
+      }
+    }
   }
 };
 
@@ -997,6 +1058,9 @@ const mutations = {
   },
   setAllRecommand(state, stores) {
     state.mainAllList = stores.map(s => s)
+  },
+  setUserList(state, users) {
+    state.userList = users.map(s => s)
   }
 };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="flag">
+  <div v-if="flag" class="container">
     <p id="rec_title">"이 식당들은 어때요??"</p>
     <div v-for="(store, i) in recStores" :key="i">
       <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
@@ -10,33 +10,33 @@
             class="recImages"
             src="../../public/images/noImage1.jpg"
             alt="gg"
-          />
-          <img v-else class="recImages" :src="store.url" alt="이미지" />
+          >
+          <img v-else class="recImages" :src="store.url" alt="이미지">
         </div>
         <div class="store_summary">
           <div class="summary_top">
-            <span id="rec_name">{{store.store_name}}</span>
-            <span id="rec_score">{{store.avg_score.toFixed(1)}}</span>
+            <span id="rec_name">{{ store.store_name }}</span>
+            <span id="rec_score">{{ store.avg_score.toFixed(1) }}</span>
           </div>
           <div class="summary_bottom">
             <div class="sb_container">
               <span class="sb">지역:</span>
-              <span class="sb_content">{{store.area}}</span>
+              <span class="sb_content">{{ store.area }}</span>
             </div>
             <div class="sb_container">
               <span class="sb">리뷰 개수:</span>
-              <span class="sb_content">{{store.review_count}}</span>
+              <span class="sb_content">{{ store.review_count }}</span>
             </div>
             <div>
-              <i class="fas fa-arrow-right"></i>
+              <i class="fas fa-arrow-right" />
               <button @click.prevent="moveToStore(store.id)">상세보기</button>
             </div>
           </div>
         </div>
       </div>
-      <br v-if="i < 2" />
-      <hr id="line" v-if="i < 2" />
-      <br v-if="i < 2" />
+      <br v-if="i < 2">
+      <hr v-if="i < 2" id="line">
+      <br v-if="i < 2">
     </div>
   </div>
 </template>
@@ -47,6 +47,13 @@ import router from "../router";
 export default {
   props: {
     storeId: Number
+  },
+  data() {
+    return {
+      recStores: Array,
+      noImage: "../../public/images/noImage1",
+      flag: false
+    };
   },
   mounted() {
     const params = this.storeId;
@@ -59,7 +66,7 @@ export default {
       console.log("굿굿");
       while (cnt === false) {
         var ranNum = Math.floor(Math.random() * max_length);
-        if (ranNum > 0 && ranNum < 19) {
+        if (ranNum > 0 && ranNum < max_length-1) {
           console.log(ranNum);
           picked.push(ranNum);
           picked.push(ranNum + 1);
@@ -79,13 +86,6 @@ export default {
       console.log("ddd");
       console.log(recStores);
     });
-  },
-  data() {
-    return {
-      recStores: Array,
-      noImage: "../../public/images/noImage1",
-      flag: false
-    };
   },
   methods: {
     moveToStore(storeId) {

@@ -1,11 +1,12 @@
 <template>
   <div>
     <Nav />
-    <div class="header"></div>
+    <div class="header" />
     <div class="main">
       <!-- 음식점 정보 -->
-      <div class="main_content" id="moveToWrite">
+      <div id="moveToWrite" class="main_content">
         <StoreInfo
+          ref="write"
           :store-name="storeName"
           :store-score="storeScore"
           :review-cnt="reviewCnt"
@@ -15,29 +16,28 @@
           :store-categories="storeCategories"
           :store-menu-list="storeMenuList"
           @add-to-review="updatedReview"
-          ref="write"
         />
         <!-- 식당 태그 -->
         <!-- 리뷰 테이블 -->
         <StoreReview ref="updateReview" @avg="avgScore" @writeReview="writeReview" />
-        <br />
-        <br />
+        <br>
+        <br>
       </div>
       <!-- 오른쪽 기능 메뉴 -->
       <div class="aside">
         <div>
           <StoreLocation :longitude="longitude" :latitude="latitude" />
         </div>
-        <br />
+        <br>
         <div v-if="tags !== null">
-          <StoreWC :tags="tags" :storeName="storeName"></StoreWC>
+          <StoreWC :tags="tags" :store-name="storeName" />
         </div>
-        <br />
-        <DetailRecStores :storeId="storeId" />
+        <br>
+        <DetailRecStores :store-id="storeId" />
       </div>
     </div>
     <div class="footer">
-      <HomeFooter></HomeFooter>
+      <HomeFooter />
     </div>
   </div>
 </template>
@@ -45,7 +45,6 @@
 <script>
 import Nav from "@/components/Nav.vue";
 import router from "@/router";
-import axios from "axios";
 import StoreLocation from "@/components/StoreLocation";
 import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
@@ -53,6 +52,7 @@ import HomeFooter from "@/components/HomeFooter";
 import DetailRecStores from "@/components/DetailRecStores";
 import StoreWC from "@/components/StoreWC";
 import { mapState, mapActions, mapMutations } from "vuex";
+import http from "../api/http"
 export default {
   components: {
     Nav,
@@ -62,26 +62,6 @@ export default {
     DetailRecStores,
     HomeFooter,
     StoreWC
-  },
-  mounted(res) {
-    axios
-      .get(
-        `https://i02d106.p.ssafy.io:8765/api/stores/${this.$route.params.storeId}`
-      )
-      .then(res => {
-        console.log(res);
-        this.storeName = res.data.store_name;
-        this.storeArea = res.data.area;
-        this.storeAddress = res.data.address;
-        this.storeTel = res.data.tel;
-        this.storeCategories = res.data.category_list;
-        this.latitude = Number(res.data.latitude);
-        this.longitude = Number(res.data.longitude);
-        this.reviewCnt = res.data.review_count;
-        this.storeMenuList = res.data.menues;
-        this.tags = res.data.tag;
-      })
-      .then(this.checkNavSearch(0));
   },
   data() {
     return {
@@ -98,6 +78,26 @@ export default {
       storeId: Number(this.$route.params.storeId),
       tags: ""
     };
+  },
+  mounted(res) {
+    http
+      .get(
+        `/api/stores/${this.$route.params.storeId}`
+      )
+      .then(res => {
+        console.log(res);
+        this.storeName = res.data.store_name;
+        this.storeArea = res.data.area;
+        this.storeAddress = res.data.address;
+        this.storeTel = res.data.tel;
+        this.storeCategories = res.data.category_list;
+        this.latitude = Number(res.data.latitude);
+        this.longitude = Number(res.data.longitude);
+        this.reviewCnt = res.data.review_count;
+        this.storeMenuList = res.data.menues;
+        this.tags = res.data.tag;
+      })
+      .then(this.checkNavSearch(0));
   },
   methods: {
     ...mapMutations("data", ["checkNavSearch"]),
