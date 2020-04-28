@@ -8,8 +8,8 @@
         <div class="slide">
           <div class="content">
             <h2>김평강</h2>
-            <p>Back End (REST API, 배포, 알고리즘 최적화)</p>
-            <p>특징 (스마트팩토리 관심많음)</p>
+            <p>Back End (REST API, 배포, 알고리즘 최적화, SVDPP)</p>
+            <p>특징 (프로젝트 총괄, 스마트팩토리 관심많음)</p>
             <p>기타 (취직하고싶다..)</p>
           </div>
         </div>
@@ -22,8 +22,9 @@
         <div class="slide">
           <div class="content">
             <h2>김정덕</h2>
-            <p>Front End (SearchPage, StoreDetail)</p>
-            <p>특징(글로벌 글로벌, 타이완 넘버 원)</p>
+            <p>Front End (SearchPage, StoreDetail, Location Based, Word Cloud)</p>
+            <p>Back End (TF-IDF)</p>
+            <p>특징(프론트 총괄, UCC, 글로벌 글로벌, 타이완 넘버 원)</p>
             <p>기타(지훈이형.. 2달은 우습지 ㅎㅎ)</p>
           </div>
         </div>
@@ -38,7 +39,8 @@
         <div class="slide">
           <div class="content">
             <h2>이지훈</h2>
-            <p>Front-End (Mypage, Main, Report, Login, Register)</p>
+            <p>Front-End (Mypage, Main, Report, Login, Register, Admin, Member)</p>
+            <p>Back-End (TF-IDF)</p>
             <p>특징 (단발단발단발단발단발단발, 하리보고양이)</p>
             <p>기타 (코로나때문에 여친 못 만난지 2달 넘음...)</p>
           </div>

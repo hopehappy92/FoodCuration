@@ -185,7 +185,34 @@ class StoreDetailSerializer2(serializers.ModelSerializer):
             return obj.review_set.aggregate(Avg('score'))["score__avg"]
         return 0
 
+class StoreDetailSerializer3(serializers.ModelSerializer):
+    avg_score = serializers.SerializerMethodField()
+    images = ImageSerializer(source="storeimage_set", many=True)
+    url = serializers.SerializerMethodField()
+    class Meta:
+        model = Store
+        fields = [
+            "id",
+            "store_name",
+            "area",
+            "review_count",
+            "avg_score",
+            "images",
+            "url",
+        ]
+    def get_url(self, obj):
+        a = StoreImage.objects.filter(store_id=obj.id)
+        if a:
+            return a[0].url
+        else:
+            return ""
 
+    def get_avg_score(self, obj):
+        if obj.review_set.count():
+            return obj.review_set.aggregate(Avg('score'))["score__avg"]
+        return 0
+
+        
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser

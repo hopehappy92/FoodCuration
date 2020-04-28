@@ -153,6 +153,7 @@ export default {
     ...mapActions("data", ["getStores"]),
     ...mapActions("data", ["getUserReview"]),
     ...mapActions("data", ["adminDelete"]),
+    ...mapActions("data", ["getUserData"]),
     async showUsers() {
       var target = document.getElementById("tab3").style
       var else1 = document.getElementById("tab1").style
@@ -175,6 +176,7 @@ export default {
       } else {
         this.userFlag = false
       }
+      this.getUserData()
     },
     async showReviews() {
       var target = document.getElementById("tab2").style
