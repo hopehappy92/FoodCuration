@@ -4,16 +4,6 @@
     <div v-for="(store, i) in recStores" :key="i">
       <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
       <div style="display: flex; flex-flow: row;">
-<<<<<<< HEAD
-        <img
-          v-if="store.url === ''"
-          class="recImages"
-          src="../../public/images/noImage1.jpg"
-          alt="gg"
-          style="width:300px;"
-        />
-        <img v-else class="recImages" :src="store.url" alt="이미지" style="width:200px;" />
-=======
         <div>
           <img
             v-if="store.url === ''"
@@ -23,7 +13,6 @@
           />
           <img v-else class="recImages" :src="store.url" alt="이미지" />
         </div>
->>>>>>> 13b0e8a7f961bd8ae651230e82e842dc0d1ffe4e
         <div class="store_summary">
           <div class="summary_top">
             <span id="rec_name">{{store.store_name}}</span>
