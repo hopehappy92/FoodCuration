@@ -86,15 +86,6 @@ export default {
       this.sort_value = ""
       this.$emit("searchcate", reset);
       this.resetCategoryList()
-
-
-      let a = ""
-      await this.SHA256("test")
-      .then(res => {
-        // console.log(res)
-        a = res
-      })
-      console.log(a)
     }
   }
 }

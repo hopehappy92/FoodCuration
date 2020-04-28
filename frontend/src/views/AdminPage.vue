@@ -16,7 +16,9 @@
         <div class="slide">
           <div class="content">
             <h2>김사덕</h2>
-            <p>asdfasdfkljasdlfkjasldfkjalsdkfj</p>
+            <p>Back End (추천 시스템, 보고서 컨텐츠 기획 및 데이터 분석, K-Means, KNN)</p>
+            <p>특징 (싸피 출근하고 싶어함)</p>
+            <p>기타 (데이터 분석 하고 싶음)</p>
           </div>
         </div>
         <div class="slide">
@@ -90,23 +92,23 @@ export default {
   data() {
     return {
       timeOut: false,
-      // before: true,
-      // main: false,
-      before: false,
-      main: true,
+      before: true,
+      main: false,
+      // before: false,
+      // main: true,
       admin: false
     }
   },
   async mounted() {
     await this.checkNavbar()
-    // setTimeout(() => {
-    //   this.timeOut = true
-    //   this.before = false
-    // }, 2000)
-    // setTimeout(() => {
-    //   this.timeOut = false
-    //   this.main = true
-    // }, 10000)
+    setTimeout(() => {
+      this.timeOut = true
+      this.before = false
+    }, 2000)
+    setTimeout(() => {
+      this.timeOut = false
+      this.main = true
+    }, 8000)
   },
   destroyed() {
     this.checkNavbar()

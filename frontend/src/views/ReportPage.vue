@@ -120,31 +120,6 @@
         <div v-for="i in top3Location.length" :key="top3Location[i-1][2]" style="display: inline-block;">
           <img :id="`top3Location${i}`" :src="`${top3Location[i-1][1]}`" :alt="`${top3Location[i-1][2]}`" class="report_box_top3_location_imgs">
         </div>
-        <!-- <img src="../../public/images/report/dobong_top3.png" alt="dobong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/dongdaemoon_top3.png" alt="dongdaemoon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/dongjak_top3.png" alt="dongjak_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/eunpeong_top3.png" alt="eunpeong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangbook_top3.png" alt="gangbook_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangdong_top3.png" alt="gangdong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangnam_top3.png" alt="gangnam_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangseo_top3.png" alt="gangseo_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/geumcheon_top3.png" alt="geumcheon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/guro_top3.png" alt="png" class="report_box_location_imgs">
-        <img src="../../public/images/report/gwanak_top3.png" alt="png" class="report_box_location_imgs">
-        <img src="../../public/images/report/gwangjin_top3.png" alt="gwangjin_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/jongro_top3.png" alt="jongro_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/joongrang_top3.png" alt="joongrang_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/joongu_top3.png" alt="joongu_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/mapo_top3.png" alt="mapo_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/nowon_top3.png" alt="nowon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/seocho_top3.png" alt="seocho_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/seodaemoon_top3.png" alt="seodaemoon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/seongbook_top3.png" alt="seongbook_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/songpa_top3.png" alt="songpa_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/sungdong_top3.png" alt="sungdong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/yangcheon_top3.png" alt="yangcheon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/yongsan_top3.png" alt="yongsan_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/youngdeungpo_top3.png" alt="youngdeungpo_top3" class="report_box_location_imgs"> -->
         <div class="sectionHeader">
           상권 추천
         </div>
@@ -441,7 +416,7 @@ export default {
       });
     },
     async showTrends(idx) {
-      console.log(idx)
+      // console.log(idx)
       var target = document.getElementById(`trendBtn${idx}`)
       if (target.style.color == "") {
         target.style.color = "white"

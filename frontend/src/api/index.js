@@ -3,9 +3,6 @@ import http from "./http"
 
 const apiUrl = "/api";
 const regiUrl = "/rest-auth";
-const headers = {
-  Authorization: "jwt " + localStorage.getItem("token")
-}
 
 export default {
   getStores(params) {
@@ -43,7 +40,10 @@ export default {
     return http.get(`${apiUrl}/get_store_reviews_by_store_id/${params}`, params)
   },
   writeReview(params) {
-    return http.post(`${apiUrl}/store_reviews`, params)
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.post(`${apiUrl}/store_reviews`, params, {headers})
   },
   setUserCategory(params) {
     const headers = {
@@ -95,6 +95,21 @@ export default {
     return http.post(`${apiUrl}/token/verify/`, params)
   },
   getUsers(params) {
-    return http.get(`${apiUrl}/user`)
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/all_user`, {headers})
+  },
+  deleteUser(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.put(`${apiUrl}/delete_user`, params, {headers})
+  },
+  changeUserStaff(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.put(`${apiUrl}/change_user`, params, {headers})
   }
 }

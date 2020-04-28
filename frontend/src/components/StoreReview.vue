@@ -32,8 +32,7 @@
 </template>
 
 <script>
-import router from "@/router";
-import axios from "axios";
+// import router from "@/router";
 import http from "../api/http";
 import { mapState, mapActions } from "vuex";
 import updateReview from "@/components/updateReview";

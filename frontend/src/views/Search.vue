@@ -5,31 +5,44 @@
     infinite-scroll-distance="10"
     class="bgAll"
   >
-    <v-container fill-height fluid grid-list-xl id="bgControl" class="bgControl">
+    <v-container id="bgControl" fill-height fluid grid-list-xl class="bgControl">
       <v-layout justify-center wrap mt-5>
         <v-flex xs12 md8>
-          <card :title="title" class="upperCard">
+          <card class="upperCard">
+            <div style="text-align: center; font-size: 40px; margin-top: 10px; margin-bottom: 10px; color: black; font-weight: 700;">
+              {{ title }}
+            </div>  
             <v-container py-0>
               <v-layout wrap>
                 <v-flex xs12 md12>
                   <div class="searchBar_innder_middle">
-                    <input
-                      type="text"
-                      placeholder="상호명"
-                      v-model="storeName"
-                      v-if="location"
-                      @keydown="enterKey"
-                    />
-                    <input
-                      type="text"
-                      placeholder="상호명 or 메뉴"
-                      v-model="storeName"
-                      v-else
-                      @keydown="enterKey"
-                    />
-                    <i class="fas fa-search" @click="onSubmit" v-if="location" />
-                    <i class="fas fa-search" @click="locationSubmit" v-else />
                     <v-select
+                      id="my_page_head_option"
+                      v-model="options_value"
+                      :items="options"
+                      dense
+                      item-color="black"
+                      color="rgba(0, 0, 0, 1)"
+                      style="display: inline-block; width: 200px; font-size: 15px;"
+                      @change="selectOption"
+                    />
+                    <input
+                      v-if="location"
+                      v-model="storeName"
+                      type="text"
+                      placeholder="  상호명"
+                      @keydown="enterKey"
+                    >
+                    <input
+                      v-else
+                      v-model="storeName"
+                      type="text"
+                      placeholder="  상호명 or 메뉴"
+                      @keydown="enterKey"
+                    >
+                    <i v-if="location" class="fas fa-search" @click="onSubmit" />
+                    <i v-else class="fas fa-search" @click="locationSubmit" />
+                    <!-- <v-select
                       id="my_page_head_option"
                       v-model="options_value"
                       :items="options"
@@ -38,15 +51,15 @@
                       color="rgba(0, 0, 0, 1)"
                       style="display: inline-block; width: 200px; font-size: 15px; transform: translateY(-7.5%); margin-left: 10px;"
                       @change="selectOption"
-                    />
+                    /> -->
                   </div>
                   <p v-if="location === 0" id="desc_map">탐색하고 싶은 위치로 지도를 움직이고 범위를 선택해주세요</p>
                   <div v-if="location === 0" id="disBody">
-                    <button @click.prevent="setDis(100)" id="btn1">100m</button>
-                    <button @click.prevent="setDis(200)" id="btn2">200m</button>
-                    <button @click.prevent="setDis(300)" id="btn3" class="underlined">300m</button>
-                    <button @click.prevent="setDis(400)" id="btn4">400m</button>
-                    <button @click.prevent="setDis(500)" id="btn5">500m</button>
+                    <button id="btn1" @click.prevent="setDis(100)">100m</button>
+                    <button id="btn2" @click.prevent="setDis(200)">200m</button>
+                    <button id="btn3" class="underlined" @click.prevent="setDis(300)">300m</button>
+                    <button id="btn4" @click.prevent="setDis(400)">400m</button>
+                    <button id="btn5" @click.prevent="setDis(500)">500m</button>
                   </div>
                   <v-flex v-if="location === 0" id="mapCard">
                     <StoresLocation
@@ -56,27 +69,29 @@
                       :stores="stores"
                       :dis="dis"
                       @child="changedLocation"
-                    ></StoresLocation>
+                    />
                   </v-flex>
                 </v-flex>
-                <v-flex xs12 text-center>
+                <!-- <v-flex xs12 text-center>
                   <v-btn
+                    v-if="location"
                     large
-                    class="sliver --text ma-5"
+                    class="sliver --text ma-3"
                     rounded
+                    dark
                     color="sliver lighten-1"
                     @click="onSubmit"
-                    v-if="location"
                   >전국 음식점 검색</v-btn>
                   <v-btn
+                    v-else
                     large
-                    class="sliver--text ma-5"
+                    class="sliver--text ma-3"
                     rounded
+                    dark
                     color="sliver lighten-1"
                     @click="locationSubmit"
-                    v-else
                   >주변 음식점 검색</v-btn>
-                </v-flex>
+                </v-flex> -->
               </v-layout>
             </v-container>
           </card>
@@ -86,8 +101,8 @@
           <v-flex v-for="store in stores" :key="store.id" pa-4>
             <router-link
               :to="{ name: 'StoreDetail', params: {
-              storeId: store.id
-            }}"
+                storeId: store.id
+              }}"
             >
               <store-list-card
                 :id="store.id"
@@ -106,18 +121,17 @@
 
 <script>
 import Card from "@/components/Card";
-import router from "@/router";
+// import router from "@/router";
 import StoreListCard from "@/components/StoreListCard";
 import StoresLocation from "@/components/StoresLocation";
-import Nav from "@/components/Nav";
+// import Nav from "@/components/Nav";
 import { mapState, mapActions, mapMutations } from "vuex";
-import axios from "axios";
 export default {
   components: {
     Card,
     StoreListCard,
     StoresLocation,
-    Nav
+    // Nav
   },
   data: () => ({
     storeName: "",
@@ -305,6 +319,7 @@ export default {
 </script>
 <style scoped>
 .bgAll {
+  height: 100%;
   background: rgb(14, 14, 14); /* Old browsers */
   background: -moz-linear-gradient(
     left,
@@ -388,10 +403,16 @@ export default {
   justify-content: center;
 }
 .searchBar_innder_middle > input {
-  background: #f1f1f1;
+  /* background: #f1f1f1; */
   width: 100%;
   height: 40px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
+  transform: translateY(-4px);
+  border-bottom: 1px solid black;
+}
+.searchBar_innder_middle > input::placeholder {
+  font-size: 17px;
+  transform: translateY(6px);
 }
 .searchBar_innder_middle > i {
   font-size: 20px;

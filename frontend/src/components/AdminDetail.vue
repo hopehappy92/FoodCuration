@@ -117,54 +117,59 @@
       </div>
 
       <div v-if="userFlag == true">
-        {{ users }}
-        <!-- <table>
+        <table>
           <tr>
             <th>
               ID
             </th>
             <th>
-              STORE_NAME
+              EMAIL
             </th>
             <th>
-              SCORE
+              AGE
             </th>
             <th>
-              CONTENT
+              GENDER
             </th>
             <th>
-              REG_TIME
+              IS_STAFF
             </th>
             <th>
-              DELETE
+              REVIEW_COUNT
             </th>
           </tr>
-          <tr v-for="(review, i) in reviews" :key="i">
+          <tr v-for="(user, i) in addUser" :key="i">
             <th>
-              {{ review["id"] }}
+              {{ user["id"] }}
             </th>
             <th>
-              {{ review["store_name"] }}
+              {{ user["email"] }}
             </th>
             <th>
-              {{ review["score"] }}
+              {{ user["age"] }}
             </th>
             <th>
-              {{ review["content"] }}
+              {{ user["gender"] }}
             </th>
             <th>
-              {{ review["reg_time"] }}
+              {{ user["is_staff"] }}
+              <div style="display: inline;" class="chageBtn" @click="changeStaff(user['id'])">
+                권한변경
+              </div>
             </th>
             <th>
-              <div class="deleteBtn" @click="del('review', review['id'])">
+              {{ user["review_count"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('user', user['id'])">
                 DELETE
               </div>
             </th>
           </tr>
         </table>
-        <div class="loadMore" @click="reviewLoadMore()">
+        <div class="loadMore" @click="userLoadMore()">
           더보기
-        </div> -->
+        </div>
       </div>
 
     </div>
@@ -182,7 +187,9 @@ export default {
       reviewFlag: false,
       userFlag: false,
       loading: true,
-      storeName: ""
+      storeName: "",
+      addUser: [],
+      userpage: 1,
     }
   },
   computed: {
@@ -193,6 +200,11 @@ export default {
       reviewpage: state => state. data.userReviewPage,
       users: state => state.data.userList
     })
+  },
+  watch: {
+    users: function() {
+      this.addUser = this.users.slice(0,10)
+    }
   },
   methods: {
     goHome() {
@@ -208,6 +220,7 @@ export default {
     ...mapActions("data", ["getUserReview"]),
     ...mapActions("data", ["adminDelete"]),
     ...mapActions("data", ["getUserData"]),
+    ...mapActions("data", ["setUserStaff"]),
     async showUsers() {
       var target = document.getElementById("tab3").style
       var else1 = document.getElementById("tab1").style
@@ -319,6 +332,18 @@ export default {
         this.loading = false;
       }, 1000);
     },
+    userLoadMore() {
+      let start, end
+      start = this.addUser.length
+      end = this.addUser.length + 10
+      for (let i = start; i < end; ++i) {
+        this.addUser.push(this.users[i])
+      }
+    },
+    changeStaff(params) {
+      // console.log(params)
+      this.setUserStaff(params)
+    }
   }
 }
 </script>
@@ -360,5 +385,14 @@ tr:nth-child(even) {
   text-align: center;
   background-color: red;
   color: white;
+  cursor: pointer;
+}
+.chageBtn {
+  border: 1px solid black;
+  padding: 1px;
+  text-align: center;
+  background-color: green;
+  color: white;
+  cursor: pointer;
 }
 </style>
