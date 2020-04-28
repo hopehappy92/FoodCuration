@@ -348,7 +348,17 @@ class StoreReviewSet(viewsets.ModelViewSet):
         '''
         받아온 pk에 해당하는 리뷰를 삭제합니다.
         '''
-        if request.user.is_authenticated:
+        if request.user.is_staff:
+            review = models.Review.objects.get(id=pk)
+            user = review.user
+            store = review.store
+            review.delete()
+            user.review_count -= 1
+            user.save()
+            store.review_count -= 1
+            store.save()
+            return Response("삭제 성공")
+        elif request.user.is_authenticated:
             review = models.Review.objects.get(id=pk)
             user = review.user
             store = review.store
@@ -359,16 +369,6 @@ class StoreReviewSet(viewsets.ModelViewSet):
                 store.review_count -= 1
                 store.save()
                 return Response("삭제 성공")
-        elif request.user.is_staff:
-            review = models.Review.objects.get(id=pk)
-            user = review.user
-            store = review.store
-            review.delete()
-            user.review_count -= 1
-            user.save()
-            store.review_count -= 1
-            store.save()
-            return Response("삭제 성공")
         return Response("삭제 실패")
 
 
@@ -807,5 +807,6 @@ def recommend_by_current_location(self):
             if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < 10:
                 a.append(store)
         serializer = serializers.StoreDetailSerializer3(a, many=True)
+        check_image(serializer)
         queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
     return Response(queryset)
