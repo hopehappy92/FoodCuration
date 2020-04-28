@@ -478,7 +478,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     @api_view(['POST'])
-    def user_delete(self):
+    def user_withdrawal(self):
         if self.user.is_authenticated == False:
             return Response("삭제 실패")
         else:
@@ -487,6 +487,40 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response("삭제 성공")
 
+
+class UserViewSet2(viewsets.ModelViewSet):
+    serializer_class = serializers.UserSerializer2
+    
+    @api_view(['GET'])
+    def all_user(self):
+        if self.user.is_staff == True:
+            serializer = serializers.UserSerializer2(models.CustomUser.objects.filter(is_active=1), many=True)
+            return Response(serializer.data)
+        else:
+            return Response("접근 불가")
+    
+    @api_view(['POST'])
+    def delete_user(self, id):
+        if self.user.is_staff == False:
+            return Response("삭제 실패")
+        else:
+            user = get_object_or_404(CustomUser, id=id)
+            user.is_active = False
+            user.save()
+            return Response("삭제 성공")
+
+    @api_view(['POST'])
+    def change_user(self, id):
+        if self.user.is_staff == False:
+            return Response("접근 불가")
+        else:
+            user = get_object_or_404(CustomUser, id=id)
+            if user.is_staff:
+                user.is_staff = False
+            else:
+                user.is_staff = True
+            user.save()
+            return Response("권한 변경 성공")
 
 class StoreViewSet2(viewsets.GenericViewSet):
     serializer_class = serializers.StoreSerializer2
