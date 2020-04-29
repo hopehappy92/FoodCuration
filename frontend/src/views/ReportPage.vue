@@ -23,7 +23,7 @@
           개요
         </div>
         <div class="sectionDetail">
-          최근 리뷰를 기반으로 TF-IDF 분석을 하였다.
+          최근 리뷰를 기반으로 TF-IDF 분석을 하였으며, 최근 두드러지는 단어를 워드클라우드로 표현하였다.
         </div>
         <div id="WC" style="width: 100%; height: 500px;" />
       </div>
@@ -120,31 +120,6 @@
         <div v-for="i in top3Location.length" :key="top3Location[i-1][2]" style="display: inline-block;">
           <img :id="`top3Location${i}`" :src="`${top3Location[i-1][1]}`" :alt="`${top3Location[i-1][2]}`" class="report_box_top3_location_imgs">
         </div>
-        <!-- <img src="../../public/images/report/dobong_top3.png" alt="dobong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/dongdaemoon_top3.png" alt="dongdaemoon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/dongjak_top3.png" alt="dongjak_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/eunpeong_top3.png" alt="eunpeong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangbook_top3.png" alt="gangbook_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangdong_top3.png" alt="gangdong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangnam_top3.png" alt="gangnam_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/gangseo_top3.png" alt="gangseo_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/geumcheon_top3.png" alt="geumcheon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/guro_top3.png" alt="png" class="report_box_location_imgs">
-        <img src="../../public/images/report/gwanak_top3.png" alt="png" class="report_box_location_imgs">
-        <img src="../../public/images/report/gwangjin_top3.png" alt="gwangjin_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/jongro_top3.png" alt="jongro_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/joongrang_top3.png" alt="joongrang_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/joongu_top3.png" alt="joongu_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/mapo_top3.png" alt="mapo_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/nowon_top3.png" alt="nowon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/seocho_top3.png" alt="seocho_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/seodaemoon_top3.png" alt="seodaemoon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/seongbook_top3.png" alt="seongbook_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/songpa_top3.png" alt="songpa_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/sungdong_top3.png" alt="sungdong_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/yangcheon_top3.png" alt="yangcheon_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/yongsan_top3.png" alt="yongsan_top3" class="report_box_location_imgs">
-        <img src="../../public/images/report/youngdeungpo_top3.png" alt="youngdeungpo_top3" class="report_box_location_imgs"> -->
         <div class="sectionHeader">
           상권 추천
         </div>
@@ -441,7 +416,7 @@ export default {
       });
     },
     async showTrends(idx) {
-      console.log(idx)
+      // console.log(idx)
       var target = document.getElementById(`trendBtn${idx}`)
       if (target.style.color == "") {
         target.style.color = "white"
@@ -719,8 +694,20 @@ export default {
             ],
               datasets: [{
                 backgroundColor: [
-                  'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple',
-                  'pink', 'yellogreen', 'forestgreen', 'tomato', 'gold', 'olive', 'brown'
+                  "rgb(255, 50, 100)",
+                  "rgb(255, 175, 100)",
+                  "rgb(239, 252, 101)",
+                  "rgb(149, 250, 99)",
+                  "rgb(112, 250, 120)",
+                  "rgb(113, 252, 207)",
+                  "rgb(106, 207, 255)",
+                  "rgb(95, 105, 255)",
+                  "rgb(147, 106, 255)",
+                  "rgb(239, 110, 255)",
+                  "rgb(255, 105, 176)",
+                  "rgb(255, 105, 220)",
+                  "rgb(170, 61, 250)",
+                  "rgb(0, 0, 100)",
                 ],
                 data: [
                   (this.generationChartData[`${this.generationTabs[idx]}`]["교육비"][0]),
@@ -741,8 +728,20 @@ export default {
               },
               {
                 backgroundColor: [
-                  'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple',
-                  'pink', 'yellogreen', 'forestgreen', 'tomato', 'gold', 'olive', 'brown'
+                  "rgb(255, 50, 100)",
+                  "rgb(255, 175, 100)",
+                  "rgb(239, 252, 101)",
+                  "rgb(149, 250, 99)",
+                  "rgb(112, 250, 120)",
+                  "rgb(113, 252, 207)",
+                  "rgb(106, 207, 255)",
+                  "rgb(95, 105, 255)",
+                  "rgb(147, 106, 255)",
+                  "rgb(239, 110, 255)",
+                  "rgb(255, 105, 176)",
+                  "rgb(255, 105, 220)",
+                  "rgb(170, 61, 250)",
+                  "rgb(0, 0, 100)",
                 ],
                 data: [
                   (this.generationChartData[`${this.generationTabs[idx]}`]["교육비"][1]),

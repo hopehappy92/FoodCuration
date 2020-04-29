@@ -6,7 +6,7 @@
       </div>
       <div id="report_desc">
         월 1$로 지역별 상권분석부터 업종별 경향까지 <br>
-        다양한 분석 알고리즘으로 당신의 성공적인 창업을 도와드립니다.
+        다양한 분석 알고리즘으로 당신의 성공을 도와드립니다.
       </div>
       <div id="report_link">
         <div v-if="isMobile == false" id="report_free" class="report_add" @click="goReportPage()">

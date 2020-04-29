@@ -305,12 +305,11 @@ class StoreReviewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         # 리뷰를 작성하는 함수입니다.
-        print('asdf')
         if request.user.is_authenticated:
             data = request.data
             store = Store.objects.get(id=data["store"])
             user = request.user
-            review = models.Review.objects.create(store=store, user=user, content=data["content"], score=data["score"])
+            review = models.Review.objects.create(store=store, store_name=store.store_name, user=user, content=data["content"], score=data["score"])
             store.review_count += 1
             store.save()
             user.review_count += 1
@@ -348,7 +347,17 @@ class StoreReviewSet(viewsets.ModelViewSet):
         '''
         받아온 pk에 해당하는 리뷰를 삭제합니다.
         '''
-        if request.user.is_authenticated:
+        if request.user.is_staff:
+            review = models.Review.objects.get(id=pk)
+            user = review.user
+            store = review.store
+            review.delete()
+            user.review_count -= 1
+            user.save()
+            store.review_count -= 1
+            store.save()
+            return Response("삭제 성공")
+        elif request.user.is_authenticated:
             review = models.Review.objects.get(id=pk)
             user = review.user
             store = review.store
@@ -359,16 +368,6 @@ class StoreReviewSet(viewsets.ModelViewSet):
                 store.review_count -= 1
                 store.save()
                 return Response("삭제 성공")
-        elif request.user.is_staff:
-            review = models.Review.objects.get(id=pk)
-            user = review.user
-            store = review.store
-            review.delete()
-            user.review_count -= 1
-            user.save()
-            store.review_count -= 1
-            store.save()
-            return Response("삭제 성공")
         return Response("삭제 실패")
 
 
@@ -401,7 +400,7 @@ def search_store(self):
     for store in all_store:
         lat = store.latitude
         lon = store.longitude
-        if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < dis:
+        if 6371*acos(min(1, cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat)))) < dis:
             queryset.append(store)
     words = []
     # 검색어를 입력받아 띄워쓰기별로 나눠줍니다.
@@ -478,7 +477,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     @api_view(['POST'])
-    def user_delete(self):
+    def user_withdrawal(self):
         if self.user.is_authenticated == False:
             return Response("삭제 실패")
         else:
@@ -487,6 +486,42 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response("삭제 성공")
 
+
+class UserViewSet2(viewsets.ModelViewSet):
+    serializer_class = serializers.UserSerializer2
+    
+    @api_view(['GET'])
+    def all_user(self):
+        print(self.user)
+        if self.user.is_staff == True:
+            serializer = serializers.UserSerializer2(models.CustomUser.objects.filter(is_active=1), many=True)
+            return Response(serializer.data)
+        else:
+            return Response("접근 불가")
+    
+    @api_view(['PUT'])
+    def delete_user(self):
+        if self.user.is_staff == False:
+            print(self.user.is_staff)
+            return Response("삭제 실패")
+        else:
+            user = get_object_or_404(CustomUser, id=self.data["id"])
+            user.is_active = False
+            user.save()
+            return Response("삭제 성공")
+
+    @api_view(['PUT'])
+    def change_user(self):
+        if self.user.is_staff == False:
+            return Response("접근 불가")
+        else:
+            user = get_object_or_404(CustomUser, id=self.data["id"])
+            if user.is_staff:
+                user.is_staff = False
+            else:
+                user.is_staff = True
+            user.save()
+            return Response("권한 변경 성공")
 
 class StoreViewSet2(viewsets.GenericViewSet):
     serializer_class = serializers.StoreSerializer2
@@ -656,6 +691,7 @@ def user_based_cf(self):
 def recommend_by_store_id(self, store_id):
     '''
     '''
+    print(store_id)
     store = Store.objects.get(id=store_id)
     store_df = pd.DataFrame(all_store.values("id", "longitude", "latitude", "category"))
     min_review = 5
@@ -665,7 +701,7 @@ def recommend_by_store_id(self, store_id):
     store_df = store_df[store_df["longitude"] - lon > -0.015]
     store_df = store_df[store_df["latitude"] - lat < 0.015]
     store_df = store_df[store_df["latitude"] - lat > -0.015]
-    store_df = store_df[store_df.apply(lambda x: 6371*acos(cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"]))), axis=1) < 1][["id", "category"]]
+    store_df = store_df[store_df.apply(lambda x: 6371*acos(min(1, cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"])))), axis=1) < 1][["id", "category"]]
     
     a = []
     store_category_set = set(store.category.split('|'))
@@ -804,8 +840,9 @@ def recommend_by_current_location(self):
         for store in store_list:
             lat = store.latitude
             lon = store.longitude
-            if 6371*acos(cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat))) < 10:
+            if 6371*acos(min(1, cos(radians(lat))*cos(radians(clat))*cos(radians(clon)-radians(lon))+sin(radians(lat))*sin(radians(clat)))) < 10:
                 a.append(store)
         serializer = serializers.StoreDetailSerializer3(a, many=True)
+        check_image(serializer)
         queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
     return Response(queryset)

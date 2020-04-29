@@ -40,12 +40,29 @@
             <span class="info_content">{{ category }}</span>
           </span>
         </tr>
-        <tr v-for="(menu, index) in storeMenuList" v-if="index < 5" :key="index">
+        <tr v-for="(menu, index) in storeMenuList.slice(0,5)" :key="index">
           <th v-if="index == 0">메뉴</th>
           <th v-else />
           <div class="menu">
             <span class="info_content">{{ menu.menu_name }}</span>
             <span class="info_content">{{ menu.price }}원</span>
+          </div>
+        </tr>
+        <tr>
+          <th />
+          <div v-if="menuFlag == false && flag == true" class="moreMenu" @click="moreMenu()">
+            메뉴 더보기
+          </div>
+          <div v-if="menuFlag == true">
+            <div v-for="(menu, index) in storeMenuList.slice(5,storeMenuList.length)" :key="index">
+              <div class="menu">
+                <span class="info_content">{{ menu.menu_name }}</span>
+                <span class="info_content">{{ menu.price }}원</span>
+              </div>
+            </div>
+            <div class="moreMenu" @click="moreMenu()">
+              더보기 닫기
+            </div>
           </div>
         </tr>
       </tbody>
@@ -72,7 +89,6 @@
 import { mapState, mapActions } from "vuex";
 import http from "../api/http"
 // import { mdiHanger } from "@mdi/js";
-import axios from "axios";
 
 export default {
   props: {
@@ -83,7 +99,11 @@ export default {
     storeTel: String,
     storeAddress: String,
     storeCategories: Array,
-    storeMenuList: Array
+    storeMenuList: Array,
+    storeLike: {
+      type: Number,
+      default: 0
+    },
   },
   data() {
     return {
@@ -100,8 +120,20 @@ export default {
         { text: "4점!", value: 4 },
         { text: "5점!", value: 5 }
       ],
-      options_value: 3
+      options_value: 3,
+      menuFlag: false,
+      flag: false,
     };
+  },
+  watch: {
+    storeLike: function() {
+      this.like = true
+    },
+    storeMenuList: function() {
+      if (this.storeMenuList.length != 0) {
+        this.flag = true
+      }
+    }
   },
   methods: {
     ...mapActions("data", ["writeReview"]),
@@ -110,7 +142,7 @@ export default {
         store: this.$route.params.storeId,
         user: this.userId,
         score: this.score,
-        content: this.content
+        content: this.content,
       };
       await this.writeReview(params)
         .then(this.$emit("add-to-review"))
@@ -123,30 +155,11 @@ export default {
         this.dialog = false;
       }
     },
-    submit() {
-      console.log(this.userId, this.$route.params.storeId);
-      const headers = {
-        Authorization: "jwt" + localStorage.getItem("token")
-      };
-      http
-        .post(
-          `https://i02d106.p.ssafy.io:8765/api/store_reviews`,
-          {
-            store: this.$route.params.storeId,
-            user: this.userId,
-            score: this.score,
-            content: this.content
-          },
-          {headers}
-        )
-        .then(this.$emit("add-to-review"))
-        .then((this.dialog = false));
-    },
     pushLike() {
-      console.log(localStorage.getItem("pk"));
-      console.log(this.$route.params.storeId);
+      // console.log(localStorage.getItem("pk"));
+      // console.log(this.$route.params.storeId);
       const headers = {
-        Authorization: "jwt" + localStorage.getItem("token")
+        Authorization: "jwt " + localStorage.getItem("token")
       };
       http
         .post(
@@ -158,7 +171,7 @@ export default {
           {headers}
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
         });
       if (this.like == false) {
         this.like = true;
@@ -168,6 +181,14 @@ export default {
     },
     selectOption(value) {
       this.options_value = value;
+    },
+    moreMenu() {
+      if (this.menuFlag == false) {
+        this.menuFlag = true
+      } else {
+        this.menuFlag = false
+      }
+      // console.log(this.menuFlag)
     }
   }
 };
@@ -315,5 +336,18 @@ td {
 #review_form {
   margin-left: 10px;
   margin-right: 10px;
+}
+.moreMenu {
+  text-align: center;
+  font-family: "Yeon Sung", cursive;
+  border: 1px solid black;
+  width: 100px;
+  font-size: 18px;
+  padding: 3px;
+  cursor: pointer;
+}
+.moreMenu:hover {
+  color: white;
+  background-color: black;
 }
 </style>

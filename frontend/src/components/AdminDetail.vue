@@ -64,6 +64,7 @@
           더보기
         </div>
       </div>
+      
       <div v-if="reviewFlag == true">
         <!-- {{ reviews }} -->
         <table>
@@ -114,6 +115,63 @@
           더보기
         </div>
       </div>
+
+      <div v-if="userFlag == true">
+        <table>
+          <tr>
+            <th>
+              ID
+            </th>
+            <th>
+              EMAIL
+            </th>
+            <th>
+              AGE
+            </th>
+            <th>
+              GENDER
+            </th>
+            <th>
+              IS_STAFF
+            </th>
+            <th>
+              REVIEW_COUNT
+            </th>
+          </tr>
+          <tr v-for="(user, i) in addUser" :key="i">
+            <th>
+              {{ user["id"] }}
+            </th>
+            <th>
+              {{ user["email"] }}
+            </th>
+            <th>
+              {{ user["age"] }}
+            </th>
+            <th>
+              {{ user["gender"] }}
+            </th>
+            <th>
+              {{ user["is_staff"] }}
+              <div style="display: inline;" class="chageBtn" @click="changeStaff(user['id'])">
+                권한변경
+              </div>
+            </th>
+            <th>
+              {{ user["review_count"] }}
+            </th>
+            <th>
+              <div class="deleteBtn" @click="del('user', user['id'])">
+                DELETE
+              </div>
+            </th>
+          </tr>
+        </table>
+        <div class="loadMore" @click="userLoadMore()">
+          더보기
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -129,7 +187,9 @@ export default {
       reviewFlag: false,
       userFlag: false,
       loading: true,
-      storeName: ""
+      storeName: "",
+      addUser: [],
+      userpage: 1,
     }
   },
   computed: {
@@ -138,7 +198,13 @@ export default {
       page: state => state.data.storeSearchPage,
       reviews: state => state.data.userReviewList,
       reviewpage: state => state. data.userReviewPage,
+      users: state => state.data.userList
     })
+  },
+  watch: {
+    users: function() {
+      this.addUser = this.users.slice(0,10)
+    }
   },
   methods: {
     goHome() {
@@ -154,6 +220,7 @@ export default {
     ...mapActions("data", ["getUserReview"]),
     ...mapActions("data", ["adminDelete"]),
     ...mapActions("data", ["getUserData"]),
+    ...mapActions("data", ["setUserStaff"]),
     async showUsers() {
       var target = document.getElementById("tab3").style
       var else1 = document.getElementById("tab1").style
@@ -200,14 +267,13 @@ export default {
       } else {
         this.reviewFlag = false
       }
-      if (this.reviews.length == 0) {
-        const params = {
-          page: 1,
-          append: true,
-          page_size: 10
-        };
-        await this.getUserReview(params);
-      }
+      const params = {
+        page: 1,
+        append: true,
+        page_size: 10,
+        reset: true,
+      };
+      await this.getUserReview(params);
     },
     async showStores() {
       var target = document.getElementById("tab1").style
@@ -231,15 +297,13 @@ export default {
       } else {
         this.storeFlag = false
       }
-      // console.log(this.stores.length)
-      if (this.stores.length == 0) {
-        const params = {
-          page: 1,
-          append: true,
-          page_size: 10,
-        };
-        await this.getStores(params)
-      }
+      const params = {
+        page: 1,
+        append: true,
+        page_size: 10,
+        reset: true,
+      };
+      await this.getStores(params)
     },
     storeLoadMore: async function() {
       this.loading = true;
@@ -265,6 +329,18 @@ export default {
         this.loading = false;
       }, 1000);
     },
+    userLoadMore() {
+      let start, end
+      start = this.addUser.length
+      end = this.addUser.length + 10
+      for (let i = start; i < end; ++i) {
+        this.addUser.push(this.users[i])
+      }
+    },
+    changeStaff(params) {
+      // console.log(params)
+      this.setUserStaff(params)
+    }
   }
 }
 </script>
@@ -306,5 +382,14 @@ tr:nth-child(even) {
   text-align: center;
   background-color: red;
   color: white;
+  cursor: pointer;
+}
+.chageBtn {
+  border: 1px solid black;
+  padding: 1px;
+  text-align: center;
+  background-color: green;
+  color: white;
+  cursor: pointer;
 }
 </style>
