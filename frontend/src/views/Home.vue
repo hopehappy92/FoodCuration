@@ -255,6 +255,8 @@ export default {
 }
 #home_body_recommand_algo {
   font-size: 30px;
+  font-family: "Do Hyeon", sans-serif;
+  letter-spacing: 2px;
 }
 #home_body_recommand_whole {
   font-size: 30px;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="map" style="width:100%;height:350px;"></div>
+    <div id="map" style="width:100%;height:350px;" />
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
       // });
       // marker.setMap(map);
       const that = this;
-      console.log("지도야 나와라!!!!");
+      // console.log("지도야 나와라!!!!");
       var mapContainer = document.getElementById("map"), // 지도를 표시할 div
         mapOption = {
           center: new kakao.maps.LatLng(this.latitude, this.longitude), // 지도의 중심좌표

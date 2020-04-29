@@ -110,5 +110,11 @@ export default {
       Authorization: "jwt " + localStorage.getItem("token")
     }
     return http.put(`${apiUrl}/change_user`, params, {headers})
+  },
+  getUserLikeStores() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/like_stores`, {headers})
   }
 }

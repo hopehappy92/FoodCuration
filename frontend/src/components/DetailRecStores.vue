@@ -1,52 +1,63 @@
 <template>
-  <div v-if="flag" class="container">
+  <div class="container">
     <p id="rec_title">"이 식당들은 어때요??"</p>
-    <div v-for="(store, i) in recStores" :key="i">
-      <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
-      <div style="display: flex; flex-flow: row;">
-        <div>
-          <img
-            v-if="store.url === ''"
-            class="recImages"
-            src="../../public/images/noImage1.jpg"
-            alt="gg"
-          >
-          <img v-else class="recImages" :src="store.url" alt="이미지">
-        </div>
-        <div class="store_summary">
-          <div class="summary_top">
-            <span id="rec_name">{{ store.store_name }}</span>
-            <span id="rec_score">{{ store.avg_score.toFixed(1) }}</span>
+    <div v-if="flag">
+      <div v-for="(store, i) in recStores" :key="i">
+        <!-- <img class="recImages" :src="store.images[0]" alt="이미지" /> -->
+        <div style="display: flex; flex-flow: row;">
+          <div>
+            <img
+              v-if="store.url === ''"
+              class="recImages"
+              src="../../public/images/noImage1.jpg"
+              alt="gg"
+            >
+            <img v-else class="recImages" :src="store.url" alt="이미지">
           </div>
-          <div class="summary_bottom">
-            <div class="sb_container">
-              <span class="sb">지역:</span>
-              <span class="sb_content">{{ store.area }}</span>
+          <div class="store_summary">
+            <div class="summary_top">
+              <span id="rec_name">{{ store.store_name }}</span>
+              <span id="rec_score">{{ store.avg_score.toFixed(1) }}</span>
             </div>
-            <div class="sb_container">
-              <span class="sb">리뷰 개수:</span>
-              <span class="sb_content">{{ store.review_count }}</span>
-            </div>
-            <div>
-              <i class="fas fa-arrow-right" />
-              <button @click.prevent="moveToStore(store.id)">상세보기</button>
+            <div class="summary_bottom">
+              <div class="sb_container">
+                <span class="sb">지역:</span>
+                <span class="sb_content">{{ store.area }}</span>
+              </div>
+              <div class="sb_container">
+                <span class="sb">리뷰 개수:</span>
+                <span class="sb_content">{{ store.review_count }}</span>
+              </div>
+              <div>
+                <i class="fas fa-arrow-right" />
+                <button @click.prevent="moveToStore(store.id)">상세보기</button>
+              </div>
             </div>
           </div>
         </div>
+        <br v-if="i < 2">
+        <hr v-if="i < 2" id="line">
+        <br v-if="i < 2">
       </div>
-      <br v-if="i < 2">
-      <hr v-if="i < 2" id="line">
-      <br v-if="i < 2">
+    </div>
+    <div v-else id="loading">
+      <i id="loadingCircle" class="fa fa-spinner fa-spin" />
+      <div style="font-size: 20px; margin-top: 10px;">
+        알고리즘 분석중입니다.
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import api from "../api";
-import router from "../router";
+// import router from "../router";
 export default {
   props: {
-    storeId: Number
+    storeId: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -61,13 +72,13 @@ export default {
       var picked = [];
       var max_length = res.data.length;
       var cnt = false;
-      var flag = true;
-      console.log(res);
-      console.log("굿굿");
+      // var flag = true;
+      // console.log(res);
+      // console.log("굿굿");
       while (cnt === false) {
         var ranNum = Math.floor(Math.random() * max_length);
         if (ranNum > 0 && ranNum < max_length-1) {
-          console.log(ranNum);
+          // console.log(ranNum);
           picked.push(ranNum);
           picked.push(ranNum + 1);
           picked.push(ranNum - 1);
@@ -76,20 +87,20 @@ export default {
           continue;
         }
       }
-      console.log(picked);
+      // console.log(picked);
       const recStores = [];
       for (var number of picked) {
         recStores.push(res.data[number]);
       }
       this.recStores = recStores;
       this.flag = true;
-      console.log("ddd");
-      console.log(recStores);
+      // console.log("ddd");
+      // console.log(recStores);
     });
   },
   methods: {
     moveToStore(storeId) {
-      console.log(storeId);
+      // console.log(storeId);
       this.$router.push("/StoreDetail/" + storeId);
     }
   }
@@ -181,6 +192,13 @@ export default {
   -ms-animation: fadeOut 1s 1s infinite linear normal;
   -o-animation: fadeOut 1s 1s infinite linear normal;
   animation: fadeOut 1s 1s infinite linear normal;
+}
+#loading {
+  border: none;
+  color: black;
+  padding: 0px 24px;
+  font-size: 40px;
+  text-align: center;
 }
 @keyframes fadeOut {
   from {

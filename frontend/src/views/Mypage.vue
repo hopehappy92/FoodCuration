@@ -68,6 +68,22 @@ export default {
       page: state => state.data.userReviewPage
     })
   },
+    async mounted() {
+    const params = {
+      user: this.$route.params.userId,
+      page: 1,
+      append: false
+    };
+    // console.log("mypage ", params)
+    this.checkNavSearch(0);
+    await this.getUserReview(params);
+    this.loading = false;
+  },
+  created() {
+    if (this.$route.params.userId != localStorage.getItem("pk")) {
+      router.push("/wrongid")
+    }
+  },
   methods: {
     ...mapActions("data", ["getUserReview"]),
     ...mapActions("data", ["getReviewByCategory"]),
@@ -141,22 +157,6 @@ export default {
       this.flag = false;
     }
   },
-  async mounted() {
-    const params = {
-      user: this.$route.params.userId,
-      page: 1,
-      append: false
-    };
-    // console.log("mypage ", params)
-    this.checkNavSearch(0);
-    await this.getUserReview(params);
-    this.loading = false;
-  },
-  created() {
-    // if (this.$route.params.userId != localStorage.getItem("pk")) {
-    //   router.push("/wrongid")
-    // }
-  }
 };
 </script>
 

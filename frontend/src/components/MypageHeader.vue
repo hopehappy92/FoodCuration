@@ -121,6 +121,7 @@ export default {
 }
 #my_page_head_sort > div > div {
   margin: 0px;
+  font-family: "Do Hyeon", sans-serif;
 }
 #my_page_head_search_btn {
   font-size: 16px;
@@ -130,6 +131,7 @@ export default {
   color: white;
   width: 50px;
   transition: all .5s;
+  font-family: "Do Hyeon", sans-serif;
 }
 #my_page_head_reset_btn {
   font-size: 16px;
@@ -141,6 +143,7 @@ export default {
   height: 34px;
   transition: all .5s;
   transform: translateY(15%);
+  font-family: "Do Hyeon", sans-serif;
 }
 #blackbox {
   height: 20px;

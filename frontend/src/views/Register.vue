@@ -29,7 +29,7 @@ export default {
 
 <style scoped>
 #register {
-  background-image: url("../../public/images/regi_bg.png");
+  background-image: url("../../public/images/regi_bg.jpg");
   /* Add the blur effect */
   /* filter: blur(8px);
   -webkit-filter: blur(8px); */

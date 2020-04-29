@@ -42,16 +42,6 @@
                     >
                     <i v-if="location" class="fas fa-search" @click="onSubmit" />
                     <i v-else class="fas fa-search" @click="locationSubmit" />
-                    <!-- <v-select
-                      id="my_page_head_option"
-                      v-model="options_value"
-                      :items="options"
-                      dense
-                      item-color="black"
-                      color="rgba(0, 0, 0, 1)"
-                      style="display: inline-block; width: 200px; font-size: 15px; transform: translateY(-7.5%); margin-left: 10px;"
-                      @change="selectOption"
-                    /> -->
                   </div>
                   <p v-if="location === 0" id="desc_map">탐색하고 싶은 위치로 지도를 움직이고 범위를 선택해주세요</p>
                   <div v-if="location === 0" id="disBody">
@@ -72,26 +62,6 @@
                     />
                   </v-flex>
                 </v-flex>
-                <!-- <v-flex xs12 text-center>
-                  <v-btn
-                    v-if="location"
-                    large
-                    class="sliver --text ma-3"
-                    rounded
-                    dark
-                    color="sliver lighten-1"
-                    @click="onSubmit"
-                  >전국 음식점 검색</v-btn>
-                  <v-btn
-                    v-else
-                    large
-                    class="sliver--text ma-3"
-                    rounded
-                    dark
-                    color="sliver lighten-1"
-                    @click="locationSubmit"
-                  >주변 음식점 검색</v-btn>
-                </v-flex> -->
               </v-layout>
             </v-container>
           </card>

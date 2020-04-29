@@ -15,6 +15,7 @@
           :store-address="storeAddress"
           :store-categories="storeCategories"
           :store-menu-list="storeMenuList"
+          :store-like="storeLike"
           @add-to-review="updatedReview"
         />
         <!-- 식당 태그 -->
@@ -32,6 +33,9 @@
         <div v-if="tags !== null">
           <StoreWC :tags="tags" :store-name="storeName" />
         </div>
+        <div v-else id="wordCloud">
+          리뷰를 작성해서 <br> <i style="color:skyblue;"><b>워드클라우드</b></i> 의 <br> 주인공이 되어 보세요
+        </div>
         <br>
         <DetailRecStores :store-id="storeId" />
       </div>
@@ -44,7 +48,7 @@
 
 <script>
 import Nav from "@/components/Nav.vue";
-import router from "@/router";
+// import router from "@/router";
 import StoreLocation from "@/components/StoreLocation";
 import StoreInfo from "@/components/StoreInfo";
 import StoreReview from "@/components/StoreReview";
@@ -76,16 +80,20 @@ export default {
       latitude: 0,
       longitude: 0,
       storeId: Number(this.$route.params.storeId),
-      tags: ""
+      tags: "",
+      storeLike: 0
     };
   },
   mounted(res) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
     http
       .get(
-        `/api/stores/${this.$route.params.storeId}`
+        `/api/stores/${this.$route.params.storeId}`, {headers}
       )
       .then(res => {
-        console.log(res);
+        // console.log(res);
         this.storeName = res.data.store_name;
         this.storeArea = res.data.area;
         this.storeAddress = res.data.address;
@@ -96,6 +104,7 @@ export default {
         this.reviewCnt = res.data.review_count;
         this.storeMenuList = res.data.menues;
         this.tags = res.data.tag;
+        this.storeLike = res.data.like;
       })
       .then(this.checkNavSearch(0));
   },
@@ -108,7 +117,7 @@ export default {
       this.storeScore = Number(avgScore);
     },
     writeReview() {
-      console.log("clicked");
+      // console.log("clicked");
       this.$refs.write.write();
       document.getElementById("moveToWrite").scrollIntoView();
     }
@@ -155,6 +164,14 @@ footer {
 }
 .mobile_map {
   display: none;
+}
+#wordCloud {
+  border: 1px solid white;
+  background-color: white;
+  border-radius: 10px;;
+  font-size: 24px;
+  text-align: center;
+  padding: 10px;
 }
 @media screen and (max-width: 600px) {
   .mobile_map {
