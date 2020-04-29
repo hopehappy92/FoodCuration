@@ -106,6 +106,9 @@ import router from "../router"
   /* background-color: black; */
   color: white;
   font-size: 16px;
+  font-family: "Do Hyeon", sans-serif;
+  font-weight: 200;
+  letter-spacing: 1px;
 }
 .home_body_card_btn {
   border: 2px solid white;
@@ -113,7 +116,7 @@ import router from "../router"
   margin-top: 2px;
 }
 #home_body_card_title {
-  font-size: 1.4vw;
+  font-size: 1.5vw;
   margin-bottom: 5px;
 }
 .home_body_card_desc {

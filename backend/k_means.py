@@ -24,6 +24,7 @@ user_df['gender'] = user_df['gender'].apply(lambda x: male_value if x=="남" els
 kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=300, random_state=0)
 kmeans.fit(user_df[["age", "gender"]])
 print('cluster 완료')
+print(kmeans.cluster_centers_)
 
 # kmeans.labels_ : 몇번 클르서티인지 라벨링 붙이고 분리했었던 id col을 붙임
 user_df['cluster'] = kmeans.labels_

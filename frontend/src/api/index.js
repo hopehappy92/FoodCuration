@@ -27,7 +27,6 @@ export default {
     return http.delete(`${apiUrl}/user_reviews/${params}`)
   },
   reviewUpdate(params) {
-    // console.log(params)
     return http.put(`${apiUrl}/user_reviews/${params["id"]}`, params)
   },
   getStoresByLocation(params) {
@@ -111,5 +110,11 @@ export default {
       Authorization: "jwt " + localStorage.getItem("token")
     }
     return http.put(`${apiUrl}/change_user`, params, {headers})
+  },
+  getUserLikeStores() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/like_stores`, {headers})
   }
 }

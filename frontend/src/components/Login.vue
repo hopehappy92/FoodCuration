@@ -36,7 +36,7 @@
           <hr style="width:37%; display:inline-block; margin-left:10px; border: 0.5px solid;">
         </div>
         <div style="margin-bottom: 20px;">
-          <v-btn color="rgba(255, 255, 0, 1)" class="login_btn" @click="check()">KAKAO</v-btn>
+          <v-btn color="rgba(255, 255, 0, 1)" class="login_btn" disabled>KAKAO</v-btn>
         </div>
         <div>
           계정이 없으신가요?
@@ -80,7 +80,7 @@
           <hr style="width:37%; display:inline-block; margin-left:10px; border: 0.5px solid;">
         </div>
         <div style="margin-bottom: 20px;">
-          <v-btn color="rgba(255, 255, 0, 1)" class="login_btn" @click="check()">KAKAO</v-btn>
+          <v-btn color="rgba(255, 255, 0, 1)" class="login_btn" disabled>KAKAO</v-btn>
         </div>
         <div>
           계정이 없으신가요?
@@ -103,7 +103,7 @@ export default {
         password: ""
       },
       dialog: false,
-      isMobile: false
+      isMobile: false,
     };
   },
   mounted() {

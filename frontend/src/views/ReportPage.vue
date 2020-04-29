@@ -23,7 +23,7 @@
           개요
         </div>
         <div class="sectionDetail">
-          최근 리뷰를 기반으로 TF-IDF 분석을 하였다.
+          최근 리뷰를 기반으로 TF-IDF 분석을 하였으며, 최근 두드러지는 단어를 워드클라우드로 표현하였다.
         </div>
         <div id="WC" style="width: 100%; height: 500px;" />
       </div>
@@ -694,8 +694,20 @@ export default {
             ],
               datasets: [{
                 backgroundColor: [
-                  'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple',
-                  'pink', 'yellogreen', 'forestgreen', 'tomato', 'gold', 'olive', 'brown'
+                  "rgb(255, 50, 100)",
+                  "rgb(255, 175, 100)",
+                  "rgb(239, 252, 101)",
+                  "rgb(149, 250, 99)",
+                  "rgb(112, 250, 120)",
+                  "rgb(113, 252, 207)",
+                  "rgb(106, 207, 255)",
+                  "rgb(95, 105, 255)",
+                  "rgb(147, 106, 255)",
+                  "rgb(239, 110, 255)",
+                  "rgb(255, 105, 176)",
+                  "rgb(255, 105, 220)",
+                  "rgb(170, 61, 250)",
+                  "rgb(0, 0, 100)",
                 ],
                 data: [
                   (this.generationChartData[`${this.generationTabs[idx]}`]["교육비"][0]),
@@ -716,8 +728,20 @@ export default {
               },
               {
                 backgroundColor: [
-                  'red', 'orange', 'yellow', 'green', 'blue', 'navy', 'purple',
-                  'pink', 'yellogreen', 'forestgreen', 'tomato', 'gold', 'olive', 'brown'
+                  "rgb(255, 50, 100)",
+                  "rgb(255, 175, 100)",
+                  "rgb(239, 252, 101)",
+                  "rgb(149, 250, 99)",
+                  "rgb(112, 250, 120)",
+                  "rgb(113, 252, 207)",
+                  "rgb(106, 207, 255)",
+                  "rgb(95, 105, 255)",
+                  "rgb(147, 106, 255)",
+                  "rgb(239, 110, 255)",
+                  "rgb(255, 105, 176)",
+                  "rgb(255, 105, 220)",
+                  "rgb(170, 61, 250)",
+                  "rgb(0, 0, 100)",
                 ],
                 data: [
                   (this.generationChartData[`${this.generationTabs[idx]}`]["교육비"][1]),

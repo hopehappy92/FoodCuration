@@ -21,6 +21,7 @@ const state = {
     url: "",
     reviewCount: 0,
     avgScore: 0,
+    like: 0,
   },
   user: {
     id: "",
@@ -46,6 +47,7 @@ const state = {
   mainAllList: [0],
   mainEmptyFlag: false,
   userList: [],
+  userLikeList: [0],
   trendChartData: {
     의류: {label: [], data1: [], data2: []},
     악세사리류: {label: [], data1: [], data2: []},
@@ -351,6 +353,9 @@ const actions = {
   async getStores({
     commit
   }, params) {
+    if (params["reset"] == true) {
+      state.storeSearchList = []
+    }
     const append = params.append;
     const resp = await api.getStores(params);
     // console.log(resp)
@@ -363,7 +368,12 @@ const actions = {
       address: d.address,
       lat: d.latitude,
       lng: d.longitude,
-      categories: d.category_list
+      categories: d.category_list,
+      images: d.images,
+      url: d.url,
+      reviewCount: d.review_count,
+      avgScore: d.avg_score,
+      like: d.like
     }));
 
     if (append) {
@@ -377,9 +387,11 @@ const actions = {
   async getUserReview({
     commit
   }, params) {
-    // console.log(params["page"])
     if (params["page"] == false) {
       return
+    }
+    if (params["reset"] == true) {
+      state.userReviewList = []
     }
     const append = params.append;
     // console.log(append)
@@ -676,7 +688,7 @@ const actions = {
     // console.log(params)
     await api.reviewUpdate(params)
       .then(res => {
-        // console.log(res)
+        // console.log("bbbbbbb", res)
       })
       .catch(err => {
         console.log(err)
@@ -703,10 +715,10 @@ const actions = {
   async searchByLocation({
     commit
   }, params) {
-    console.log(params)
+    // console.log(params)
     const resp = await api.getStoresByLocation(params);
-    console.log('123131231')
-    console.log(resp)
+    // console.log('123131231')
+    // console.log(resp)
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,
@@ -716,7 +728,8 @@ const actions = {
       address: d.address,
       lat: d.latitude,
       lng: d.longitude,
-      categories: d.category_list
+      categories: d.category_list,
+      like: d.like
     }));
     commit("setStoreSearchList", stores)
   },
@@ -736,6 +749,7 @@ const actions = {
   async writeReview({
     commit
   }, params) {
+    console.log(params)
     await api.writeReview(params)
       .then(res => {
         // console.log(res)
@@ -991,6 +1005,19 @@ const actions = {
         state.userList.push(tmp[i])
       }
     }
+  },
+  async userLikeStores({commit}) {
+    const resp = await api.getUserLikeStores()
+    // console.log(resp)
+    const stores = resp.data.map(d => ({
+      id: d.id,
+      store_name: d.store_name,
+      area: d.area,
+      avg_score: d.avg_score,
+      review_count: d.review_count,
+    }))
+    // console.log(stores)
+    commit("setUserLikeList", stores)
   }
 };
 
@@ -1035,7 +1062,7 @@ const mutations = {
     state.isHomeCate = localStorage.getItem("category_list")
   },
   checkNavSearch(state, check = 0) {
-    console.log('반응했니?')
+    // console.log('반응했니?')
     if (check === 1) {
       state.navSearch = false
     } else {
@@ -1043,7 +1070,7 @@ const mutations = {
     }
   },
   searchFromNav(state, params) {
-    console.log(params)
+    // console.log(params)
     state.searchFromNav = true
     state.storeNameFromNav = params
   },
@@ -1061,6 +1088,9 @@ const mutations = {
   },
   setUserList(state, users) {
     state.userList = users.map(s => s)
+  },
+  setUserLikeList(state, stores) {
+    state.userLikeList = stores.map(s => s)
   }
 };
 

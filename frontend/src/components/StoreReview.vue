@@ -34,7 +34,7 @@
 <script>
 // import router from "@/router";
 import http from "../api/http";
-import { mapState, mapActions } from "vuex";
+// import { mapState, mapActions } from "vuex";
 import updateReview from "@/components/updateReview";
 export default {
   components: {
@@ -73,8 +73,8 @@ export default {
         `/api/get_store_reviews_by_store_id/${this.$route.params.storeId}`
       )
       .then(res => {
-        console.log(res.data);
-        console.log("dddd");
+        // console.log(res.data);
+        // console.log("dddd");
         if (res.data.length) {
           var value = 0;
           let allScore = 0;
@@ -125,7 +125,7 @@ export default {
       const headers = {
           Authorization: 'jwt ' + localStorage.getItem("token")
       };
-      console.log(review_id);
+      // console.log(review_id);
       http
         .delete(
           `/api/store_reviews/${review_id}`, {headers}

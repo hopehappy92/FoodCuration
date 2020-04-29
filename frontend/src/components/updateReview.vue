@@ -9,10 +9,8 @@
         <v-card-title class="headline grey lighten-2" primary-title>리뷰 수정</v-card-title>
         <textarea v-model="eContent" type="text" value="hhh">content</textarea>
         <v-divider />
-
         <v-card-actions>
           <v-spacer />
-
           <v-btn color="primary" text @click="editDone">수정</v-btn>
           <v-btn color="red" text @click="dialog = false">취소</v-btn>
         </v-card-actions>

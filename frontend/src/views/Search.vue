@@ -9,7 +9,7 @@
       <v-layout justify-center wrap mt-5>
         <v-flex xs12 md8>
           <card class="upperCard">
-            <div style="text-align: center; font-size: 40px; margin-top: 10px; margin-bottom: 10px; color: black; font-weight: 700;">
+            <div id="my_page_title">
               {{ title }}
             </div>  
             <v-container py-0>
@@ -42,16 +42,6 @@
                     >
                     <i v-if="location" class="fas fa-search" @click="onSubmit" />
                     <i v-else class="fas fa-search" @click="locationSubmit" />
-                    <!-- <v-select
-                      id="my_page_head_option"
-                      v-model="options_value"
-                      :items="options"
-                      dense
-                      item-color="black"
-                      color="rgba(0, 0, 0, 1)"
-                      style="display: inline-block; width: 200px; font-size: 15px; transform: translateY(-7.5%); margin-left: 10px;"
-                      @change="selectOption"
-                    /> -->
                   </div>
                   <p v-if="location === 0" id="desc_map">탐색하고 싶은 위치로 지도를 움직이고 범위를 선택해주세요</p>
                   <div v-if="location === 0" id="disBody">
@@ -72,26 +62,6 @@
                     />
                   </v-flex>
                 </v-flex>
-                <!-- <v-flex xs12 text-center>
-                  <v-btn
-                    v-if="location"
-                    large
-                    class="sliver --text ma-3"
-                    rounded
-                    dark
-                    color="sliver lighten-1"
-                    @click="onSubmit"
-                  >전국 음식점 검색</v-btn>
-                  <v-btn
-                    v-else
-                    large
-                    class="sliver--text ma-3"
-                    rounded
-                    dark
-                    color="sliver lighten-1"
-                    @click="locationSubmit"
-                  >주변 음식점 검색</v-btn>
-                </v-flex> -->
               </v-layout>
             </v-container>
           </card>
@@ -103,6 +73,7 @@
               :to="{ name: 'StoreDetail', params: {
                 storeId: store.id
               }}"
+              style="text-decoration: none; color: black;"
             >
               <store-list-card
                 :id="store.id"
@@ -110,6 +81,7 @@
                 :categories="store.categories"
                 :address="store.address"
                 :tel="store.tel"
+                :url="store.url"
               />
             </router-link>
           </v-flex>
@@ -147,8 +119,14 @@ export default {
       { text: "주변검색", value: 2 }
     ],
     options_value: 1,
-    title: "일반검색"
+    title: "주변 검색을 사용해 보세요!"
   }),
+  computed: {
+    ...mapState({
+      stores: state => state.data.storeSearchList,
+      page: state => state.data.storeSearchPage
+    })
+  },
   watch: {
     options_value: function() {
       if (this.options_value == 2) {
@@ -157,12 +135,6 @@ export default {
         this.noLocation();
       }
     }
-  },
-  computed: {
-    ...mapState({
-      stores: state => state.data.storeSearchList,
-      page: state => state.data.storeSearchPage
-    })
   },
   methods: {
     ...mapActions("data", ["getStores"]),
@@ -197,7 +169,7 @@ export default {
     getLocation() {
       const that = this;
       navigator.geolocation.getCurrentPosition(function(pos) {
-        console.log(pos.coords.longitude, pos.coords.latitude);
+        // console.log(pos.coords.longitude, pos.coords.latitude);
         setTimeout(() => {
           that.lat = Number(pos.coords.latitude);
           that.lon = Number(pos.coords.longitude);
@@ -212,9 +184,9 @@ export default {
       this.location = 1;
     },
     locationSubmit: async function() {
-      console.log(this.lat);
-      console.log(this.lon);
-      console.log(this.storeName);
+      // console.log(this.lat);
+      // console.log(this.lon);
+      // console.log(this.storeName);
       const params = {
         latitude: this.lat,
         longitude: this.lon,
@@ -281,7 +253,7 @@ export default {
           this.locationSubmit();
           break;
         default:
-          console.log("뭔일이고?");
+          // console.log("뭔일이고?");
       }
     },
     selectOption(value) {
@@ -306,7 +278,7 @@ export default {
     setTimeout(() => {
       this.checkNavSearch(1);
       if (this.$store.state.data.searchFromNav) {
-        console.log("들어왔다");
+        // console.log("들어왔다");
         this.storeName = this.$store.state.data.storeNameFromNav;
         this.onSubmit();
         setTimeout(() => {
@@ -403,10 +375,8 @@ export default {
   justify-content: center;
 }
 .searchBar_innder_middle > input {
-  /* background: #f1f1f1; */
   width: 100%;
   height: 40px;
-  /* border-radius: 10px; */
   transform: translateY(-4px);
   border-bottom: 1px solid black;
 }
@@ -435,9 +405,19 @@ input:focus {
 .bgControl {
   height: 100%;
 }
+#my_page_title {
+  text-align: center;
+  font-size: 36px;
+  margin: 20px;
+  color: black;
+  font-weight: 700;
+}
 @media screen and (max-width: 600px) {
   .underlined::before {
     left: 18px;
+  }
+  #my_page_title {
+    font-size: 6vw;
   }
 }
 </style>

@@ -187,6 +187,7 @@ export default {
     }
   },
   async mounted() {
+    await this.allRecommand()
     const that = this;
     await navigator.geolocation.getCurrentPosition(function(pos) {
       that.lat = Number(pos.coords.latitude);
@@ -198,6 +199,7 @@ export default {
       }
       that.allRecommand(params)
     });
+    
     await this.checkNavbar()
     await this.userBasedCheck()
     this.onResponsiveInverted();
@@ -253,6 +255,8 @@ export default {
 }
 #home_body_recommand_algo {
   font-size: 30px;
+  font-family: "Do Hyeon", sans-serif;
+  letter-spacing: 2px;
 }
 #home_body_recommand_whole {
   font-size: 30px;

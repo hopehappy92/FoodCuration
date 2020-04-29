@@ -267,14 +267,13 @@ export default {
       } else {
         this.reviewFlag = false
       }
-      if (this.reviews.length == 0) {
-        const params = {
-          page: 1,
-          append: true,
-          page_size: 10
-        };
-        await this.getUserReview(params);
-      }
+      const params = {
+        page: 1,
+        append: true,
+        page_size: 10,
+        reset: true,
+      };
+      await this.getUserReview(params);
     },
     async showStores() {
       var target = document.getElementById("tab1").style
@@ -298,15 +297,13 @@ export default {
       } else {
         this.storeFlag = false
       }
-      // console.log(this.stores.length)
-      if (this.stores.length == 0) {
-        const params = {
-          page: 1,
-          append: true,
-          page_size: 10,
-        };
-        await this.getStores(params)
-      }
+      const params = {
+        page: 1,
+        append: true,
+        page_size: 10,
+        reset: true,
+      };
+      await this.getStores(params)
     },
     storeLoadMore: async function() {
       this.loading = true;
