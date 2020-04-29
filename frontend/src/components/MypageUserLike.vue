@@ -10,21 +10,26 @@
         dark
       >
         <div id="like_store">
-          <div v-for="(value, i) in likeList" :key="i">
-            <div class="like_store_card" @click="goDetail(value['id'])">
-              <div class="like_store_desc like_store_name">
-                {{ value["store_name"] }}
-              </div>
-              <div class="like_store_desc">
-                ( {{ value["area"] }} )
-              </div>
-              <div class="like_store_desc">
-                평점 : {{ String(value["avg_score"]).slice(0,3) }}점  |
-              </div>
-              <div class="like_store_desc">
-                리뷰 : {{ value["review_count"] }}개
+          <div v-if="flag == true">
+            <div v-for="(value, i) in likeList" :key="i">
+              <div class="like_store_card" @click="goDetail(value['id'])">
+                <div class="like_store_desc like_store_name">
+                  {{ value["store_name"] }}
+                </div>
+                <div class="like_store_desc">
+                  ( {{ value["area"] }} )
+                </div>
+                <div class="like_store_desc">
+                  평점 : {{ String(value["avg_score"]).slice(0,3) }}점  |
+                </div>
+                <div class="like_store_desc">
+                  리뷰 : {{ value["review_count"] }}개
+                </div>
               </div>
             </div>
+          </div>
+          <div v-else style="text-align: center; font-size: 24px;">
+            좋아요한 가게가 없습니다.
           </div>
         </div>
       </v-card>
@@ -39,21 +44,26 @@
         dark
       >
         <div id="like_store">
-          <div v-for="(value, i) in likeList" :key="i">
-            <div class="like_store_card" @click="goDetail(value['id'])">
-              <div class="like_store_desc like_store_name">
-                {{ value["store_name"] }}
-              </div>
-              <div class="like_store_desc">
-                ( {{ value["area"] }} )
-              </div>
-              <div class="like_store_desc">
-                평점 : {{ String(value["avg_score"]).slice(0,3) }}점  |
-              </div>
-              <div class="like_store_desc">
-                리뷰 : {{ value["review_count"] }}개
+          <div v-if="flag == true">
+            <div v-for="(value, i) in likeList" :key="i">
+              <div class="like_store_card" @click="goDetail(value['id'])">
+                <div class="like_store_desc like_store_name">
+                  {{ value["store_name"] }}
+                </div>
+                <div class="like_store_desc">
+                  ( {{ value["area"] }} )
+                </div>
+                <div class="like_store_desc">
+                  평점 : {{ String(value["avg_score"]).slice(0,3) }}점  |
+                </div>
+                <div class="like_store_desc">
+                  리뷰 : {{ value["review_count"] }}개
+                </div>
               </div>
             </div>
+          </div>
+          <div v-else style="text-align: center; font-size: 24px;">
+            좋아요한 가게가 없습니다.
           </div>
         </div>
       </v-card>
@@ -71,10 +81,19 @@ export default {
     return {
       dialog1: false,
       isMobile: false,
+      flag: true,
     }
   },
   computed: {
     likeList: v => v.userLikeList
+  },
+  watch: {
+    userLikeList: function() {
+      // console.log(this.userLikeList.length)
+      if (this.userLikeList.length == 0) {
+        this.flag = false
+      }
+    }
   },
   mounted() {
     this.onResponsiveInverted();
