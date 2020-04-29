@@ -11,7 +11,7 @@
       >
         <div id="like_store">
           <div v-if="flag == true">
-            <div v-for="(value, i) in likeList" :key="i">
+            <div v-for="(value, i) in userLikeList" :key="i">
               <div class="like_store_card" @click="goDetail(value['id'])">
                 <div class="like_store_desc like_store_name">
                   {{ value["store_name"] }}
@@ -45,7 +45,7 @@
       >
         <div id="like_store">
           <div v-if="flag == true">
-            <div v-for="(value, i) in likeList" :key="i">
+            <div v-for="(value, i) in userLikeList" :key="i">
               <div class="like_store_card" @click="goDetail(value['id'])">
                 <div class="like_store_desc like_store_name">
                   {{ value["store_name"] }}
