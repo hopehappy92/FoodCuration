@@ -240,6 +240,14 @@ class StoreViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.StoreSerializer
     pagination_class = SmallPagination
     
+    def retrieve(self, request, pk=None):
+        user = request.user
+        store = models.Store.objects.get(id=pk)
+        a = serializers.StoreSerializer(store).data        
+        b = UserLikeStore.objects.filter(store=store, customuser=user) if user.is_authenticated else 0
+        a['like'] = 1 if b else 0
+        return Response(a)
+
     def get_queryset(self):
         name = self.request.query_params.get("name", "")
         queryset = (
@@ -315,21 +323,7 @@ class StoreReviewSet(viewsets.ModelViewSet):
             user.review_count += 1
             user.save()
             return Response("작성 성공")
-        else:
-            return Response("작성 실패")
-        # data = request.data
-        # store = Store.objects.get(id=data["store"])
-        # store_name = store.store_name
-        # user = CustomUser.objects.get(id=data["user"])
-        # # 받아온 데이터를 이용해서 Review를 작성합니다.
-        # models.Review.objects.create(store_id=data["store"], user_id=data["user"], content=data["content"], score=data["score"], reg_time=datetime.datetime.now(), store_name=store_name)
-        
-        # 작성이 완료되었다면 매장과 유저의 review_count를 1씩 추가합니다.
-        # store.review_count += 1
-        # store.save()
-        # user.review_count += 1
-        # user.save()
-        return Response("작성 성공")
+        return Response("작성 실패")
 
     def update(self, request, pk=None):
         '''
@@ -416,7 +410,7 @@ def search_store(self):
             # print(store.location)
             chk = 0
             for word in words:
-                if store.store_name in word:
+                if word in store.store_name:
                     chk = 1
                     break
             if chk:
@@ -846,3 +840,11 @@ def recommend_by_current_location(self):
         check_image(serializer)
         queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
     return Response(queryset)
+
+
+@api_view(['GET'])
+def like_stores(self):
+    user = self.user
+    stores = user.like_stores.all()
+    a = serializers.StoreDetailSerializer3(stores, many=True).data
+    return Response(a)
