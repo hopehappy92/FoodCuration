@@ -1,15 +1,24 @@
-# 맛집 추천 서비스
+# Food Curation
 
-서비스명은 맛집 추천 서비스를 제공하는 플랫폼입니다. knn, 협업필터링을 적용해서 사용자가 관심을 가질만 한 맛집을 추천해 주는 것을 목표로 삼고 있습니다.
+이 서비스는 사용자 정보 기반 맛집 추천 서비스로 사용자에게 적절한 매장들을 추천해 주는 기능과 여러 정보를 바탕으로 각종 보고서를 제작하여 제공해 주는 기능을 가지고 있습니다.
+
+맛집 추천 서비스의 경우 KNN과 SVDPP, K-means 알고리즘을 복합적으로 사용하여 추천해 줍니다.
+
+보고서의 경우 다이닝 코드, 결제 데이터, 통계청 데이터 등을 활용하여 나이대별 소비 트렌드, 지역별 경제 특성분석, 상권 분석, 체인점 분석, 업종별 경향 분석 등의 결과를 보여줍니다.
+
+
 
 ## 핵심 기능 및 기대 효과
 
 - 각종 알고리즘과 머신러닝을 기반으로 사용자에게 사용자의, 사용자를 위한, 사용자에 의한 맛집 추천 사이트
 - 나만의 맛집 추천을 받고 싶은 사람들에게 맞춤 정장과 같은 느낌의 맛집 추천 시스템
+- 맛집에 관한 정보 뿐만 아니라 사람들의 소비트렌드, 지역별 분석, 상권 분석, 체인점 분석, 업종별 분석 결과를 통해 경제 경향을 볼 수 있는 보고서 기능
 
 ## 주요 사용자
 
 - 무분별한 맛집 추천에 지친 30대 차도남
+- 경제, 사회에 대해 관삼이 많은 여대생
+- 창업에 관심이 많은 요리사
 
 ## 개발 환경
 
@@ -32,63 +41,38 @@
 
 ## How to Run
 
-### front
+이 프로젝트는 pm2를 사용하여 서버를 관리하고 nginx를 사용하여 ssl 적용 및 프록시 제어를 하고 있습니다.
 
-```bash
-cd frontend
-npm install
-npm runserve
+nginx의 경우 아래와 같은 설정으로 80포트로 들어오면 8080포트로 넘겨주게 설정되어 있으며
+
+```
+server {
+        listen 80;
+        server_name i02d106.p.ssafy.io;
+        location / {
+                proxy_pass http://127.0.0.1:8080;
+        }
+}
 ```
 
-### backend
+인증서는 아래의 경로에 보관되어 잇습니다.
 
-윈도우
-
-```bash
-cd backend
-pip install -r requirements.txt
-python manage.py runserver
+```
+/etd/nginx/ssl/server.crt
+/etd/nginx/ssl/server.csr
+/etd/nginx/ssl/server.key
 ```
 
-우분투
+pm2에서는 frontend와 backend의 스크립트파일을 통해 frontend서버와 backend서버를 구동할 수 있습니다.
 
-```bash
-cd backend
-pip3 install -r requirements.txt
-python3 manage.py runserver
+```
+pm2 start frontend/dps.json
+pm2 start backend/dps.json
 ```
 
 ## data schema
 
 ![](images/ERD.png)
-
-## 파일/디렉터리 구조
-
-### frontend
-
-components
-
-- 페이지 단위 컴포넌트에서 쓰이는 소규모 컴포넌트가 위치하는 디렉토리
-
-views
-
-- 페이지 단위의 컴포넌트가 위치하는 디렉토리
-
-src > api
-
-- http.js - 기본 url 관리, API요청시 헤더 관리 파일
-- index.js - API 관리 파일
-
-store > modules
-
-- data.js - Vuex 관리 파일
-
-router.js : 라우터 설정 관련 파일
-store.js : vuex 파일
-App.vue : 최상위 컴포넌트
-main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
-
-
 
 ## 명세
 
@@ -100,7 +84,7 @@ main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
 
 2. Pandas DataFrame DB 마이그레이션
 
-   데이터를 DB에 넣으려면 아래와 같이 실행하면 된다.
+   데이터를 DB에 넣으려면 아래와 같이 실행하면 됩니다.
 
    ```bash
    cd backend
@@ -108,349 +92,35 @@ main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
    ## 우분투 환경에선 python 대신 python3을 입력하면 된다.
    ```
 
-   initialize에 대한 설명
-
-   ```python
-   from pathlib import Path
-   import pandas as pd
-   from django.core.management.base import BaseCommand
-   from backend import settings
-   from api import models
-   
-   
-   class Command(BaseCommand):
-       help = "initialize database"
-       DATA_DIR = Path(settings.BASE_DIR).parent / "data"
-       DATA_FILE = str(DATA_DIR / "dump.pkl")
-   
-       def _load_dataframes(self):
-           '''
-           데이터프레임을 읽어옵니다.
-           '''
-           try:
-               data = pd.read_pickle(Command.DATA_FILE)
-           except:
-               print(f"[-] Reading {Command.DATA_FILE} failed")
-               exit(1)
-           return data
-   
-       def _initialize(self):
-           '''
-           기존의 dataframe pkl파일을 읽어와서 DB에 저장합니다.
-           '''
-   
-           print("[*] Loading data...")
-           # dataframe pkl 파일을 읽어오는 _load_dataframes함수를 실행합니다.
-           dataframes = self._load_dataframes()
-   
-           # 데이터 중 빈 값들을 0.0으로 입력해 줍니다.
-           dataframes["stores"] = dataframes["stores"].fillna(0.0)
-           dataframes["menues"]["price"]=dataframes["menues"]["price"].fillna(0.0).astype(int)
-           
-           print("[*] Delete all data...")
-           # DB에 저장된 정보를 모두 지워 초기화해 줍니다.
-           models.Store.objects.all().delete()
-           models.CustomUser.objects.all().delete()
-           models.Review.objects.all().delete()
-           models.Menu.objects.all().delete()
-           print("[+] Done")
-   
-           print("[*] Initializing stores...")
-           # DB에 데이터를 작성합니다.
-   
-           stores = dataframes["stores"]
-           # 데이터프레임에서 매장 정보를 가져옵니다.
-   
-           stores_bulk = [
-               models.Store(
-                   id=store.id,
-                   store_name=store.store_name,
-                   branch=store.branch,
-                   area=store.area,
-                   tel=store.tel,
-                   address=store.address,
-                   latitude=store.latitude,
-                   longitude=store.longitude,
-                   category=store.category,
-                   # latitude와 longitude을 바탕으로 격자 값을 계산하여 location에 입력합니다.
-                   # 맨 왼쪽 아래가 0번이고 맨 오른쪽 위가 가장 큰 값을 가지는 형태입니다.
-                   location=int((store.latitude - 33.079772) / 0.0009) + (int((store.longitude -124.6)/0.0009)<<14) if store.longitude != 0.0 else 0,
-                   # 매장에 작성된 리뷰 갯수를 입력합니다.
-                   # 머신러닝에서 DB 데이터를 활용하기 위해 미리 계산해 칼럼에 입력합니다.
-                   review_count=dataframes["reviews"]["store"][dataframes["reviews"]["store"]==store.id].count()
-               )
-               for store in stores.itertuples()
-           ]
-           # 벌크데이터 리스트를 만들고 모델에 입력합니다.
-           models.Store.objects.bulk_create(stores_bulk)
-           print("[+] Done")
-   
-           print("[*] Initializing users...")
-           # store와 거의 동일.
-           users = dataframes["users"]
-           users_bulk = [
-               models.CustomUser(
-                   id=user.id,
-                   username=user.id,
-                   gender=user.gender,
-                   age=user.age,
-                   # 유저가 작성한 리뷰 갯수를 입력합니다.
-                   # 머신러닝에서 DB 데이터를 활용하기 위해 미리 계산해 칼럼에 입력합니다.
-                   review_count=dataframes["reviews"]["user"][dataframes["reviews"]["user"]==user.id].count()
-               )
-               for user in users.itertuples()
-           ]
-           models.CustomUser.objects.bulk_create(users_bulk)
-           print("[+] Done")
-   
-           print("[*] Initializing menues...")
-           menues = dataframes["menues"]
-           menues_bulk = [
-               models.Menu(
-                   id=menu.id,
-                   store_id=menu.store,
-                   menu_name=menu.menu_name,
-                   price=menu.price,
-               )
-               for menu in menues.itertuples()
-           ]
-           models.Menu.objects.bulk_create(menues_bulk)
-           print("[+] Done")
-   
-           print("[*] Initializing reviews...")
-           reviews = dataframes["reviews"]
-           reviews_bulk = [
-               models.Review(
-                   store_id=review.store,
-                   store_name=models.Store.objects.get(id=review.store).store_name,
-                   user_id=review.user,
-                   score=review.score,
-                   content=review.content,
-                   reg_time=review.reg_time,
-               )
-               for review in reviews.itertuples()
-           ]
-           models.Review.objects.bulk_create(reviews_bulk)
-           print("[+] Done")
-   
-       def handle(self, *args, **kwargs):
-           # python manage.py initialize를 실행하면 가장 먼저 들어오는 부분
-           # _initialize함수를 실행한다.
-           self._initialize()
-   
-   ```
-
-   
 
 ### req2 웹 서비스 검색 기능 확장
 
 1. 검색 기능 확장
 
-   근처에 존재하는 매장들의 메뉴나 매장명을 검색하는 기능입니다.
-
-   ```python
-   @api_view(['POST'])
-   def search_store(self):
-       '''
-       입력 데이터
-       {
-           "latitude": float,
-           "longitude": float,
-           "words": "string" 
-       }
-       '''
-       # 위치 정보가 없으면 오류 반환
-       if not self.data.get("longitude") or not self.data.get("latitude"):
-           return Response("위치 정보가 없습니다.")
-       
-       # 입력받은 위치 정보를 격자 번호로 변환합니다.
-       location_x = int((self.data["longitude"] -124.6)/0.0009)
-       location_y = int((self.data["latitude"] - 33.079772) / 0.0009)
-       
-       # 현 위치와 인근 격자 번호를 계산합니다.
-       location = location_y + (location_x<<14)
-       location2 = location_y + ((location_x+1)<<14)
-       location3 = location_y + ((location_x+2)<<14)
-       location4 = location_y + ((location_x-1)<<14)
-       location5 = location_y + ((location_x-2)<<14)
-   
-       location6 = location_y+1 + ((location_x-1)<<14)
-       location7 = location_y+1 + ((location_x)<<14)
-       location8 = location_y+1 + ((location_x+1)<<14)
-   
-       location9 = location_y+2 + ((location_x)<<14)
-   
-       location10 = location_y-1 + ((location_x-1)<<14)
-       location11 = location_y-1 + ((location_x)<<14)
-       location12 = location_y-1 + ((location_x+1)<<14)
-   
-       location13 = location_y-2 + ((location_x)<<14)
-   
-       # 인근에 존재하는 매장들을 모두 가져옵니다.
-       queryset = Store.objects.filter(
-           Q(location = location)
-           |Q(location = location2)
-           |Q(location = location3)
-           |Q(location = location4)
-           |Q(location = location5)
-           |Q(location = location6)
-           |Q(location = location7)
-           |Q(location = location8)
-           |Q(location = location9)
-           |Q(location = location10)
-           |Q(location = location11)
-           |Q(location = location12)
-           |Q(location = location13)
-           )
-   
-       words = []
-       # 검색어를 입력받아 띄워쓰기별로 나눠줍니다.
-       if self.data.get("words"):
-           words = self.data["words"].split()
-       
-       a = []
-       if words:
-           # 검색어가 존재할 경우 매장목록에 대해서 반복문을 돌면서
-           # 검색 단어가 포함된 매장명이나 검색 단어가 포함된 메뉴가 있을 경우
-           # a라는 리스트에 해당 매장을 추가합니다.
-           for store in queryset:
-               # print(store.location)
-               chk = 0
-               for word in words:
-                   if store.store_name in word:
-                       chk = 1
-                       break
-               if chk:
-                   a.append(store)
-                   continue
-               for menu in store.menu_set.all():
-                   for word in words:
-                       if word in menu.menu_name:
-                           chk = 1
-                           break
-                   if chk:
-                       break
-               if chk:
-                   a.append(store)
-           # 검색어에 해당하는 매장이 담긴 a 리스트를 직렬화합니다.
-           serializer = serializers.StoreSerializer(a, many=True)
-       else:
-           serializer = serializers.StoreSerializer(queryset, many=True)
-       # 데이터를 반환합니다.
-       return Response(serializer.data)
-   ```
-
-   
+   근처에 존재하는 매장들의 메뉴나 매장명을 검색하는 기능입니다. 거리를 설정할 수 있으며 현재 보고 있는 지도의 중심점에서 설정한 거리 반경 이내의 매장의 메뉴, 매장명 등을 검색할 수 있습니다.
 
 2. 유저 정보 기능 구현
 
    유저의 상세 정보를 프론트에 제공해주기 위해 로그인 성공 시 유저 정보를 응답해줍니다.
 
-   - views.py
-
-   ```python
-   class CustomLoginView(LoginView):
-       def get_response(self):
-           user = get_object_or_404(CustomUser, username=self.user)
-           orginal_response = super().get_response()
-           mydata = {"gender": user.gender, "age": user.age, "review_count": user.review_count, "status": "success"}
-           orginal_response.data["user"].update(mydata)
-           return orginal_response
-   ```
-
-   - urls.py
-
-   ```python
-       path('login/', views.CustomLoginView.as_view(), name='login'),
-   ```
-
-   - 추가사항: 회원탈퇴, 비밀번호 변경, 비밀번호 재설정 기능(REST API 참고)
-
-3. 
-
-   
+   - 추가사항: 회원탈퇴, 비밀번호 변경, 비밀번호 재설정 기능
 
 4. 음식점 정보 기능 구현
 
-   매장명에 해당하는 매장을 반환합니다.
+   매장명에 해당하는 매장의 정보(매장 상세정보, 메뉴, 평균평점)를 반환합니다.
 
-   ```python
-   class StoreDetailViewSet(viewsets.ModelViewSet):
-       serializer_class = serializers.StoreDetailSerializer
-       pagination_class = SmallPagination
-   
-       def get_queryset(self):
-           name = self.request.query_params.get("name", "")
-           queryset = (
-               models.Store.objects.all().filter(store_name__contains=name).order_by("id")
-           )
-           return queryset
-   ```
+4. 음식점 사진 자료 크롤링
 
-   
+   서비스를 진행하는동안 자동으로 이미지가 등록되지 않은 매장을 조회 시 크롤링 할 매장 아이디와 우선순위를 저장한 딕셔너리를 갱신합니다.
 
-5. 음식점 사진 자료 크롤링
+   크롤링 해야 할 매장의 갯수가 일정 수준 이상이 되면 자동으로 크롤링을 시작하고 크롤링 할 목록이나 크롤링 시작을 요청할 수 있는 API가 있습니다.
 
-   크롤링을 시작하려면 아래와 같이 실행하면 된다.
+   크롤링 할 딕셔너리 조회 API: https://i02d106.p.ssafy.io:8765/api/crawling_check
 
-   ```bash
-   cd backend
-   python manage.py crawling
-   ## 우분투 환경에선 python 대신 python3을 입력하면 된다.
-   ```
+   크롤링 시작 요청 API: https://i02d106.p.ssafy.io:8765/api/crawling_start
 
-   네이버 검색 API를 이용하여 매장명, 주소를 검색한 후 해당 결과에서 나오는 img url을 수집하여 DB에 저장한다.
+5. 구글에 매장명, 주소를 검색하여 받아온 결과에서 썸네일 이미지 url을 가져와 db에 저장합니다.
 
-   
-
-6. 네이버 검색 api를 활용해서 매장명, 주소를 검색하고 받아온 결과에서 이미지 url을 가져와 db에 입력합니다.
-
-   ```python
-   from api import models
-   from django.core.management.base import BaseCommand
-   import requests
-   from bs4 import BeautifulSoup
-   from api import models
-   
-   class Command(BaseCommand):
-       def _initialize(self):
-           search_base = "https://openapi.naver.com/v1/search/webkr.xml?query=다이닝코드+"
-           search_opt = "&display=10&start=1"
-           base = "https://www.diningcode.com/profile.php"
-           headers={
-                       "X-Naver-Client-Id": "HzusvK5FvwGA_OcXs0xZ",
-                       "X-Naver-Client-Secret": "o7Hh0ooCxL",
-                   }
-           stores = models.Store.objects.all()
-           for i in range(3691, len(stores)):
-               store = stores[i]
-               print(store.id)
-               # print(store)
-               # continue
-               add = store.address
-               store_name = store.store_name
-               add = add.replace(' ', '+')
-               store_name = store_name.replace(' ', '+')
-               url = search_base+add+'+'+store_name+search_opt
-               res = requests.get(url, headers=headers).text.split(base)
-               # print(res)
-               if len(res) >= 2:
-                   q = res[1].split("</link>")[0]
-                   print(q)
-                   soup = BeautifulSoup(requests.get(base+q).text, 'html.parser')
-                   a = soup.select('.btn-gallery-open > img')
-                   print(a)
-                   if a:
-                       img = ''
-                       img = a[0].attrs['src']
-                       print(img)
-                       models.StoreImage.objects.create(store=store, url=img)
-       def handle(self, *args, **kwargs):
-           self._initialize()
-   
-   ```
-
-   
 
 ### req3 웹 서비스 인증 기능 구현
 
@@ -458,140 +128,29 @@ main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
 
    라이브러리에서 제공하는 회원가입 기능을 커스터마이징하여 추가적인 정보를 받도록 하였습니다.
 
-   - serializers.py
-
-   ```python
-   class CustomRegisterSerializer(RegisterSerializer):
-       age = serializers.IntegerField(required=False)
-       gender = serializers.CharField(max_length=2, required=False)
-   
-       def get_cleaned_data(self):
-           data_dict = super().get_cleaned_data()
-           data_dict['age'] = self.validated_data.get('age', '')
-           data_dict['gender'] = self.validated_data.get('gender', '')
-           return data_dict
-   ```
-
-   - adapter.py
-
-   ```python
-   from allauth.account.adapter import DefaultAccountAdapter
-   
-   
-   class CustomAccountAdapter(DefaultAccountAdapter):
-   
-       def save_user(self, request, user, form, commit=False):
-           user = super().save_user(request, user, form, commit)
-           data = form.cleaned_data
-           user.gender = data.get('gender')
-           user.age = data.get('age')
-           user.save()
-           return user
-   ```
-
-   - urls.py
-
-   ```python
-   path('rest-auth/registration/', include('rest_auth.registration.urls')),
-   ```
-
-   - 추가사항: 이메일 인증(REST API 참고) 
-
-     
+   - 추가사항: 이메일 인증
 
 2. 로그인, 로그아웃 기능 구현
 
    django-rest-auth, rest_framework_jwt라이브러리를 사용하였고, 로그인 했을 경우, JWT 토큰을 프론트에 넘겨줍니다.
 
-   ```python
-       path('login/', views.CustomLoginView.as_view(), name='login'),
-   ```
-
    JWT토큰을 사용하였기 때문에 백엔드에서는 로그아웃에 대한 처리를 따로 하지않았습니다.
-
+   
    - 추가사항: 회원탈퇴 기능
-     - 완전히 유저를 삭제하지 않고 is_active 값을 조정해줌으로써 관련 댓글과 리뷰 정보는 남겨두도록 하였습니다.
-     - views.UserViewSet
-
-   ```python
-    @api_view(['POST'])
-       def user_delete(self):
-           if self.user.is_authenticated == False:
-               return Response("삭제 실패")
-           else:
-               user = get_object_or_404(CustomUser, username=self.user)
-               user.is_active = False
-               user.save()
-               return Response("삭제 성공")
-   ```
-
+  - 완전히 유저를 삭제하지 않고 is_active 값을 조정해줌으로써 관련 댓글과 리뷰 정보는 남겨두도록 하였습니다.
 
 
 ### req4 웹 서비스 리뷰 기능 구현
 
 1. 리뷰 기능 구현
 
-   ```python
-   class StoreReviewSet(viewsets.ModelViewSet):
-       serializer_class = serializers.ReviewSerializer
-       pagination_class = SmallPagination
+   리뷰 작성 요청이 들어오면 권한이 있는지 확인 후 권한이 있으면 리뷰를 작성합니다.
    
-       def get_queryset(self):
-           queryset = (
-               models.Review.objects.all()
-           )
-           return queryset
+   리뷰가 작성이 되면 store와 user의 review_count를 각 각 1씩 더해 줍니다.
    
-       def create(self, request):
-           # 리뷰를 작성하는 함수입니다.
-           # if request.user.is_authenticated:
-           #     data = request.data
-           #     review = models.Review.objects.create(store_id=data["store"], user_id=request.user.id, content=data["content"], score=data["score"], reg_time=datetime.datetime.now())
-           #     return Response("작성 성공")
-           # else:
-           #     return Response("작성 실패")
-           data = request.data
-           store = Store.objects.get(id=data["store"])
-           store_name = store.store_name
-           user = CustomUser.objects.get(id=data["user"])
+   리뷰 삭제 요청이 들어오면 권한이 있는지 확인 후 권한이 있으면 리뷰를 삭제합니다.
    
-           # 받아온 데이터를 이용해서 Review를 작성합니다.
-           models.Review.objects.create(store_id=data["store"], user_id=data["user"], content=data["content"], score=data["score"], reg_time=datetime.datetime.now(), store_name=store_name)
-           
-           # 작성이 완료되었다면 매장과 유저의 review_count를 1씩 추가합니다.
-           store.review_count += 1
-           store.save()
-           user.review_count += 1
-           user.save()
-           return Response("작성 성공")
-   
-       def update(self, request, pk=None):
-           '''
-           받아온 데이터에서 평점과 내용을 가져와 리뷰 객체를 수정합니다.
-           '''
-           review = models.Review.objects.get(id=pk)
-           if request.data.get("score"):
-               review.score = request.data["score"]
-           if request.data.get("content"):
-               review.content = request.data["content"]
-           review.save()
-           return Response("수정 성공")
-   
-       def destroy(self, request, pk=None):
-           '''
-           받아온 pk에 해당하는 리뷰를 삭제합니다.
-           '''
-           review = models.Review.objects.get(id=pk)
-           user = models.CustomUser.objects.get(id=review.user_id)
-           store = models.Store.objects.get(id=review.store_id)
-           review.delete()
-           user.review_count -= 1
-           store.review_count -= 1
-   
-           return Response("삭제 성공")
-   ```
-
-   
+   리뷰가 삭제되면 store와 user의 review_count를 각 각 1씩 빼줍니다.
 
 ### req5 KNN 알고리즘 구현
 
@@ -599,124 +158,158 @@ main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
 
 1. 데이터 가공
 
-   ```python
-   # review가 10개 이상인 식당만 불러옴
-   request_store = requests.get("http://i02d106.p.ssafy.io:8765/api/store/10").json()
-   # review가 10개 이상인 유저만 불러옴
-   request = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
-   request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
-   qs1= pd.DataFrame(data=request_store)
-   qs3= Review.objects.all()
-   
-   ten_review_store_list= []
-   human_list = []
-   for user in request:
-       human_list.append(user['id'])
-   print(len(request))
-   for store in request_store:
-       ten_review_store_list.append(store['id'])
-   
-   review_list = list(qs3.values())
-   store_list = []
-   for dic in review_list:
-       if('score' in dic.keys() and 'user_id' in dic.keys() and 'store_id' in dic.keys()):
-           if(dic['user_id'] in human_list and dic['store_id'] in ten_review_store_list):
-               store_list.append(dic['store_id'])
-   store_list = list(dict.fromkeys(store_list))
-   print(len(store_list))
-   # print(store_list[0])
-   # print(store_list[1])
-   
-   #리스트로 바꾼 다음 데이터프레임으로 변환
-   stores = qs1
-   review = pd.DataFrame(list(qs3.values()))
-   ratings = review[['user_id', 'store_id', 'score']]
-   
-   ```
+   리뷰가 10개 이상인 음식점의 리뷰와 리뷰가 10개 이상인 유저 두 집합에 포함되는 리뷰의 user_id, store_id, score를 가져옵니다.
 
 2. KNN 알고리즘 학습 및 구현
 
-   ```python
-   # 안가본 식당
-   def get_uneaten(ratings, store_list, user_id):
-       eaten_store = ratings[ratings['user_id'] == user_id]['store_id'].tolist()
-       uneaten_store = [store for store in store_list if store not in eaten_store]
-       print('평점 매긴 식당 수 : ', len(eaten_store), '추천 대상 식당 수 : ', len(uneaten_store), '전체 식당 수 : ', len(store_list)  )
-   
-       return uneaten_store
-   
-   # 추천 식당 정렬해서 리턴
-   def recomm_store(algo, user_id, unvisited_store, top_n=10):
-       predicitons = []
-       
-       
-       predicitons = [algo.predict(str(user_id), str(kk), r_ui=4, verbose=True) for kk in unvisited_store]
-       pre1 = algo.predict(str(user_id), str(86))
-       pre2 = algo.predict(str(user_id), str(149))
-       print(123)
-       print(pre1)
-       print(pre2)
-       # print(predicitons[0])
-       # print(predicitons[1])
-       def sortkey_est(pred):
-           return pred.est
-       
-       predicitons.sort(key=sortkey_est, reverse=False)
-   
-       top_predictions = predicitons[:top_n]
-   
-       top_store_ids = [ int(pred.iid) for pred in top_predictions]
-       top_store_rating = [pred.est for pred in top_predictions]
-   
-       top_sotre_preds = [ (id, rating) for id, rating in zip(top_store_ids, top_store_rating) ]
-   
-   
-       return top_sotre_preds
-   
-   unvisited_store = get_uneaten(ratings, store_list, 235)
-   
-   top_store_preds = recomm_store(algo, 235, unvisited_store, top_n=10)
-   print('#### Top 10 음식점####')
-   for top_store in top_store_preds:
-       print(top_store)
-   ```
-
-   
+   위에 전처리 한 리뷰 데이터를 기반으로 평점을 매기지 않은 음식점들 중 추정 score 값이 가장 높은 매장 상위 20개를 반환합니다.
 
 ### req6 Matrix Factorization 알고리즘 구현
 
 1. 데이터 가공
 
-   ```python
-   # review가 10개 이상인 식당만 불러옴
-   request_store = requests.get("http://i02d106.p.ssafy.io:8765/api/store/10").json()
-   # review가 10개 이상인 유저만 불러옴
-   request = requests.get("http://i02d106.p.ssafy.io:8765/api/user").json()
-   request_all_review = requests.get("http://i02d106.p.ssafy.io:8765/api/reviews").json()
-   qs1= pd.DataFrame(data=request_store)
-   qs3= Review.objects.all()
+   KNN 알고리즘 구현의 데이터 가공과 동일
    
-   ten_review_store_list= []
-   human_list = []
-   for user in request:
-       human_list.append(user['id'])
-   print(len(request))
-   for store in request_store:
-       ten_review_store_list.append(store['id'])
-   
-   review_list = list(qs3.values())
-   store_list = []
-   for dic in review_list:
-       if('score' in dic.keys() and 'user_id' in dic.keys() and 'store_id' in dic.keys()):
-           if(dic['user_id'] in human_list and dic['store_id'] in ten_review_store_list):
-               store_list.append(dic['store_id'])
-   store_list = list(dict.fromkeys(store_list))
-   print(len(store_list))
-   # print(store_list[0])
-   # print(store_list[1])
-   ```
+2. SVDPP 알고리즘 학습 및 구현
+
+   이전에 전처리한 리뷰 데이터를 기반으로 평점을 매기지 않은 음식점들 중 추정 score 값이 가장 높은 매장 상위 20개를 반환합니다.
+
+### req7 TF-IDF 알고리즘 구현
+
+1. 데이터 가공
+
+   리뷰가 5개이상 작성된 매장에서 리뷰를 가져옵니다. 이 중 평점이 3점 이상일 경우 좋은 리뷰로 판단합니다.
+
+2. TF-IDF 알고리즘 구현
+
+   각 매장별로 좋은 리뷰를 TF, 각 매장별 전체 리뷰를 IDF로 사용하여 좋은 리뷰에서 나온 정보를 바탕으로 점수를 계산하여 높은 순으로 반환합니다. 이 정보는 각 매장 상세 페이지에서 워드클라우드로 확인할 수 있습니다.
+
+### req8 K-Means 알고리즘 구현
+
+1. 데이터 가공
+
+   리뷰 작성 갯수가 10개 이상인 유저를 가져옵니다.
+
+   성별이 남자일 경우 gender값을 15로, 여자일 경우 0으로 바꿔 줍니다.
+
+2. K-Means 알고리즘 구현
+
+   위에서 전처리된 데이터를 기반으로 k-means++ 알고리즘을 적용해 유저 군집 각각의 centroid를 얻어냅니다.
+
+   각 각의 군집은 유저의 성별과 나이를 바탕으로 5개의 군집을 이루도록 만들었습니다.
+
+### req9 컨텐츠 기반 필터링 추천 시스템 구현
+
+매장 정보가 부족하고 가공하기에 부적절하다고 생각하여 이 부분을 유저 군집을 구하여 해당 군집의 유저(나이와 성별을 바탕으로 구분된 군집들)이 주로 찾는 매장을 추천하도록 하였습니다.
+
+리뷰 작성 데이터가 충분하지 않은 유저의 경우 knn, kmeans알고리즘을 적용하지 않고 해당 유저가 어떤 유저 군집에 속해있는지 확인하여 매장을 추천합니다. 
+
+### req10 하이브리드 추천 시스템 구현
+
+저희 추천 시스템은 사용자의 정보(리뷰 작성량이 일정갯수 이상)가 충분할 경우 svdpp 혹은 knn알고리즘 바탕으로 리뷰를 작성하지 않은 음식점들의 평점을 추산하여 가장 높은 음식점을 추천 목록으로 제공합니다.
+
+만약 사용자의 정보가 부족한 경우, 나이와 성별을 바탕으로 해당 유저가 어느 군집에 속해있는지 판별한 후 속하는 유저 군집에서 인기도점수가 높은 매장을 추천 목록으로 제공합니다.
+
+기본적으로 svdpp와 knn알고리즘이 거의 동일한 역할을 하고 있기 때문에, 서버에 현재 어떤 알고리즘이 적용되어 있는지 확인하고 이를 변경할 수 있는 API를 만들어 원하는 알고리즘이 적용된 추천 리스트를 제공할 수 있도록 구성하였습니다.
+
+### req11 웹서비스 구현
+
+관리자로 등록된 유저로 로그인 한 경우 페이지 우측 상단에 관리자 페이지로 이동 링크가 보여지게 되며 클릭 시 관리자 페이지로 이동합니다.
+
+유저, 음식점, 리뷰 등을 보거나 삭제, 음식점 등록을 할 수 있습니다.
+
+관리자가 아닌 유저의 경우 해당 기능은 사용할 수가 없습니다.
+
+### req12 웹서비스 배포
+
+Food curation 서비스는 nginx와 pm2를 활용하여 aws에서 서비스 되고 있습니다.
+
+ssl을 적용하여 프론트엔드와 백엔드 모두 https로 접근하도록 설정하였습니다.
+
+프론트엔드와 백엔드 모두 pm2에서 관리되고 있으며 nginx에선 ssl을 위한 인증서 관리 및 프록시역할을 하고 있습니다.
+
+### 추가사항: 경제경향보고서
+
+파트: 개요, 지역별 경제 특성 분석, 상권 분석 및 추천, 체인점 분석, 업종별 경향 분석
+
+- 개요
+  - 조사대상 → 다이닝 코드 이용자 및 ##은행 고객
+  - 조사지역 → 서울
+  - 활용 데이터: 다이닝코드데이터, 카드사 결제데이터, 통계청 데이터, 서울특별시 우리 마을 가게 데이터
+  - tf-idf로 분석한 최신 키워드 
+  - 나이대별(2,3,4,50대) 소비 트렌드 → 은행 데이터(통계청 데이터 활용)   + 나이별 소비 증가량 → 은행 데이터
+- 지역별 경제 특성 분석 → 결제 데이터 활용
+  - 지역별 소비량 top3
+  - 성별 top1 소비량 지역
+  - 연령대별 지역 순위(소비량 top5 기준)
+  - 시간대별 지역 순위(소비량 top5 기준)
+- 상권 분석 및 추천 → 결제 데이터 + 서울특별시 우리 마을 가게(상권분석서비스 가게 수 데이터 활용)
+  - 각 지역마다 소비량이 많은 상권 top3 보여주기
+  - 식생활과 관련된 상권을 추천해주기 위하여 각 카테고리마다 지역별 소비량을 가게 수로 나누어 매출이 좋은 지역을 보여줌
+    - 식생활과 관련된 상권: 한식, 중식, 양식, 일식/생선회집, 제과점/아이스크림점, 패스트푸드점, 일반주점, 커피/음료전문점으로 한정함
+- 체인점 분석 → 다이닝 코드 데이터 활용
+  - 체인점 평점순으로 top 10
+  - 비체인/체인/전체 가게에 대한 평점 비교
+
+- 업종별 경향 분석(스토캐스틱 분석) → 결제 데이터 활용
+  - 라이프 스타일 관련 업종: 의류, 악세사리류, 제과점/아이스크림점, 커피/음료전문점, 패스트푸드점, 한식, 일식/생선회집, 중식, 양식, 주점, 편의점, 숙박, 헬스장, 미용원/피부미용원, 화장품점으로 한정함
 
 ## REST API
+
+### algorithm_change
+
+경로: api/algorithm_change
+
+메소드: PUT
+
+| 인자           | 필수 여부                  |
+| -------------- | -------------------------- |
+| algorithm_list | True(0: "svdpp", 1: "knn") |
+
+현재 서버에서 사용될 추천 알고리즘을 전송받은 데이터에 해당하는 알고리즘으로 변경합니다.
+
+### algorithm_check
+
+경로: api/algorithm_check
+
+메소드: GET
+
+현재 서버에서 어떤 추천 알고리즘이 적용되어 있는지 확인하는 API입니다.
+
+### crawling_check
+
+경로: api/crawling_check
+
+메소드: GET
+
+지금 크롤링 해야 할 매장을 저장한 딕셔너리를 조회합니다.
+
+### crawling_start
+
+경로: api/crawling_start
+
+메소드: GET
+
+크롤링 해야 할 매장이 저장된 딕셔너리를 조회하여 크로링을 시작하는 명령을 내립니다.
+
+### create_store
+
+경로: api/create_store
+
+메소드: POST
+
+|        인자        | 필수 여부 |
+| :----------------: | :-------: |
+| store_name: String |   True    |
+|   branch: String   |   False   |
+|    area: String    |   False   |
+|    tel: String     |   False   |
+|  address: String   |   False   |
+|  latitude: Float   |   False   |
+|  longitude: Float  |   False   |
+|  category: String  |   False   |
+
+현재 사용자가 관리자일 경우 Json으로 인자를 담아서 보내면 해당 매장을 생성합니다.
 
 ### get_store_reviews_by_store_id
 
@@ -728,7 +321,7 @@ main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
 | :------: | :-------: |
 | store_id |   True    |
 
-
+store_id를 입력받아 해당 매장의 리뷰 리스트를 반환합니다.
 
 반환값
 
@@ -751,8 +344,6 @@ main.js : 최상위 컴포넌트를 최초 호출하는 JavaScript 파일
 
 ### like_store
 
-user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으면 그 객체를 지우고 없으면 객체를 생성합니다.
-
 경로: api/like_store
 
 메소드: POST
@@ -761,6 +352,8 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 | :-----------: | :-------: |
 | store_id: INT |   True    |
 | user_id: INT  |   True    |
+
+user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으면 그 객체를 지우고 없으면 객체를 생성합니다.
 
 반환값
 
@@ -776,13 +369,54 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 "좋아요 취소"
 ```
 
-### reviews
+### recommend_by_current_location
 
-모든 리뷰의  store, user, score를 가져와 반환합니다.
+경로: api/recommend_by_current_location
+
+메소드: POST
+
+|       인자       | 필수 여부 |
+| :--------------: | :-------: |
+| latitude: Float  |   True    |
+| longitude: Float |   True    |
+
+위치 정보를 입력받아 반경 10km 이내의 매장 중 추천할만한 매장을 반환합니다.
+
+### recommend_by_store_id
+
+경로: api/recommend_by_store_id
+
+메소드: GET
+
+|     인자      | 필수 여부 |
+| :-----------: | :-------: |
+| store_id: Int |   True    |
+
+매장 아이디를 입력받아 반경 1km안에 있는 매장을 가져오고 각 매장별 카테고리 겹치는 횟수 및 인기도 점수를 활용하여 점수화하고 상위 매장을 반환합니다.
+
+### relearning_current_model
+
+경로: api/relearning_current_model
+
+메소드: GET
+
+요청이 들어오면 현재 서버에 적용중인 알고리즘을 확인(svdpp or knn)하여 해당 모델을 다시 학습시킵니다.
+
+### relearning_kmeans
+
+경로: api/relearning_kmeans
+
+메소드: GET
+
+요청이 들어오면 현재 k-means 모델을 다시 학습시킵니다.(최신 유저 반영하여 다시 클러스터링 합니다.)
+
+### reviews
 
 경로: api/reviews
 
 메소드: GET
+
+모든 리뷰의  store, user, score를 가져와 반환합니다.
 
 반환값
 
@@ -796,19 +430,40 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 ]
 ```
 
-### search_store
+### reviews_info
 
-위치 정보와 검색어를 받아와서 인근 매장 중 검색어가 포함된 매장을 반환합니다.
+경로: api/reviews_info
+
+메소드: GET
+
+모든 리뷰의 매장 아이디, 등록시간, 평점을 가져옵니다.
+
+반환값
+
+```json
+[
+    {
+        "store": INT(store_id),
+        "reg_time": datetime(user_id),
+        "score": INT(score)
+    }
+]
+```
+
+### search_store
 
 경로: api/search_store
 
 메소드: POST
 
-|       인자       | 필수 여부 |
-| :--------------: | :-------: |
-| latitude: Float  |   True    |
-| longitude: Float |   True    |
-|  words: String   |   False   |
+|          인자           | 필수 여부 |
+| :---------------------: | :-------: |
+|     latitude: Float     |   True    |
+|    longitude: Float     |   True    |
+|      words: String      |   False   |
+| dis: int(미터단위 정수) |   True    |
+
+위치 정보와 검색어를 받아와서 반경 dis 미터 이내의 매장 중 검색어가 포함된 매장을 반환합니다.
 
 반환값
 
@@ -827,7 +482,7 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
             String(category)
         ],
         "review_count": INT(review_count),
-        "menues": [          
+        "menues": [
             {
                 "id": INT(menu_id),
                 "store": INT(store_id),
@@ -839,9 +494,19 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 ]
 ```
 
-### store
+### set_user_category
 
-입력받은 리뷰갯수 이상인 매장들의 id, review_count를 받아 옵니다.
+경로: api/set_user_category
+
+메소드: POST
+
+|       인자       | 필수 여부 |
+| :--------------: | :-------: |
+| category: String |   True    |
+
+카테고리를 인자로 받아 요청을 보낸 유저의 category에 반영합니다.
+
+### store
 
 경로: api/store/{review_count}
 
@@ -850,6 +515,8 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 |       인자        | 필수 여부 |
 | :---------------: | :-------: |
 | review_count: INT |   True    |
+
+입력받은 리뷰갯수 이상인 매장들의 id, review_count를 받아 옵니다.
 
 반환값
 
@@ -865,50 +532,6 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
 ### store_reviews
 
 경로: api/store_reviews
-
-메소드: GET
-
-|      인자      | 필수 여부 |
-| :------------: | :-------: |
-|   page: INT    |   False   |
-| page_size: INT |   False   |
-
-반환값
-
-```json
-{
-    "count": INT(number of stores),
-    "next": String(url of next page),
-    "previous": String(url of next page),
-    "results": [
-        {
-            "id": INT(review_id),
-            "store": INT(store_id),
-            "store_name": String(store_name),
-            "user": INT(user_id),
-            "branch": String(branch),
-            "area": String(area),
-            "tel": String(phone_number),
-            "address": String(address),
-            "latitude": Float(latitude),
-            "longitude": Float(longitude),
-            "category_list": [
-                String(category)
-            ],
-            "id": 1,
-            "store": 15,
-            "store_name": "써리힐",
-            "user": 68632,
-            "score": 5,
-            "content": "전포 윗길에 새로 생긴! 호주에서 온 쉐프가 직접 요리하는 호주식 레스토랑!",
-            "reg_time": "1970-01-01T00:00:00+09:00",
-            "category_list": [
-                "호주레스토랑"
-            ]
-        }
-    ]
-}
-```
 
 메소드: POST
 
@@ -989,10 +612,98 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
                 String(category)
             ],
             "review_count": INT,
+            "menues": [
+                {
+                    "id": INT(menu_id),
+                    "store": INT(store_id),
+                    "menu_name": String(menu_name),
+                    "price": INT(price)
+                }                
+            ],
+            "tag": String(tag),
+            "url": String(image url)
         }
     ]
 }
 ```
+
+매장 정보를 반환합니다.
+
+메소드: PUT
+
+| 인자    | 필수 여부 |
+| ------- | --------- |
+| pk: INT | True      |
+
+반환값
+
+```json
+{
+    "count": INT(number of stores),
+    "next": String(url of next page),
+    "previous": String(url of next page),
+    "results": [
+        {
+            "id": INT(store_id),
+            "store_name": String(store_name),
+            "branch": String,
+            "area": String,
+            "tel": String(phone_number),
+            "address": String(address),
+            "latitude": Float(latitude),
+            "longitude": Float(longitude),
+            "category_list": [
+                String(category)
+            ],
+            "review_count": INT,
+            "menues": [
+                {
+                    "id": INT(menu_id),
+                    "store": INT(store_id),
+                    "menu_name": String(menu_name),
+                    "price": INT(price)
+                }                
+            ],
+            "tag": String(tag),
+            "url": Stringmage url)
+        }
+    ]
+}
+```
+
+메소드: DELETE
+
+| 인자    | 필수 여부 |
+| ------- | --------- |
+| pk: INT | True      |
+
+반환값
+
+```json
+삭제 성공
+```
+
+입력받은 pk를 가지는 매장을 DB에서 제거합니다.
+
+### update_learning_dataframe
+
+경로: api/update_learning_dataframe
+
+메소드: GET
+
+요청이 들어오면 학습시킬 데이터를 담아놓은 데이터프레임을 갱신합니다.(최신 DB를 반영하기 위함)
+
+### user_based_cf
+
+경로: api/user_based_cf
+
+메소드: GET
+
+요청이 들어오면 요청을 한 유저의 리뷰 갯수를 확인합니다.
+
+작성한 리뷰 갯수가 10개 이상인 경우 현재 서버에 적용된 알고리즘을 확인(svdpp or knn)을 확인하고 서버에 적용된 알고리즘으로 계산하여 예측된 평점이 높은 순으로 추천할 매장을 반환합니다.
+
+작성한 리뷰 갯수가 10개 미만인 경우 kmeans기반으로 현재 유저가 어떤 유저군에 속하는지 확인한 후 해당 군집에서 인기도 점수가 높은 매장을 추천합니다.
 
 ### user_reviews
 
@@ -1028,43 +739,183 @@ user_id와 store_id를 인자로 받아 해당하는 좋아요 객체가 있으�
     ]
 }
 ```
+현재 서버에서 적용된 협업필터링 기반 추천 알고리즘을 재학습시키는 
 
-### algorithm_change
 
-현재 서버에서 협업필터링 기반 추천 시스템에 적용할 알고리즘을 선택하는 부분입니다.
 
-0번의 경우 svdpp, 1번의 경우 knn알고리즘을 적용하여 맛집을 추천해 줍니다.
+### all_user
 
-경로: api/algorithm_change
+관리자 페이지에서 모든 유저들을 보여주기 위한 api입니다.
+
+staff 계정일 경우에만 사용이 가능합니다.
+
+경로: api/all_user
+
+메소드: GET
+
+반환값:
+
+- 성공일 경우: 활성화 상태인 모든 유저 데이터
+- 실패일 경우: "접근 불가"
+
+
+
+### change_user
+
+관리자 페이지에서 특정 유저의 권한을 변경해주기 위한 api입니다.
+
+staff 계정일 경우에만 사용이 가능합니다.
+
+경로: api/change_user
 
 메소드: PUT
 
-|      인자      | 필수 여부 |
-| :------------: | :-------: |
-| algorithm: INT |   True    |
+반환값:
 
-반환값: 지금부터 적용될 알고리즘 이름 String
+- 성공일 경우: "권한 변경 성공"
+- 실패일 경우: "접근 불가"
 
-### algorithm_check
 
-현재 서버에서 협업필터링 기반 추천 시스템에 적용되어 있는 알고리즘을 확인하는 api입니다.
 
-경로: api/algorithm_check
+### delete_user
+
+관리자 페이지에서 특정 유저를 비활성상태로 변경해주기 위한 api입니다.
+
+staff 계정일 경우에만 사용이 가능합니다.
+
+경로: api/delete_user
+
+메소드: PUT
+
+반환값:
+
+- 성공일 경우: "삭제 성공"
+- 실패일 경우: "삭제 실패"
+
+
+
+### compare_with_chain
+
+체인점 평점 순위, 비체인/체인/전체 평점 비교 차트를 위한 데이터 전송 api입니다.
+
+경로: api/compare_with_chain
 
 메소드: GET
 
-반환값: 현재 적용중인 알고리즘 이름 String
+반환값: 체인점 평점 순위, 비체인/체인/전체 평점 데이터
 
-### update_learning_dataframe
 
-현재 서버에서 협업필터링 기반 추천 시스템을 학습시키기 위한 데이터프레임을 갱신하는 api입니다.
 
-경로: api/update_learning_dataframe
+### district_by_age_time
+
+나이대별, 시간대별 지역 소비량 순위 데이터 전송 api입니다.
+
+경로: api/district_by_age_time
 
 메소드: GET
 
-반환값: "갱신 완료"
+반환값: 나이대별, 시간대별 지역 소비량 순위 데이터
 
-### relearning_current_model
 
-현재 서버에서 적용된 협업필터링 기반 추천 알고리즘을 재학습시키는 
+
+### generation_consumption
+
+연령대별 소비 트렌드 데이터 전송 api입니다.
+
+경로: api/generation_consumption
+
+메소드: GET
+
+반환값: 연령대별 소비 트렌드 데이터(평균 사용량과 비율)
+
+
+
+### trend_by_tob
+
+업종별 동향을 파악하기 위한 스토캐스틱 분석 결과 데이터 전송 api입니다.
+
+경로: api/trend_by_tob
+
+메소드: GET
+
+반환값: 업종별 동향을 파악하기 위한 스토캐스틱 분석 결과 데이터
+
+
+
+### login
+
+로그인 api입니다.
+
+경로: api/login/
+
+메소드: POST
+
+|       인자       | 필수 여부 |
+| :--------------: | :-------: |
+| username: string |   True    |
+|  email: string   |   False   |
+| password: string |   True    |
+
+반환값: 
+
+- token
+- user정보(pk, username, email, gender, age, review_count, is_staff, category_list, status)
+
+
+
+### registration
+
+회원가입 api입니다.
+
+이메일 인증 확인 후, 로그인이 가능합니다.
+
+경로: api/rest-auth/registration/
+
+메소드: POST
+
+|       인자        | 필수 여부 |
+| :---------------: | :-------: |
+| username: string  |   True    |
+|   email: string   |   True    |
+| password1: string |   True    |
+| password1: string |   True    |
+|        age        |   False   |
+|      gender       |   False   |
+
+반환값: 이메일이 전송되었습니다.
+
+
+
+### token/verify
+
+토큰을 검증하는 api입니다.
+
+경로: api/token/verify/
+
+메소드: POST
+
+|     인자      | 필수 여부 |
+| :-----------: | :-------: |
+| token: string |   True    |
+
+반환값: 
+
+- 성공했을 경우: token
+- 실패했을 경우: "Signature has expired."
+
+
+
+### user_withdrawal
+
+회원탈퇴용 api입니다.
+
+완전히 삭제하지 않고 비활성화시킵니다.
+
+경로: api/user_withdrawal
+
+메소드: POST
+
+반환값: 
+
+- 성공했을 경우: "삭제 성공"
+- 실패했을 경우: "삭제 실패"
