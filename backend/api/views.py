@@ -817,3 +817,12 @@ def recommend_by_current_location(self):
         check_image(serializer)
         queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
     return Response(queryset)
+
+
+@api_view(['GET'])
+def like_stores(self):
+    user = self.user
+    stores = user.like_stores.all()
+    a = serializers.StoreDetailSerializer3(stores, many=True).data
+    print(a)
+    return Response("갱신 완료")
