@@ -824,5 +824,5 @@ def like_stores(self):
     user = self.user
     stores = user.like_stores.all()
     a = serializers.StoreDetailSerializer3(stores, many=True).data
-    print(a)
-    return Response("갱신 완료")
+    # print(a)
+    return Response(a)
