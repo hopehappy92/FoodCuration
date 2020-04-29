@@ -224,10 +224,8 @@
             </div>
           </div>
         </div>
-        <div>
-          <div v-for="(value, i) in trendTabs" id="report_box_trend_all_chart" :key="i">
-            <canvas :id="`trendchart${i}`" class="report_box_trend_chart" />
-          </div>
+        <div v-for="(value, i) in trendTabs" id="report_box_trend_all_chart" :key="value">
+          <canvas :id="`trendchart${i}`" class="report_box_trend_chart" />
         </div>
       </div>
     </div>
@@ -427,7 +425,7 @@ export default {
         target.style.backgroundColor = ""
         document.getElementById(`trendchart${idx}`).style.display = "none"
       }
-      this.drawLineChart(idx)
+      await this.drawLineChart(idx)
     },
     
     showChainDetail() {
@@ -881,11 +879,14 @@ export default {
   background-color: black;
   color: white;
 }
-.report_box_trend_chart {
-  border: 1px solid black;
-  margin: 10px auto;
+/* #report_box_trend_all_chart {
   width: 100%;
+} */
+.report_box_trend_chart {
   display: none;
+  width: 100%;
+  border: 1px solid black;
+  margin-top: 10px;
 }
 #report_box_trend_btn_text_detail {
   width: 18vw;
@@ -900,11 +901,6 @@ export default {
   background-color: gray;
   padding: 20px;
 }
-
-/* #report_box_trend_all_chart {
-  display: inline-block;
-  width: 38vw;
-} */
 #report_box_chain_btn {
   display: inline-block;
   border: 1px solid black;
