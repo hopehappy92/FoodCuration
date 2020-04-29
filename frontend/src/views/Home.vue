@@ -187,6 +187,7 @@ export default {
     }
   },
   async mounted() {
+    await this.allRecommand()
     const that = this;
     await navigator.geolocation.getCurrentPosition(function(pos) {
       that.lat = Number(pos.coords.latitude);
@@ -198,6 +199,7 @@ export default {
       }
       that.allRecommand(params)
     });
+    
     await this.checkNavbar()
     await this.userBasedCheck()
     this.onResponsiveInverted();
