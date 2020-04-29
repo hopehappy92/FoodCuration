@@ -1,7 +1,7 @@
 import pandas as pd
 import pickle
-import plotly.graph_objs as go
-from plotly import tools
+# import plotly.graph_objs as go
+# from plotly import tools
 
 # 읽기
 with open('pickles_tob/df_cosmetics.p', 'rb') as file:

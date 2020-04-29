@@ -5,30 +5,17 @@
     infinite-scroll-distance="10"
     class="bgAll"
   >
-    <v-container fill-height fluid grid-list-xl id="bgControl" class="bgControl">
+    <v-container id="bgControl" fill-height fluid grid-list-xl class="bgControl">
       <v-layout justify-center wrap mt-5>
         <v-flex xs12 md8>
-          <card :title="title" class="upperCard">
+          <card class="upperCard">
+            <div id="my_page_title">
+              {{ title }}
+            </div>  
             <v-container py-0>
               <v-layout wrap>
                 <v-flex xs12 md12>
                   <div class="searchBar_innder_middle">
-                    <input
-                      type="text"
-                      placeholder="상호명"
-                      v-model="storeName"
-                      v-if="location"
-                      @keydown="enterKey"
-                    />
-                    <input
-                      type="text"
-                      placeholder="상호명 or 메뉴"
-                      v-model="storeName"
-                      v-else
-                      @keydown="enterKey"
-                    />
-                    <i class="fas fa-search" @click="onSubmit" v-if="location" />
-                    <i class="fas fa-search" @click="locationSubmit" v-else />
                     <v-select
                       id="my_page_head_option"
                       v-model="options_value"
@@ -36,17 +23,33 @@
                       dense
                       item-color="black"
                       color="rgba(0, 0, 0, 1)"
-                      style="display: inline-block; width: 200px; font-size: 15px; transform: translateY(-7.5%); margin-left: 10px;"
+                      style="display: inline-block; width: 200px; font-size: 15px;"
                       @change="selectOption"
                     />
+                    <input
+                      v-if="location"
+                      v-model="storeName"
+                      type="text"
+                      placeholder="  상호명"
+                      @keydown="enterKey"
+                    >
+                    <input
+                      v-else
+                      v-model="storeName"
+                      type="text"
+                      placeholder="  상호명 or 메뉴"
+                      @keydown="enterKey"
+                    >
+                    <i v-if="location" class="fas fa-search" @click="onSubmit" />
+                    <i v-else class="fas fa-search" @click="locationSubmit" />
                   </div>
-                  <p v-if="location === 0" id="desc_map">탐색 범위를 선택하고 탐색하고 싶은 위치로 지도를 움직여주세요</p>
+                  <p v-if="location === 0" id="desc_map">탐색하고 싶은 위치로 지도를 움직이고 범위를 선택해주세요</p>
                   <div v-if="location === 0" id="disBody">
-                    <button @click.prevent="setDis(100)" id="btn1">100m</button>
-                    <button @click.prevent="setDis(200)" id="btn2">200m</button>
-                    <button @click.prevent="setDis(300)" id="btn3" class="underlined">300m</button>
-                    <button @click.prevent="setDis(400)" id="btn4">400m</button>
-                    <button @click.prevent="setDis(500)" id="btn5">500m</button>
+                    <button id="btn1" @click.prevent="setDis(100)">100m</button>
+                    <button id="btn2" @click.prevent="setDis(200)">200m</button>
+                    <button id="btn3" class="underlined" @click.prevent="setDis(300)">300m</button>
+                    <button id="btn4" @click.prevent="setDis(400)">400m</button>
+                    <button id="btn5" @click.prevent="setDis(500)">500m</button>
                   </div>
                   <v-flex v-if="location === 0" id="mapCard">
                     <StoresLocation
@@ -56,26 +59,8 @@
                       :stores="stores"
                       :dis="dis"
                       @child="changedLocation"
-                    ></StoresLocation>
+                    />
                   </v-flex>
-                </v-flex>
-                <v-flex xs12 text-center>
-                  <v-btn
-                    large
-                    class="sliver --text ma-5"
-                    rounded
-                    color="sliver lighten-1"
-                    @click="onSubmit"
-                    v-if="location"
-                  >전국 음식점 검색</v-btn>
-                  <v-btn
-                    large
-                    class="sliver--text ma-5"
-                    rounded
-                    color="sliver lighten-1"
-                    @click="locationSubmit"
-                    v-else
-                  >주변 음식점 검색</v-btn>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -86,8 +71,9 @@
           <v-flex v-for="store in stores" :key="store.id" pa-4>
             <router-link
               :to="{ name: 'StoreDetail', params: {
-              storeId: store.id
-            }}"
+                storeId: store.id
+              }}"
+              style="text-decoration: none; color: black;"
             >
               <store-list-card
                 :id="store.id"
@@ -95,6 +81,7 @@
                 :categories="store.categories"
                 :address="store.address"
                 :tel="store.tel"
+                :url="store.url"
               />
             </router-link>
           </v-flex>
@@ -106,18 +93,17 @@
 
 <script>
 import Card from "@/components/Card";
-import router from "@/router";
+// import router from "@/router";
 import StoreListCard from "@/components/StoreListCard";
 import StoresLocation from "@/components/StoresLocation";
-import Nav from "@/components/Nav";
+// import Nav from "@/components/Nav";
 import { mapState, mapActions, mapMutations } from "vuex";
-import axios from "axios";
 export default {
   components: {
     Card,
     StoreListCard,
     StoresLocation,
-    Nav
+    // Nav
   },
   data: () => ({
     storeName: "",
@@ -133,8 +119,14 @@ export default {
       { text: "주변검색", value: 2 }
     ],
     options_value: 1,
-    title: "일반검색"
+    title: "주변 검색을 사용해 보세요!"
   }),
+  computed: {
+    ...mapState({
+      stores: state => state.data.storeSearchList,
+      page: state => state.data.storeSearchPage
+    })
+  },
   watch: {
     options_value: function() {
       if (this.options_value == 2) {
@@ -143,12 +135,6 @@ export default {
         this.noLocation();
       }
     }
-  },
-  computed: {
-    ...mapState({
-      stores: state => state.data.storeSearchList,
-      page: state => state.data.storeSearchPage
-    })
   },
   methods: {
     ...mapActions("data", ["getStores"]),
@@ -183,7 +169,7 @@ export default {
     getLocation() {
       const that = this;
       navigator.geolocation.getCurrentPosition(function(pos) {
-        console.log(pos.coords.longitude, pos.coords.latitude);
+        // console.log(pos.coords.longitude, pos.coords.latitude);
         setTimeout(() => {
           that.lat = Number(pos.coords.latitude);
           that.lon = Number(pos.coords.longitude);
@@ -198,9 +184,9 @@ export default {
       this.location = 1;
     },
     locationSubmit: async function() {
-      console.log(this.lat);
-      console.log(this.lon);
-      console.log(this.storeName);
+      // console.log(this.lat);
+      // console.log(this.lon);
+      // console.log(this.storeName);
       const params = {
         latitude: this.lat,
         longitude: this.lon,
@@ -232,6 +218,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 200:
           btn1.classList.toggle("underlined", false);
@@ -239,6 +226,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 300:
           btn1.classList.toggle("underlined", false);
@@ -246,6 +234,7 @@ export default {
           btn3.classList.toggle("underlined", true);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 400:
           btn1.classList.toggle("underlined", false);
@@ -253,6 +242,7 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", true);
           btn5.classList.toggle("underlined", false);
+          this.locationSubmit();
           break;
         case 500:
           btn1.classList.toggle("underlined", false);
@@ -260,9 +250,10 @@ export default {
           btn3.classList.toggle("underlined", false);
           btn4.classList.toggle("underlined", false);
           btn5.classList.toggle("underlined", true);
+          this.locationSubmit();
           break;
         default:
-          console.log("뭔일이고?");
+          // console.log("뭔일이고?");
       }
     },
     selectOption(value) {
@@ -287,7 +278,7 @@ export default {
     setTimeout(() => {
       this.checkNavSearch(1);
       if (this.$store.state.data.searchFromNav) {
-        console.log("들어왔다");
+        // console.log("들어왔다");
         this.storeName = this.$store.state.data.storeNameFromNav;
         this.onSubmit();
         setTimeout(() => {
@@ -300,6 +291,7 @@ export default {
 </script>
 <style scoped>
 .bgAll {
+  height: 100%;
   background: rgb(14, 14, 14); /* Old browsers */
   background: -moz-linear-gradient(
     left,
@@ -383,10 +375,14 @@ export default {
   justify-content: center;
 }
 .searchBar_innder_middle > input {
-  background: #f1f1f1;
   width: 100%;
   height: 40px;
-  border-radius: 10px;
+  transform: translateY(-4px);
+  border-bottom: 1px solid black;
+}
+.searchBar_innder_middle > input::placeholder {
+  font-size: 17px;
+  transform: translateY(6px);
 }
 .searchBar_innder_middle > i {
   font-size: 20px;
@@ -407,6 +403,21 @@ input:focus {
   outline: none;
 }
 .bgControl {
-  height: 900px;
+  height: 100%;
+}
+#my_page_title {
+  text-align: center;
+  font-size: 36px;
+  margin: 20px;
+  color: black;
+  font-weight: 700;
+}
+@media screen and (max-width: 600px) {
+  .underlined::before {
+    left: 18px;
+  }
+  #my_page_title {
+    font-size: 6vw;
+  }
 }
 </style>

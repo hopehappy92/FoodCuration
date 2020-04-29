@@ -103,7 +103,7 @@ export default {
         password: ""
       },
       dialog: false,
-      isMobile: false
+      isMobile: false,
     };
   },
   mounted() {
