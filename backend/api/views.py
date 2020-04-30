@@ -695,7 +695,7 @@ def recommend_by_store_id(self, store_id):
     store_df = store_df[store_df["latitude"] - lat < 0.015]
     store_df = store_df[store_df["latitude"] - lat > -0.015]
     store_df = store_df[store_df.apply(lambda x: 6371*acos(min(1, cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"])))), axis=1) < 1][["id", "category"]]
-    
+    store_df = store_df[store_df["id"] != store_id]
     a = []
     store_category_set = set(store.category.split('|'))
     for categories in store_df["category"]:
@@ -807,7 +807,7 @@ def relearning_kmeans(self):
         a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
 
         # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
-        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
+        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)
 
         # calc 기준으로 내림차순 정렬한다.
         cluster_list[i].sort_values(['calc'], ascending=False, inplace=True)
