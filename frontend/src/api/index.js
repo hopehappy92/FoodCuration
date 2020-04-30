@@ -1,9 +1,12 @@
 // import axios from "axios";
 import http from "./http"
+import https from 'https';
 
 const apiUrl = "/api";
 const regiUrl = "/rest-auth";
-
+const agent = new https.Agent({  
+    rejectUnauthorized: false
+   });
 export default {
   getStores(params) {
     return http.get(`${apiUrl}/stores`, {
@@ -27,7 +30,6 @@ export default {
     return http.delete(`${apiUrl}/user_reviews/${params}`)
   },
   reviewUpdate(params) {
-    // console.log(params)
     return http.put(`${apiUrl}/user_reviews/${params["id"]}`, params)
   },
   getStoresByLocation(params) {
@@ -40,7 +42,10 @@ export default {
     return http.get(`${apiUrl}/get_store_reviews_by_store_id/${params}`, params)
   },
   writeReview(params) {
-    return http.post(`${apiUrl}/store_reviews`, params)
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.post(`${apiUrl}/store_reviews`, params, {headers})
   },
   setUserCategory(params) {
     const headers = {
@@ -69,5 +74,50 @@ export default {
   },
   getRecommendStore(params) {
     return http.get(`${apiUrl}/recommend_by_store_id/${params}`)
+  },
+  getGenerationChartData(params) {
+    return http.get(`${apiUrl}/generation_consumption`)
+  },
+  adminDeleteStore(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.delete(`${apiUrl}/stores/${params}`, {headers})
+  },
+  adminDeleteReview(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.delete(`${apiUrl}/store_reviews/${params}`, {headers})
+  },
+  getAllRecommand(params) {
+    return http.post(`${apiUrl}/recommend_by_current_location`, params)
+  },
+  tokencheck(params) {
+    return http.post(`${apiUrl}/token/verify/`, params)
+  },
+  getUsers(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/all_user`, {headers})
+  },
+  deleteUser(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.put(`${apiUrl}/delete_user`, params, {headers})
+  },
+  changeUserStaff(params) {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.put(`${apiUrl}/change_user`, params, {headers})
+  },
+  getUserLikeStores() {
+    const headers = {
+      Authorization: "jwt " + localStorage.getItem("token")
+    }
+    return http.get(`${apiUrl}/like_stores`, {headers})
   }
 }

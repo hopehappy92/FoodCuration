@@ -4,13 +4,8 @@
             "name": "RESTAPI",          
             "script": "manage.py",
             "args": ["runsslserver", "0.0.0.0:8765"],
-
-
-
-
-
             "interpreter" : "python3",
-            "certificate": "django.cert",
-            "key": "django.key"
+            "certificate": "/etc/letsencrypt/live/django/cert.pem",
+            "key": "/etc/letsencrypt/live/django/privkey.pem"
         }] 
 }

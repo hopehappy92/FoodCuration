@@ -11,6 +11,14 @@
         <div id="user_gender_age">
           {{ user_gender }} / {{ user_age }}
         </div>
+        <!-- <div id="user_like_store" @click="likeStores()"> -->
+        <div id="user_like_store">
+          <mypageUserLike
+            :user-like-list="userLikeList"
+          >
+            <button slot="click">좋아요 모아보기</button>
+          </mypageUserLike>
+        </div>
       </div>
       <div class="my_sidebar_box">
         <div id="user_categories">
@@ -34,12 +42,13 @@
 </template>
 
 <script>
+import MypageUserLike from "../components/MypageUserLike"
 import { mapState, mapActions } from "vuex"
 
 export default {
-  // props: {
-  //   reviews: {}
-  // },
+  components: {
+    MypageUserLike
+  },
   data() {
     return {
       cates: {},
@@ -54,6 +63,7 @@ export default {
   computed: {
     ...mapState({
       reviews: state => state.data.reviewListForCate,
+      userLikeList: state => state.data.userLikeList
     })
   },
   watch: {
@@ -104,7 +114,7 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.user_name = localStorage.getItem("username")
     this.user_email = localStorage.getItem("email")
     this.user_gender = localStorage.getItem("gender")
@@ -114,10 +124,12 @@ export default {
       page_size: 1000
     };
     this.getReviewsForCate(params)
+    await this.userLikeStores()
   },
   methods: {
     ...mapActions("data", ["getReviewsForCate"]),
     ...mapActions("data", ["resetCategoryList"]),
+    ...mapActions("data", ["userLikeStores"]),
     goSearchByCategory(keyword) {
       // console.log(keyword)
       this.$emit("searchcate", keyword);
@@ -134,7 +146,10 @@ export default {
     onclickEvent(word) {
       var el = document.getElementById("user_categories")
       el.addEventListener("click", this.onclickState(word), false)
-    }
+    },
+    // likeStores() {
+    //   this.userLikeStores()
+    // }
   }
 }
 </script>
@@ -150,28 +165,41 @@ export default {
   /* background-color: rgba(255, 255, 255, 0.9); */
 }
 .my_sidebar_box {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: white;
   padding: 20px;
   margin-bottom: 20px;
+  font-family: "Do Hyeon", sans-serif;
 }
 #user_nickname {
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 10px;
 }
 #user_id {
-  font-size: 16px;
+  font-size: 20px;
   margin-bottom: 10px;
 }
 #user_gender_age {
-  font-size: 16px;
+  font-size: 20px;
   margin-bottom: 10px;
+}
+#user_like_store {
+  font-size: 20px;
+  height: 30px;
+  border: 1px solid black;
+  background-color: silver;
+  transition: all .5s;
+}
+#user_like_store:hover {
+  background-color: black;
+  color: white;
 }
 #user_categories {
   /* display: flex; */
+  font-size: 20px;
 }
 .user_category {
   /* display: flex; */
-  font-size: 16px;
+  font-size: 20px;
   margin: 10px;
   border: 1px solid black;
   padding: 5px;
@@ -181,8 +209,7 @@ export default {
 .user_category:hover,
 .user_category_all:hover {
   background-color: black;
-  color: whitesmoke;
-  
+  color: white;
 }
 .user_category_all {
   font-size: 16px;

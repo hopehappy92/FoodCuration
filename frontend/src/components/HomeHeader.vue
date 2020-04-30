@@ -113,6 +113,10 @@ export default {
 </script>
 
 <style scoped>
+.nav_menu {
+  font-family: "Do Hyeon", sans-serif;
+  letter-spacing: 2px;
+}
 #home_header {
   width: 100%;
   background-image: url("../../public/images/home_bg.jpg");
@@ -134,7 +138,7 @@ export default {
   flex: 1;
 }
 #home_header_header_logo_img {
-  width: 150px;
+  width: 200px;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -158,14 +162,17 @@ export default {
   line-height: 50px;
   width: 20vw;
   font-size: 20px;
-  transform: translateY(4%);
+  transform: translateY(1px);
+  font-family: "Do Hyeon", sans-serif;
 }
 #home_header_search_btn {
   background-color: white;
   height: 50px;
   width: 70px;
-  font-size: 20px;
-  transform: translateY(4%);
+  font-size: 22px;
+  transform: translateY(1px);
+  font-family: "Do Hyeon", sans-serif;
+  letter-spacing: 2px;
 }
 #home_header_search_input_after {
   display: inline-block;

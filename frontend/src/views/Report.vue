@@ -1,12 +1,12 @@
 <template>
-  <div id="report_main" :style="flag == true ? mainStyleTrue : mainStyleFalse">
-    <div v-if="flag==true" id="report_box">
+  <div id="report_main">
+    <div id="report_box">
       <div class="container-text">
         Report
       </div>
       <div id="report_desc">
         월 1$로 지역별 상권분석부터 업종별 경향까지 <br>
-        다양한 분석 알고리즘으로 당신의 성공적인 창업을 도와드립니다.
+        다양한 분석 알고리즘으로 당신의 성공을 도와드립니다.
       </div>
       <div id="report_link">
         <div v-if="isMobile == false" id="report_free" class="report_add" @click="goReportPage()">
@@ -23,31 +23,16 @@
         </div>
       </div>
     </div>
-    <div v-else id="report_report">
-      <reportPage />
-    </div>
   </div>
 </template>
 
 <script>
-import ReportPage from "../components/ReportPage"
-
 import router from "../router"
 import { mapActions } from "vuex";
 
 export default {
-  components: {
-    ReportPage
-  },
   data() {
     return {
-      flag: true,
-      mainStyleTrue: {
-        backgroundColor: "black"
-      },
-      mainStyleFalse: {
-        backgroundColor: "white"
-      },
       isMobile: false
     }
   },
@@ -68,7 +53,7 @@ export default {
       router.push("/")
     },
     goReportPage() {
-      this.flag = false
+      router.push("/reportpage")
     },
     onResponsiveInverted() {
       if (window.innerWidth < 600) {
@@ -85,6 +70,7 @@ export default {
 #report_main {
   text-align: center;
   height: 100%;
+  background-color: black;
 }
 #report_box {
   border: 5px solid;
@@ -122,7 +108,7 @@ export default {
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   color:  #FFFFFF;
-  font-size: 200px;
+  font-size: 14vw;
   font-weight: 1000;
   font-family: 'Bungee', cursive;
   animation: filling 3s ease forwards;

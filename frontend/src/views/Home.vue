@@ -15,7 +15,6 @@
     <div id="home_body">
       <div v-if="isMobile == false">
         <!-- algo기반 추천 -->
-        
         <div v-if="check" id="home_body_recommand_algo">
           For You
         </div>
@@ -27,21 +26,33 @@
                 :name="userStores[i-1].name"
                 :review-count="userStores[i-1].reviewCount"
                 :area="userStores[i-1].area"
-                :images="userStores[i-1].images[0]['url']"
+                :images="userStores[i-1].url"
                 :avg-score="userStores[i-1].avgScore"
               />
             </div>
           </VueSlickCarousel>
         </div>
         <!-- 전체 추천 -->
-        
         <div id="home_body_recommand_whole">
           Of You
         </div>
-        <div id="home_body_recommand_whole_outer">
+        <div v-if="mainEmptyFlag" class="home_body_recommand_whole_sub">
+          반경 5km이내에 리뷰수가 10개 이상인 음식점이 없습니다.
+        </div>
+        <div v-if="location == 1" class="home_body_recommand_whole_sub">
+          위치 정보 수집 허용을 해주세요.
+        </div>
+        <div v-if="allFlag == true" id="home_body_recommand_whole_outer">
           <VueSlickCarousel v-bind="settings">
-            <div v-for="i in 5" :key="i">
-              <homeBody />
+            <div v-for="i in allStores.length" :key="i">
+              <homeBody 
+                :id="allStores[i-1].id"
+                :name="allStores[i-1].name"
+                :review-count="allStores[i-1].reviewCount"
+                :area="allStores[i-1].area"
+                :images="allStores[i-1].url"
+                :avg-score="allStores[i-1].avgScore"
+              />
             </div>
           </VueSlickCarousel>
         </div>
@@ -57,7 +68,7 @@
               :name="userStores[i-1].name"
               :review-count="userStores[i-1].reviewCount"
               :area="userStores[i-1].area"
-              :images="userStores[i-1].images[0]['url']"
+              :images="userStores[i-1].url"
               :avg-score="userStores[i-1].avgScore"
             />
           </div>
@@ -65,11 +76,26 @@
         <div id="home_body_recommand_whole">
           Of You
         </div>
-        <VueSlickCarousel v-bind="settings_mobile">
-          <div v-for="i in 5" :key="i">
-            <homeBody />
-          </div>
-        </VueSlickCarousel>
+        <div v-if="mainEmptyFlag" class="home_body_recommand_whole_sub">
+          반경 5km이내에 리뷰수가 10개 이상인 음식점이 없습니다.
+        </div>
+        <div v-if="location == 1" class="home_body_recommand_whole_sub">
+          위치 정보 수집 허용을 해주세요.
+        </div>
+        <div v-if="allFlag == true">
+          <VueSlickCarousel v-bind="settings_mobile">
+            <div v-for="i in allStores.length" :key="i">
+              <homeBody 
+                :id="allStores[i-1].id"
+                :name="allStores[i-1].name"
+                :review-count="allStores[i-1].reviewCount"
+                :area="allStores[i-1].area"
+                :images="allStores[i-1].url"
+                :avg-score="allStores[i-1].avgScore"
+              />
+            </div>
+          </VueSlickCarousel>
+        </div>
       </div>
     </div>
     <checkFavorite>
@@ -92,7 +118,6 @@ import router from "../router"
 
 import VueSlickCarousel from 'vue-slick-carousel'
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
-// optional style for arrows & dots
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 
 export default {
@@ -115,7 +140,6 @@ export default {
       },
       settings: {
         centerMode: true,
-        // centerPadding: "20px",
         focusOnSelect: true,
         infinite: true,
         slidesToShow: 4,
@@ -125,7 +149,6 @@ export default {
       },
       settings_mobile: {
         centerMode: true,
-        // centerPadding: "20px",
         focusOnSelect: true,
         infinite: true,
         slidesToShow: 1,
@@ -135,12 +158,18 @@ export default {
       },
       check: false,
       isMobile: false,
+      allFlag: false,
+      lon: 0,
+      lat: 0,
+      location: 1,
     }
   },
   computed: {
     ...mapState({
       islogined: state => state.data.isloggined,
       userStores: state => state.data.userBasedList,
+      allStores: state => state.data.mainAllList,
+      mainEmptyFlag: state => state.data.mainEmptyFlag
     }),
   },
   watch: {
@@ -153,16 +182,29 @@ export default {
       }
       this.check = true
     },
-    // test: function() {
-    //   console.log("aaaa")
-    // }
+    allStores: async function() {
+      this.allFlag = true
+    }
   },
   async mounted() {
-    this.onResponsiveInverted();
-    window.addEventListener("resize", this.onResponsiveInverted);
+    await this.allRecommand()
+    const that = this;
+    await navigator.geolocation.getCurrentPosition(function(pos) {
+      that.lat = Number(pos.coords.latitude);
+      that.lon = Number(pos.coords.longitude);
+      that.location = 0;
+      const params = {
+        latitude: that.lat,
+        longitude: that.lon,
+      }
+      that.allRecommand(params)
+    });
+    
     await this.checkNavbar()
     await this.userBasedCheck()
-    // console.log(this.test)
+    this.onResponsiveInverted();
+    window.addEventListener("resize", this.onResponsiveInverted);
+    
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.onResponsiveInverted);
@@ -173,6 +215,7 @@ export default {
   methods: {
     ...mapActions("data", ["checkNavbar"]),
     ...mapActions("data", ["userBasedRecommand"]),
+    ...mapActions("data", ["allRecommand"]),
     async userBasedCheck() {
       if (localStorage.getItem("pk")) {
         await this.userBasedRecommand()
@@ -196,6 +239,7 @@ export default {
 <style scoped>
 #home {
   background-color: black;
+  /* background-color: white; */
   height: 100%;
 }
 #home_header {
@@ -211,6 +255,8 @@ export default {
 }
 #home_body_recommand_algo {
   font-size: 30px;
+  font-family: "Do Hyeon", sans-serif;
+  letter-spacing: 2px;
 }
 #home_body_recommand_whole {
   font-size: 30px;
@@ -238,6 +284,9 @@ export default {
 #home_body_recommand_whole_outer {
   border: 3px solid white;
   padding: 20px;
+}
+.home_body_recommand_whole_sub {
+  color: gray;
 }
 @media screen and (max-width: 600px) {
   #home_header {
@@ -268,6 +317,10 @@ export default {
     background-color: black;
     color: white;
     text-align: center;
+  }
+  .home_body_recommand_whole_sub {
+    font-size: 12px;
+    color: gray;
   }
 }
 </style>

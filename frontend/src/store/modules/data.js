@@ -16,7 +16,22 @@ const state = {
     address: "",
     lat: 0.0,
     lng: 0.0,
-    categories: []
+    categories: [],
+    images: [],
+    url: "",
+    reviewCount: 0,
+    avgScore: 0,
+    like: 0,
+  },
+  user: {
+    id: "",
+    username: "",
+    age: 0,
+    category: [],
+    email: "",
+    gender: "",
+    is_staff: false,
+    review_count: 0,
   },
   isStaff: false,
   userReviewList: [],
@@ -28,7 +43,11 @@ const state = {
   navSearch: true,
   searchFromNav: false,
   storeNameFromNav: '',
-  userBasedList: [],
+  userBasedList: [0],
+  mainAllList: [0],
+  mainEmptyFlag: false,
+  userList: [],
+  userLikeList: [0],
   trendChartData: {
     의류: {label: [], data1: [], data2: []},
     악세사리류: {label: [], data1: [], data2: []},
@@ -98,7 +117,79 @@ const state = {
   locationTabs: [
     "나이대별",
     "시간대별"
-  ]
+  ],
+  generationChartData: {
+    "20대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    },
+    "30대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    },
+    "40대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    },
+    "50대": {
+      교육비: [],
+      미용: [],
+      보험료: [],
+      생활용품: [],
+      "세금 및 기타 요금": [],
+      식생활: [],
+      "여행 및 숙박": [],
+      유흥: [],
+      의료: [],
+      "자동차/주유": [],
+      취미: [],
+      택시비: [],
+      통신비: [],
+      패션잡화: [],
+    }
+  },
+  generationTabs: [
+    "20대",
+    "30대",
+    "40대",
+    "50대"
+  ],
 };
 
 // actions
@@ -262,6 +353,9 @@ const actions = {
   async getStores({
     commit
   }, params) {
+    if (params["reset"] == true) {
+      state.storeSearchList = []
+    }
     const append = params.append;
     const resp = await api.getStores(params);
     // console.log(resp)
@@ -274,7 +368,12 @@ const actions = {
       address: d.address,
       lat: d.latitude,
       lng: d.longitude,
-      categories: d.category_list
+      categories: d.category_list,
+      images: d.images,
+      url: d.url,
+      reviewCount: d.review_count,
+      avgScore: d.avg_score,
+      like: d.like
     }));
 
     if (append) {
@@ -288,9 +387,11 @@ const actions = {
   async getUserReview({
     commit
   }, params) {
-    // console.log(params["page"])
     if (params["page"] == false) {
       return
+    }
+    if (params["reset"] == true) {
+      state.userReviewList = []
     }
     const append = params.append;
     // console.log(append)
@@ -303,8 +404,6 @@ const actions = {
       return
     }
 
-    var sysdate = new Date(resp.data.results[0].reg_time)
-    // console.log(sysdate)
     function date_to_str(format) {
       var year = format.getFullYear();
       var month = format.getMonth() + 1;
@@ -319,7 +418,6 @@ const actions = {
       if (sec < 10) sec = '0' + sec;
       return year + "-" + month + "-" + date + " " + hour + ":" + min + ":" + sec;
     }
-    sysdate = date_to_str(sysdate)
 
     reviews = resp.data.results.map(d => ({
       id: d.id,
@@ -328,7 +426,7 @@ const actions = {
       user: d.user,
       score: d.score,
       content: d.content,
-      reg_time: sysdate,
+      reg_time: date_to_str(new Date(d.reg_time)),
       categories: d.category_list
     }));
 
@@ -553,6 +651,7 @@ const actions = {
     let check = false
     localStorage.clear()
     router.push("/")
+    window.location.reload(true)
     commit("setIsLoggined", check)
     commit("setIsStaff", check)
   },
@@ -589,7 +688,7 @@ const actions = {
     // console.log(params)
     await api.reviewUpdate(params)
       .then(res => {
-        // console.log(res)
+        // console.log("bbbbbbb", res)
       })
       .catch(err => {
         console.log(err)
@@ -616,10 +715,10 @@ const actions = {
   async searchByLocation({
     commit
   }, params) {
-    console.log(params)
+    // console.log(params)
     const resp = await api.getStoresByLocation(params);
-    console.log('123131231')
-    console.log(resp)
+    // console.log('123131231')
+    // console.log(resp)
     const stores = resp.data.map(d => ({
       id: d.id,
       name: d.store_name,
@@ -629,7 +728,8 @@ const actions = {
       address: d.address,
       lat: d.latitude,
       lng: d.longitude,
-      categories: d.category_list
+      categories: d.category_list,
+      like: d.like
     }));
     commit("setStoreSearchList", stores)
   },
@@ -649,6 +749,7 @@ const actions = {
   async writeReview({
     commit
   }, params) {
+    console.log(params)
     await api.writeReview(params)
       .then(res => {
         // console.log(res)
@@ -694,16 +795,53 @@ const actions = {
       area: d.area,
       reviewCount: d.review_count,
       images: d.images,
-      avgScore: d.avg_score
-
+      avgScore: d.avg_score,
+      url: d.url
     }));
+
     mutations.setUserBasedRecommand(state, stores)
+  },
+
+  async allRecommand({commit}, params) {
+    // console.log(params)
+    const resp = await api.getAllRecommand(params)
+    // console.log(resp)
+    if (resp.data == "") {
+      // console.log("aaaaaaaaaaaaaa")
+      // state.allRecommand = [0]
+      state.mainEmptyFlag = true
+      const res = await api.getAllRecommand()
+      const store = res.data.map(d => ({
+        id: d.id,
+        name: d.store_name,
+        area: d.area,
+        reviewCount: d.review_count,
+        images: d.images,
+        avgScore: d.avg_score,
+        url: d.url
+      }));
+      mutations.setAllRecommand(state, store)
+      return
+    }
+    state.mainEmptyFlag = false
+    const stores = resp.data.map(d => ({
+      id: d.id,
+      name: d.store_name,
+      area: d.area,
+      reviewCount: d.review_count,
+      images: d.images,
+      avgScore: d.avg_score,
+      url: d.url
+    }));
+    mutations.setAllRecommand(state, stores)
+    // console.log(state.mainAllList)
   },
 
   async goTrendChartData({commit}) {
     const res = await api.getTrendChartData()
     const dataset = res.data
     for (let i = 0; i < state.trendTabs.length; ++i) {
+      state.trendChartData[`${state.trendTabs[i]}`]["label"] = []
       for (let j = 0; j < dataset[`${state.trendTabs[i]}`]["new_date"].length; ++j) {
         state.trendChartData[`${state.trendTabs[i]}`]["label"].push(dataset[`${state.trendTabs[i]}`]["new_date"][j].slice(5,10))
       }
@@ -740,6 +878,147 @@ const actions = {
       state.locationChartData[`${state.locationTabs[i]}`]["중구"] = dataset[`${state.locationTabs[i]}`]["중구"]
     }
     // console.log(state.locationChartData)
+  },
+  
+  async goGenerationChartData({commit}) {
+    // console.log("aaaaaaaaaaaaaa")
+    const res = await api.getGenerationChartData()
+    // console.log(res)
+    const dataset = res.data
+    // console.log(dataset)
+    // console.log(state.generationTabs)
+    for (let i = 0; i <state.generationTabs.length; ++i) {
+      state.generationChartData[`${state.generationTabs[i]}`]["교육비"] = dataset[`${state.generationTabs[i]}`]["교육비"]
+      state.generationChartData[`${state.generationTabs[i]}`]["미용"] = dataset[`${state.generationTabs[i]}`]["미용"]
+      state.generationChartData[`${state.generationTabs[i]}`]["보험료"] = dataset[`${state.generationTabs[i]}`]["보힘료"]
+      state.generationChartData[`${state.generationTabs[i]}`]["생활용품"] = dataset[`${state.generationTabs[i]}`]["생활용품"]
+      state.generationChartData[`${state.generationTabs[i]}`]["세금 및 기타 요금"] = dataset[`${state.generationTabs[i]}`]["세금 및 기타 요금"]
+      state.generationChartData[`${state.generationTabs[i]}`]["식생활"] = dataset[`${state.generationTabs[i]}`]["식생활"]
+      state.generationChartData[`${state.generationTabs[i]}`]["여행 및 숙박"] = dataset[`${state.generationTabs[i]}`]["여행 및 숙박"]
+      state.generationChartData[`${state.generationTabs[i]}`]["유흥"] = dataset[`${state.generationTabs[i]}`]["유흥"]
+      state.generationChartData[`${state.generationTabs[i]}`]["의료"] = dataset[`${state.generationTabs[i]}`]["의료"]
+      state.generationChartData[`${state.generationTabs[i]}`]["자동차/주유"] = dataset[`${state.generationTabs[i]}`]["자동차/주유"]
+      state.generationChartData[`${state.generationTabs[i]}`]["취미"] = dataset[`${state.generationTabs[i]}`]["취미"]
+      state.generationChartData[`${state.generationTabs[i]}`]["택시비"] = dataset[`${state.generationTabs[i]}`]["택시비"]
+      state.generationChartData[`${state.generationTabs[i]}`]["통신비"] = dataset[`${state.generationTabs[i]}`]["통신비"]
+      state.generationChartData[`${state.generationTabs[i]}`]["패션잡화"] = dataset[`${state.generationTabs[i]}`]["패션잡화"]
+    }
+    // console.log(state.generationChartData)
+  },
+  async adminDelete({commit}, params) {
+    // console.log(params)
+    if (params[0] == "store") {
+      // console.log("st")
+      let resp = await api.adminDeleteStore(params[1])
+      // console.log(resp)
+      if (resp.status == 200) {
+        alert("삭제 성공")
+        // console.log(state.storeSearchList[0]["id"])
+        let tmp = state.storeSearchList
+        state.storeSearchList = []
+        for (let i = 0; i < tmp.length; ++i) {
+          if (tmp[i]["id"] == params[1]) {
+            continue
+          }
+          state.storeSearchList.push(tmp[i])
+        }
+      }
+    } else if (params[0] == "review") {
+      // console.log("re")
+      let resp = await api.adminDeleteReview(params[1])
+      // console.log(resp)
+      if (resp.status == 200) {
+        alert("삭제 성공")
+        let tmp = state.userReviewList
+        state.userReviewList = []
+        for (let i = 0; i < tmp.length; ++i) {
+          if (tmp[i]["id"] == params[1]) {
+            continue
+          }
+          state.userReviewList.push(tmp[i])
+        }
+      }
+    } else {
+      const data = {
+        id: params[1]
+      }
+      let resp = await api.deleteUser(data)
+      // console.log(resp)
+      if (resp.data == "삭제 성공") {
+        alert("삭제 성공")
+        let tmp = state.userList
+        state.userList = []
+        for (let i = 0; i < tmp.length; ++i) {
+          if (tmp[i]["id"] == params[1]) {
+            continue
+          }
+          state.userList.push(tmp[i])
+        }
+      }
+    }
+  },
+  async tokenVerify({commit}, params) {
+    // console.log(params)
+    await api.tokencheck(params)
+    .then(res => {
+      // console.log(res)
+    })
+    .catch(err => {
+      alert("세션이 만료되었습니다.")
+      actions.logout(commit)
+    })
+  },
+  async getUserData({commit}, params) {
+    const resp = await api.getUsers(params)
+    // console.log(resp)
+    const users = resp.data.map(d => ({
+      id: d.id,
+      username: d.username,
+      age: d.age,
+      category: d.category,
+      email: d.email,
+      gender: d.gender,
+      is_staff: d.is_staff,
+      review_count: d.review_count,
+    }))
+    // console.log(users)
+    commit("setUserList", users)
+  },
+  async setUserStaff({commit}, params) {
+    const data = {
+      id: params
+    }
+    const resp = await api.changeUserStaff(data)
+    // console.log(resp)
+    if (resp.data == "권한 변경 성공") {
+      alert("권한 변경 성공")
+      let tmp = state.userList
+      state.userList = []
+      for (let i = 0; i < tmp.length; ++i) {
+        if (tmp[i]["id"] == params) {
+          // console.log(tmp[i])
+          if (tmp[i]["is_staff"]) {
+            tmp[i]["is_staff"] = false
+          } else {
+            tmp[i]["is_staff"] = true
+          }
+        }
+        state.userList.push(tmp[i])
+      }
+    }
+  },
+  async userLikeStores({commit}) {
+    const resp = await api.getUserLikeStores()
+    // console.log(resp)
+    const stores = resp.data.map(d => ({
+      id: d.id,
+      store_name: d.store_name,
+      area: d.area,
+      avg_score: d.avg_score,
+      review_count: d.review_count,
+    }))
+    // console.log(stores)
+    commit("setUserLikeList", stores)
   }
 };
 
@@ -784,7 +1063,7 @@ const mutations = {
     state.isHomeCate = localStorage.getItem("category_list")
   },
   checkNavSearch(state, check = 0) {
-    console.log('반응했니?')
+    // console.log('반응했니?')
     if (check === 1) {
       state.navSearch = false
     } else {
@@ -792,7 +1071,7 @@ const mutations = {
     }
   },
   searchFromNav(state, params) {
-    console.log(params)
+    // console.log(params)
     state.searchFromNav = true
     state.storeNameFromNav = params
   },
@@ -804,6 +1083,15 @@ const mutations = {
   },
   setIsStaff(state, check) {
     state.isStaff = check
+  },
+  setAllRecommand(state, stores) {
+    state.mainAllList = stores.map(s => s)
+  },
+  setUserList(state, users) {
+    state.userList = users.map(s => s)
+  },
+  setUserLikeList(state, stores) {
+    state.userLikeList = stores.map(s => s)
   }
 };
 

@@ -39,8 +39,8 @@ urlpatterns = [
     path('user', views.UserViewSet.get_queryset, name='user'),
     path('user_withdrawal', views.UserViewSet.user_withdrawal, name='user_withdrawal'),
     path('all_user', views.UserViewSet2.all_user, name='all_user'),
-    path('delete_user/<int:id>', views.UserViewSet2.delete_user, name='delete_user'),
-    path('change_user/<int:id>', views.UserViewSet2.change_user, name='change_user'),
+    path('delete_user', views.UserViewSet2.delete_user, name='delete_user'),
+    path('change_user', views.UserViewSet2.change_user, name='change_user'),
     path('store/<int:review_count>', views.StoreViewSet2.get_queryset, name='store'),
     path('all_stores/', views.StoreViewSet3.get_queryset, name='all_stores'),
     # path('user_reviews/<int:user_id>', views.UserReviewSet.get_queryset, name='user-review'),
@@ -78,4 +78,6 @@ urlpatterns = [
     path('set_user_category', views.set_user_category, name="set_user_category"),
     path('recommend_by_store_id/<int:store_id>', views.recommend_by_store_id, name="recommend_by_store_id"),
     path('recommend_by_current_location', views.recommend_by_current_location, name="recommend_by_current_location"),
+    path('like_stores', views.like_stores, name="like_stores"),
+    path('store_info/<int:pk>', views.store_info, name="store_info"),
 ]

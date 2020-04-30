@@ -3,7 +3,7 @@ from api import models, serializers
 from django.http import HttpResponse
 from rest_framework import viewsets, mixins
 from rest_framework.schemas import AutoSchema
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, authentication_classes, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
@@ -240,6 +240,14 @@ class StoreViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.StoreSerializer
     pagination_class = SmallPagination
     
+    def retrieve(self, request, pk=None):
+        user = request.user
+        store = models.Store.objects.get(id=pk)
+        a = serializers.StoreSerializer(store).data        
+        b = UserLikeStore.objects.filter(store=store, customuser=user) if user.is_authenticated else 0
+        a['like'] = 1 if b else 0
+        return Response(a)
+
     def get_queryset(self):
         name = self.request.query_params.get("name", "")
         queryset = (
@@ -315,21 +323,7 @@ class StoreReviewSet(viewsets.ModelViewSet):
             user.review_count += 1
             user.save()
             return Response("작성 성공")
-        else:
-            return Response("작성 실패")
-        # data = request.data
-        # store = Store.objects.get(id=data["store"])
-        # store_name = store.store_name
-        # user = CustomUser.objects.get(id=data["user"])
-        # # 받아온 데이터를 이용해서 Review를 작성합니다.
-        # models.Review.objects.create(store_id=data["store"], user_id=data["user"], content=data["content"], score=data["score"], reg_time=datetime.datetime.now(), store_name=store_name)
-        
-        # 작성이 완료되었다면 매장과 유저의 review_count를 1씩 추가합니다.
-        # store.review_count += 1
-        # store.save()
-        # user.review_count += 1
-        # user.save()
-        return Response("작성 성공")
+        return Response("작성 실패")
 
     def update(self, request, pk=None):
         '''
@@ -416,7 +410,7 @@ def search_store(self):
             # print(store.location)
             chk = 0
             for word in words:
-                if store.store_name in word:
+                if word in store.store_name:
                     chk = 1
                     break
             if chk:
@@ -492,28 +486,30 @@ class UserViewSet2(viewsets.ModelViewSet):
     
     @api_view(['GET'])
     def all_user(self):
+        print(self.user)
         if self.user.is_staff == True:
             serializer = serializers.UserSerializer2(models.CustomUser.objects.filter(is_active=1), many=True)
             return Response(serializer.data)
         else:
             return Response("접근 불가")
     
-    @api_view(['POST'])
-    def delete_user(self, id):
+    @api_view(['PUT'])
+    def delete_user(self):
         if self.user.is_staff == False:
+            print(self.user.is_staff)
             return Response("삭제 실패")
         else:
-            user = get_object_or_404(CustomUser, id=id)
+            user = get_object_or_404(CustomUser, id=self.data["id"])
             user.is_active = False
             user.save()
             return Response("삭제 성공")
 
-    @api_view(['POST'])
-    def change_user(self, id):
+    @api_view(['PUT'])
+    def change_user(self):
         if self.user.is_staff == False:
             return Response("접근 불가")
         else:
-            user = get_object_or_404(CustomUser, id=id)
+            user = get_object_or_404(CustomUser, id=self.data["id"])
             if user.is_staff:
                 user.is_staff = False
             else:
@@ -699,7 +695,7 @@ def recommend_by_store_id(self, store_id):
     store_df = store_df[store_df["latitude"] - lat < 0.015]
     store_df = store_df[store_df["latitude"] - lat > -0.015]
     store_df = store_df[store_df.apply(lambda x: 6371*acos(min(1, cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"])))), axis=1) < 1][["id", "category"]]
-    
+    store_df = store_df[store_df["id"] != store_id]
     a = []
     store_category_set = set(store.category.split('|'))
     for categories in store_df["category"]:
@@ -811,7 +807,7 @@ def relearning_kmeans(self):
         a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
 
         # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
-        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
+        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)
 
         # calc 기준으로 내림차순 정렬한다.
         cluster_list[i].sort_values(['calc'], ascending=False, inplace=True)
@@ -843,3 +839,23 @@ def recommend_by_current_location(self):
         check_image(serializer)
         queryset = sorted(serializer.data, key=lambda x: x["avg_score"], reverse=True)[:10]
     return Response(queryset)
+
+
+@api_view(['GET'])
+def like_stores(self):
+    user = self.user
+    stores = user.like_stores.all()
+    a = serializers.StoreDetailSerializer3(stores, many=True).data
+    return Response(a)
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def store_info(self, pk):
+    user = self.user
+    store = models.Store.objects.get(id=pk)
+    a = serializers.StoreSerializer(store).data        
+    b = UserLikeStore.objects.filter(store=store, customuser=user) if user.is_authenticated else 0
+    a['like'] = 1 if b else 0
+    return Response(a)
