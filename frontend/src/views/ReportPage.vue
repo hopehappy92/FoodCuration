@@ -23,7 +23,7 @@
           개요
         </div>
         <div class="sectionDetail">
-          최근 리뷰를 기반으로 TF-IDF 분석을 하였으며, 최근 두드러지는 단어를 워드클라우드로 표현하였다.
+          최근 6개월의 리뷰를 분석 하여, 두드러지는 단어를 보여주었다.
         </div>
         <div id="WC" style="width: 100%; height: 500px;" />
       </div>
