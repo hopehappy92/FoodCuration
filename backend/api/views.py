@@ -3,7 +3,7 @@ from api import models, serializers
 from django.http import HttpResponse
 from rest_framework import viewsets, mixins
 from rest_framework.schemas import AutoSchema
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, authentication_classes, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
@@ -685,7 +685,6 @@ def user_based_cf(self):
 def recommend_by_store_id(self, store_id):
     '''
     '''
-    print(store_id)
     store = Store.objects.get(id=store_id)
     store_df = pd.DataFrame(all_store.values("id", "longitude", "latitude", "category"))
     min_review = 5
@@ -847,4 +846,16 @@ def like_stores(self):
     user = self.user
     stores = user.like_stores.all()
     a = serializers.StoreDetailSerializer3(stores, many=True).data
+    return Response(a)
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def store_info(self, pk):
+    user = self.user
+    store = models.Store.objects.get(id=pk)
+    a = serializers.StoreSerializer(store).data        
+    b = UserLikeStore.objects.filter(store=store, customuser=user) if user.is_authenticated else 0
+    a['like'] = 1 if b else 0
     return Response(a)

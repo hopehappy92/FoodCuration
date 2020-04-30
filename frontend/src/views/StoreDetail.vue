@@ -90,7 +90,7 @@ export default {
     }
     http
       .get(
-        `/api/stores/${this.$route.params.storeId}`, {headers}
+        `/api/store_info/${this.$route.params.storeId}`, {headers}
       )
       .then(res => {
         // console.log(res);
