@@ -841,6 +841,7 @@ const actions = {
     const res = await api.getTrendChartData()
     const dataset = res.data
     for (let i = 0; i < state.trendTabs.length; ++i) {
+      state.trendChartData[`${state.trendTabs[i]}`]["label"] = []
       for (let j = 0; j < dataset[`${state.trendTabs[i]}`]["new_date"].length; ++j) {
         state.trendChartData[`${state.trendTabs[i]}`]["label"].push(dataset[`${state.trendTabs[i]}`]["new_date"][j].slice(5,10))
       }
