@@ -3,7 +3,7 @@ from api import models, serializers
 from django.http import HttpResponse
 from rest_framework import viewsets, mixins
 from rest_framework.schemas import AutoSchema
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, authentication_classes, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
@@ -685,7 +685,6 @@ def user_based_cf(self):
 def recommend_by_store_id(self, store_id):
     '''
     '''
-    print(store_id)
     store = Store.objects.get(id=store_id)
     store_df = pd.DataFrame(all_store.values("id", "longitude", "latitude", "category"))
     min_review = 5
@@ -696,7 +695,7 @@ def recommend_by_store_id(self, store_id):
     store_df = store_df[store_df["latitude"] - lat < 0.015]
     store_df = store_df[store_df["latitude"] - lat > -0.015]
     store_df = store_df[store_df.apply(lambda x: 6371*acos(min(1, cos(radians(lat))*cos(radians(x["latitude"]))*cos(radians(x["longitude"])-radians(lon))+sin(radians(lat))*sin(radians(x["latitude"])))), axis=1) < 1][["id", "category"]]
-    
+    store_df = store_df[store_df["id"] != store_id]
     a = []
     store_category_set = set(store.category.split('|'))
     for categories in store_df["category"]:
@@ -808,7 +807,7 @@ def relearning_kmeans(self):
         a = sum(cluster_list[i]['sum']) / sum(cluster_list[i]['count'])
 
         # calc 칼럼을 추가하고 거기에 인기도 점수 계산한 값을 넣어준다.
-        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/x['count']+min_review))*a, axis=1)
+        cluster_list[i]['calc'] = cluster_list[i].apply(lambda x: ((x['count']/(x['count']+min_review))*x['mean'] + (min_review/(x['count']+min_review))*a), axis=1)
 
         # calc 기준으로 내림차순 정렬한다.
         cluster_list[i].sort_values(['calc'], ascending=False, inplace=True)
@@ -847,4 +846,16 @@ def like_stores(self):
     user = self.user
     stores = user.like_stores.all()
     a = serializers.StoreDetailSerializer3(stores, many=True).data
+    return Response(a)
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def store_info(self, pk):
+    user = self.user
+    store = models.Store.objects.get(id=pk)
+    a = serializers.StoreSerializer(store).data        
+    b = UserLikeStore.objects.filter(store=store, customuser=user) if user.is_authenticated else 0
+    a['like'] = 1 if b else 0
     return Response(a)

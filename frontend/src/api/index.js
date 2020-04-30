@@ -1,9 +1,12 @@
 // import axios from "axios";
 import http from "./http"
+import https from 'https';
 
 const apiUrl = "/api";
 const regiUrl = "/rest-auth";
-
+const agent = new https.Agent({  
+    rejectUnauthorized: false
+   });
 export default {
   getStores(params) {
     return http.get(`${apiUrl}/stores`, {

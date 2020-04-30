@@ -28,6 +28,10 @@
         <div id="WC" style="width: 100%; height: 500px;" />
       </div>
 
+      <br>
+      <hr>
+      <hr>
+      <hr>
 
       <div id="section1">
         <div class="sectionHeader">
@@ -40,6 +44,7 @@
           <b>40대</b> : 20대에 관심을 가졌던 부분들에서 가장 큰 폭으로 하락한 나이대. 교육비, 보험료 지출이 다시 한 번 상승하는 모습이며, 이는 자식들의 지출을 대변함. 가족을 자극하는 마케팅이 필요함. <br>
           <b>50대</b> : 전체적으로 40대와 비슷한 양상을 보이지만 소득이 감소하며 이는 통신비, 취미, 미용 관련 비용이 하락함.
         </div>
+        <br>
         <div v-for="(value, i) in generationTabs" id="report_box_generation_btn" :key="value">
           <div :id="`generationBtn${i}`" class="report_box_generation_btn_text" @click="showGeneration(i)">
             {{ value }}
@@ -50,7 +55,11 @@
         </div>
       </div>
       
-
+      <br>
+      <br>
+      <hr>
+      <hr>
+      <hr>
 
       <div id="section2">
         <div class="sectionHeader">
@@ -77,8 +86,11 @@
         <canvas id="locationchart1" class="report_box_location_chart" />
       </div>
 
-
-
+      <br>
+      <br>
+      <hr>
+      <hr>
+      <hr>
 
       <div id="section3">
         <div class="sectionHeader">
@@ -112,6 +124,7 @@
           <b>용산구</b>는 역시 전자제품의 메출이 가장 높았으며,
           <b>영등포구</b>는 여의도와 타임스퀘어를 기반으로 전자제품의 매출이 두드러졌다.
         </div>
+        <br>
         <div v-for="i in top3Location.length" :key="top3Location[i-1][0]" style="display: inline-block;">
           <div :id="`top3Btn${i}`" class="report_box_top3_location_text" @click="showTop3Location(i)">
             {{ top3Location[i-1][0] }}
@@ -120,6 +133,14 @@
         <div v-for="i in top3Location.length" :key="top3Location[i-1][2]" style="display: inline-block;">
           <img :id="`top3Location${i}`" :src="`${top3Location[i-1][1]}`" :alt="`${top3Location[i-1][2]}`" class="report_box_top3_location_imgs">
         </div>
+
+        <br>
+        <br>
+        <br>
+        <hr>
+        <hr>
+        <hr>
+
         <div class="sectionHeader">
           상권 추천
         </div>
@@ -136,6 +157,7 @@
           <b>중식</b>은 노원, 강남, 서초의 순서를 띄었다.
           <b>커피/음료전문점</b>은 기업이 몰려있는 중구가 8개의 분야중 유일하게 나타났으며, 1위를 차지했다.
         </div>
+        <br>
         <div v-for="i in top3Cate.length" :key="top3Cate[i-1][0]" style="display: inline-block;">
           <div :id="`top3CateBtn${i}`" class="report_box_top3_cate_text" @click="showTop3Cate(i)">
             {{ top3Cate[i-1][0] }}
@@ -146,7 +168,11 @@
         </div>
       </div>
 
-
+      <br>
+      <br>
+      <hr>
+      <hr>
+      <hr>
 
       <div id="section4">
         <div class="sectionHeader">
@@ -158,6 +184,7 @@
           <b>체인점</b>의 경우 선택지가 다양하고 불호가 낮은 타는 베스킨라빈스가 4.0으로 1위를 차지하였고, 명랑핫도그가 3.8로 10위에 자리잡았다.
           상위 10개 중 5개가 카페, 디저트류인걸로 보아 후식류 체인점의 강세가 두드러졌다. 그리고 미스사이공의 경우 가성비에서 고점을 받은걸로 보인다.
         </div>
+        <br>
         <div v-for="(value, i) in chainTabs" id="report_box_chain_btn" :key="i">
           <div :id="`chainBtn${i}`" class="report_box_chain_btn_text" @click="showChain(i)">
             {{ value }}
@@ -186,6 +213,12 @@
         <canvas id="chainchart2" class="report_box_chain_chart" />
       </div>
 
+      <br>
+      <br>
+      <hr>
+      <hr>
+      <hr>
+
       <div id="section5">
         <div class="sectionHeader">
           업종별 경향 비교
@@ -197,6 +230,7 @@
           <b>헬스장</b>의 경우 추석을 기점으로 수직상승을 이루었고, 정확히 한달 후 비슷한 경향을 보였다.
           그리고 <b>숙박, 미용/피부</b>의 경우 추석 이후 두드러지는 성장은 없었지만 주단위의 규칙성을 보여주었다.
         </div>
+        <br>
         <div v-for="(value, i) in trendTabs" id="report_box_trend_btn" :key="i">
           <div :id="`trendBtn${i}`" class="report_box_trend_btn_text" @click="showTrends(i)">
             {{ value }}
