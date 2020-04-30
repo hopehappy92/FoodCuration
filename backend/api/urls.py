@@ -78,4 +78,5 @@ urlpatterns = [
     path('set_user_category', views.set_user_category, name="set_user_category"),
     path('recommend_by_store_id/<int:store_id>', views.recommend_by_store_id, name="recommend_by_store_id"),
     path('recommend_by_current_location', views.recommend_by_current_location, name="recommend_by_current_location"),
+    path('like_stores', views.like_stores, name="like_stores"),
 ]
