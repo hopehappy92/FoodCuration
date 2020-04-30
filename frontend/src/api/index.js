@@ -9,7 +9,7 @@ const agent = new https.Agent({
    });
 export default {
   getStores(params) {
-    return http.get(`${apiUrl}/store_info`, {
+    return http.get(`${apiUrl}/stores`, {
       params
     });
   },
