@@ -108,7 +108,7 @@ export default {
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   color:  #FFFFFF;
-  font-size: 200px;
+  font-size: 14vw;
   font-weight: 1000;
   font-family: 'Bungee', cursive;
   animation: filling 3s ease forwards;

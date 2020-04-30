@@ -11,7 +11,8 @@
         <div id="user_gender_age">
           {{ user_gender }} / {{ user_age }}
         </div>
-        <div id="user_like_store" @click="likeStores()">
+        <!-- <div id="user_like_store" @click="likeStores()"> -->
+        <div id="user_like_store">
           <mypageUserLike
             :user-like-list="userLikeList"
           >
@@ -113,7 +114,7 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.user_name = localStorage.getItem("username")
     this.user_email = localStorage.getItem("email")
     this.user_gender = localStorage.getItem("gender")
@@ -123,6 +124,7 @@ export default {
       page_size: 1000
     };
     this.getReviewsForCate(params)
+    await this.userLikeStores()
   },
   methods: {
     ...mapActions("data", ["getReviewsForCate"]),
@@ -145,9 +147,9 @@ export default {
       var el = document.getElementById("user_categories")
       el.addEventListener("click", this.onclickState(word), false)
     },
-    likeStores() {
-      this.userLikeStores()
-    }
+    // likeStores() {
+    //   this.userLikeStores()
+    // }
   }
 }
 </script>
