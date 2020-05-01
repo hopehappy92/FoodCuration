@@ -2,17 +2,15 @@
   <div class="text-center">
     <v-dialog v-model="dialog" width="500">
       <template v-slot:activator="{ on }">
-        <i class="fas fa-edit" v-on="on"></i>
+        <i class="fas fa-edit" v-on="on" />
       </template>
 
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>리뷰 수정</v-card-title>
-        <textarea type="text" v-model="eContent" value="hhh">content</textarea>
-        <v-divider></v-divider>
-
+        <textarea v-model="eContent" type="text" value="hhh">content</textarea>
+        <v-divider />
         <v-card-actions>
-          <v-spacer></v-spacer>
-
+          <v-spacer />
           <v-btn color="primary" text @click="editDone">수정</v-btn>
           <v-btn color="red" text @click="dialog = false">취소</v-btn>
         </v-card-actions>
@@ -22,7 +20,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapState, mapActions } from "vuex";
 export default {
   props: {
     reviewId: Number,
@@ -36,15 +34,14 @@ export default {
     };
   },
   methods: {
-    editDone() {
-      axios
-        .put(
-          `http://i02d106.p.ssafy.io:8765/api/store_reviews/${this.reviewId}`,
-          {
-            score: this.score,
-            content: this.eContent
-          }
-        )
+    ...mapActions("data", ["editReview"]),
+    editDone: async function() {
+      const params = {
+        id: this.reviewId,
+        score: this.score,
+        content: this.eContent
+      };
+      await this.editReview(params)
         .then(this.$emit("editReview"))
         .then((this.dialog = false));
     }
@@ -53,8 +50,11 @@ export default {
 </script>
 
 <style scoped>
+i {
+  font-size: 20px;
+}
 i:hover {
-  font-size: 18px;
+  font-size: 25px;
   cursor: pointer;
 }
 textarea {

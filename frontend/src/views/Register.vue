@@ -14,22 +14,22 @@ export default {
     RegisterForm
   },
   methods: {
-    ...mapActions("data", ["checkRegister"])
+    ...mapActions("data", ["checkNavbar"])
   },
   mounted() {
     // console.log("aaa")
-    this.checkRegister()
+    this.checkNavbar()
   },
   destroyed() {
     // console.log("bbb")
-    this.checkRegister()
+    this.checkNavbar()
   }
 }
 </script>
 
 <style scoped>
 #register {
-  background-image: url("../../public/images/regi_bg.png");
+  background-image: url("../../public/images/regi_bg.jpg");
   /* Add the blur effect */
   /* filter: blur(8px);
   -webkit-filter: blur(8px); */
@@ -55,5 +55,17 @@ export default {
   z-index: 2;
   padding: 20px;
   text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+  #register {
+    background-image: none;
+    background-color: black;
+  }
+  #regiform {
+    padding: 10px;
+    width: 80%;
+  }
+
 }
 </style>

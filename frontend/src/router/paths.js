@@ -28,12 +28,27 @@ export default [{
     view: "Mypage",
     name: "mypage",
     meta: {
-      authRequired: true
+      authRequired: true,
     }
   },
   {
     path: "*",
     view: "NotFound",
 		name: "notFound",
-	}
+  },
+  {
+    path: "/report",
+    view: "Report",
+    name: "report"
+  },
+  {
+    path: "/reportpage",
+    view: "ReportPage",
+    name: "reportpage"
+  },
+  {
+    path: "/adminpage",
+    view: "AdminPage",
+    name: "adminpage"
+  }
 ];

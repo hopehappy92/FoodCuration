@@ -3,22 +3,24 @@
     <div class="content_top">
       <div class="content_top_title">
         <div class="content_top_title_inner">
-          <h1 class="store_title">{{ storeName}}</h1>
-          <div id="card_rating">{{ storeScore}}</div>
+          <h1 class="store_title">{{ storeName }}</h1>
+          <div id="card_rating">{{ storeScore }}</div>
         </div>
       </div>
-      <button class="icon_review" @click="write">
-        <i class="fas fa-pencil-alt" />
-        <p>리뷰작성</p>
-      </button>
-      <button class="icon_like" v-if="like" @click="pushLike">
-        <i class="fas fa-heart"></i>
-        <p>취소</p>
-      </button>
-      <button class="icon_like" v-else @click="pushLike">
-        <i class="far fa-heart"></i>
-        <p>좋아요</p>
-      </button>
+      <div class="content_top_right">
+        <button class="icon_review" @click="write">
+          <i class="fas fa-pencil-alt" />
+          <p>리뷰작성</p>
+        </button>
+        <button v-if="like" class="icon_like" @click="pushLike">
+          <i class="fas fa-heart" />
+          <p>취소</p>
+        </button>
+        <button v-else class="icon_like" @click="pushLike">
+          <i class="far fa-heart" />
+          <p>좋아요</p>
+        </button>
+      </div>
     </div>
     <p class="area">{{ storeArea }}</p>
     <table>
@@ -38,7 +40,7 @@
             <span class="info_content">{{ category }}</span>
           </span>
         </tr>
-        <tr v-for="(menu, index) in storeMenuList" v-if="index < 5" :key="index">
+        <tr v-for="(menu, index) in storeMenuList.slice(0,5)" :key="index">
           <th v-if="index == 0">메뉴</th>
           <th v-else />
           <div class="menu">
@@ -46,9 +48,26 @@
             <span class="info_content">{{ menu.price }}원</span>
           </div>
         </tr>
+        <tr>
+          <th />
+          <div v-if="menuFlag == false && flag == true" class="moreMenu" @click="moreMenu()">
+            메뉴 더보기
+          </div>
+          <div v-if="menuFlag == true">
+            <div v-for="(menu, index) in storeMenuList.slice(5,storeMenuList.length)" :key="index">
+              <div class="menu">
+                <span class="info_content">{{ menu.menu_name }}</span>
+                <span class="info_content">{{ menu.price }}원</span>
+              </div>
+            </div>
+            <div class="moreMenu" @click="moreMenu()">
+              더보기 닫기
+            </div>
+          </div>
+        </tr>
       </tbody>
     </table>
-    <form v-show="dialog" @submit.prevent="submit" id="review_form">
+    <form v-show="dialog" id="review_form" @submit.prevent="submit">
       <textarea v-model="content" class="message" placeholder="리뷰를 작성해주세요" rows="5" />
       <div class="review_update">
         <v-select
@@ -67,7 +86,10 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapState, mapActions } from "vuex";
+import http from "../api/http"
+// import { mdiHanger } from "@mdi/js";
+
 export default {
   props: {
     storeName: String,
@@ -77,7 +99,11 @@ export default {
     storeTel: String,
     storeAddress: String,
     storeCategories: Array,
-    storeMenuList: Array
+    storeMenuList: Array,
+    storeLike: {
+      type: Number,
+      default: 0
+    },
   },
   data() {
     return {
@@ -88,16 +114,40 @@ export default {
       userId: localStorage.getItem("pk"),
       like: false,
       options: [
-        { text: "평점", value: 1 },
-        { text: "1", value: 2 },
-        { text: "2", value: 3 },
-        { text: "3", value: 4 },
-        { text: "4", value: 5 },
-        { text: "5", value: 6 }
-      ]
+        { text: "1점!", value: 1 },
+        { text: "2점!", value: 2 },
+        { text: "3점!", value: 3 },
+        { text: "4점!", value: 4 },
+        { text: "5점!", value: 5 }
+      ],
+      options_value: 3,
+      menuFlag: false,
+      flag: false,
     };
   },
+  watch: {
+    storeLike: function() {
+      this.like = true
+    },
+    storeMenuList: function() {
+      if (this.storeMenuList.length != 0) {
+        this.flag = true
+      }
+    }
+  },
   methods: {
+    ...mapActions("data", ["writeReview"]),
+    submit: async function() {
+      const params = {
+        store: this.$route.params.storeId,
+        user: this.userId,
+        score: this.score,
+        content: this.content,
+      };
+      await this.writeReview(params)
+        .then(this.$emit("add-to-review"))
+        .then((this.dialog = false));
+    },
     write() {
       if (this.dialog == false) {
         this.dialog = true;
@@ -105,40 +155,40 @@ export default {
         this.dialog = false;
       }
     },
-    submit() {
-      console.log(this.userId, this.$route.params.storeId);
-      axios
-        .post(`http://i02d106.p.ssafy.io:8765/api/store_reviews`, {
-          store: this.$route.params.storeId,
-          user: this.userId,
-          score: this.score,
-          content: this.content
-        })
-        .then(this.$emit("add-to-review"))
-        .then((this.dialog = false));
-    },
     pushLike() {
-      console.log();
+      // console.log(localStorage.getItem("pk"));
+      // console.log(this.$route.params.storeId);
       const headers = {
-        Authorization: localStorage.getItem("token")
+        Authorization: "jwt " + localStorage.getItem("token")
       };
-      axios
+      http
         .post(
-          `http://i02d106.p.ssafy.io:8765/api/like_store`,
+          `/api/like_store`,
           {
             customuser_id: localStorage.getItem("pk"),
             store_id: this.$route.params.storeId
           },
-          headers
+          {headers}
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
         });
       if (this.like == false) {
         this.like = true;
       } else {
         this.like = false;
       }
+    },
+    selectOption(value) {
+      this.options_value = value;
+    },
+    moreMenu() {
+      if (this.menuFlag == false) {
+        this.menuFlag = true
+      } else {
+        this.menuFlag = false
+      }
+      // console.log(this.menuFlag)
     }
   }
 };
@@ -183,7 +233,7 @@ export default {
   margin-left: 10px;
 }
 .content_top_title {
-  width: 80%;
+  width: 100%;
   display: flex;
   align-items: baseline;
   flex-direction: row nowrap;
@@ -193,6 +243,12 @@ export default {
   display: flex;
   align-items: baseline;
   margin-left: 10px;
+}
+.content_top_right {
+  width: 20%;
+  margin-right: 20px;
+  display: flex;
+  flex-flow: row nowrap;
 }
 .icon_review {
   margin-right: 30px;
@@ -220,14 +276,17 @@ th {
   text-align: left;
   padding-bottom: 10px;
   font-family: "Yeon Sung", cursive;
+  font-size: 25px;
 }
 td {
   margin-left: 20px;
   padding-bottom: 10px;
   font-family: "Yeon Sung", cursive;
+  font-size: 20px;
 }
 .info_content {
   font-family: "Yeon Sung", cursive;
+  font-size: 20px;
 }
 .message {
   width: 100%;
@@ -277,5 +336,18 @@ td {
 #review_form {
   margin-left: 10px;
   margin-right: 10px;
+}
+.moreMenu {
+  text-align: center;
+  font-family: "Yeon Sung", cursive;
+  border: 1px solid black;
+  width: 100px;
+  font-size: 18px;
+  padding: 3px;
+  cursor: pointer;
+}
+.moreMenu:hover {
+  color: white;
+  background-color: black;
 }
 </style>

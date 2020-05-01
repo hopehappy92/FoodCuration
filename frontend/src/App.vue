@@ -1,34 +1,39 @@
 <template>
   <v-app id="app">
-    <!-- <toolbar /> -->
-    <!-- <drawer /> -->
-    <Nav v-if="onRegister == false" style="height: 86px;" />
-    <route-view />
-    <!-- <go-top /> -->
+    <Nav v-if="onNav == false" style="height: 83px;" />
+    <route-view :key="$route.fullPath" />
+    <go-top />
   </v-app>
 </template>
 
 <script>
-// import Drawer from "@/components/Drawer";
-// import Toolbar from "@/components/Toolbar";
 import RouteView from "@/components/RouteView";
 import Nav from "@/components/Nav";
-// import GoTop from "@/components/GoTop";
-import { mapState } from "vuex";
+import GoTop from "@/components/GoTop";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
-    // Drawer,
-    // Toolbar,
     RouteView,
-    Nav
-    // GoTop
+    Nav,
+    GoTop
   },
   computed: {
     ...mapState({
-      onRegister: state => state.data.onRegisterFlag,
+      onNav: state => state.data.onNavFlag
     })
   },
+  mounted() {
+    if (localStorage.getItem("token")) {
+      const params = {
+        token: localStorage.getItem("token")
+      }
+      this.tokenVerify(params)
+    }
+  },
+  methods: {
+    ...mapActions("data", ["tokenVerify"])
+  }
 };
 </script>
 

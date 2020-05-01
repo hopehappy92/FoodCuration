@@ -86,15 +86,6 @@ export default {
       this.sort_value = ""
       this.$emit("searchcate", reset);
       this.resetCategoryList()
-
-
-      let a = ""
-      await this.SHA256("test")
-      .then(res => {
-        // console.log(res)
-        a = res
-      })
-      console.log(a)
     }
   }
 }
@@ -130,6 +121,7 @@ export default {
 }
 #my_page_head_sort > div > div {
   margin: 0px;
+  font-family: "Do Hyeon", sans-serif;
 }
 #my_page_head_search_btn {
   font-size: 16px;
@@ -139,6 +131,7 @@ export default {
   color: white;
   width: 50px;
   transition: all .5s;
+  font-family: "Do Hyeon", sans-serif;
 }
 #my_page_head_reset_btn {
   font-size: 16px;
@@ -150,9 +143,37 @@ export default {
   height: 34px;
   transition: all .5s;
   transform: translateY(15%);
+  font-family: "Do Hyeon", sans-serif;
 }
 #blackbox {
   height: 20px;
   background-color: rgb(48, 48, 48);
+}
+
+@media screen and (max-width: 600px) {
+  #my_page_head {
+    display: block;
+    padding: 5px;
+  }
+  #my_page_head_search {
+    display: inline-block;
+    flex: 0;
+    width: 100%;
+  }
+  #my_page_head_search_bar {
+    width: 33vw;
+    -webkit-transition: none;
+    transition: none;
+  }
+  #my_page_head_search_bar:focus {
+    width: 33vw;
+  }
+  #my_page_head_reset_btn {
+    font-size: 16px;
+    margin: 0px;
+    margin-right: 5px;
+    margin-left: 5px;
+    width: 78vw;
+  }
 }
 </style>

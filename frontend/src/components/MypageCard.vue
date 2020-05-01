@@ -65,7 +65,7 @@ export default {
         id: this.id,
         store: this.store,
         store_name: this.storeName,
-        user: this.user,
+        user_id: localStorage.getItem("pk"),
         score: this.score,
         content: this.content,
         reg_time: this.regTime
@@ -108,6 +108,8 @@ export default {
   text-align: start;
   padding-top: 5px;
   margin-left: 10px;
+  font-family: "Do Hyeon", sans-serif;
+  letter-spacing: 1.5px;
 }
 #card_body {
   display: flex;
@@ -139,18 +141,14 @@ export default {
 }
 #card_content {
   display: inline-block;
-  font-size: 20px;
+  line-height: 20px !important;
   margin-right: 20px;
   width: 100%;
-  /* height: auto; */
 }
 #card_content > form > div {
   padding-top: 0;
-}
-#content_edit {
-  width: 55vw;
-  overflow: auto;
-  border: 1px solid;
+  font-size: 16px;
+  font-family: "Jua", sans-serif;
 }
 #content_btn {
   padding: 5px;
@@ -159,12 +157,6 @@ export default {
   bottom: 20px;
   margin-left: 10px;
 }
-/* .line-clamp {
-	overflow: hidden;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-} */
 #card_imgs {
   display: inline-block;
   /* float: right; */
@@ -177,5 +169,23 @@ export default {
   height: 20px;
   margin-left: 5px;
   cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  #card_rating {
+    margin: 0;
+    margin-top: 10px;
+  }
+  #rating_input {
+    margin: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+  #card_content {
+    margin-right: 0px;
+  }
+  #content_btn {
+    width: 26vw;
+  }
 }
 </style>

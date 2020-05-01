@@ -1,42 +1,54 @@
 <template>
   <div>
     <div id="my_sidebar">
-      <img id="user_img" src="../../public/images/regi_bg.png" alt="user_img">
-      <div id="user_nickname">
-        {{ user_name }}
-      </div>
-      <div id="user_id">
-        {{ user_email }}
-      </div>
-      <div id="user_gender_age">
-        {{ user_gender }} / {{ user_age }}
-      </div>
-      <hr>
-      <div id="user_categories">
-        <div>
-          카테고리 모아보기
+      <div class="my_sidebar_box">
+        <div id="user_nickname">
+          {{ user_name }}
         </div>
-        <button 
-          v-for="category in category_lst.slice(0,10)" 
-          :id="`${category[0]}`" 
-          :key="category[0]"
-          class="user_category"
-          @click="goSearchByCategory(`${ category[0] }`); onclickEvent(`${ category[0] }`)"
-        >
-          {{ category[0] }}
-        </button>
+        <div id="user_id">
+          {{ user_email }}
+        </div>
+        <div id="user_gender_age">
+          {{ user_gender }} / {{ user_age }}
+        </div>
+        <!-- <div id="user_like_store" @click="likeStores()"> -->
+        <div id="user_like_store">
+          <mypageUserLike
+            :user-like-list="userLikeList"
+          >
+            <button slot="click">좋아요 모아보기</button>
+          </mypageUserLike>
+        </div>
+      </div>
+      <div class="my_sidebar_box">
+        <div id="user_categories">
+          <div>
+            카테고리 모아보기
+          </div>
+          <hr style="margin: 8px 0;">
+          <button 
+            v-for="category in category_lst.slice(0,10)" 
+            :id="`${category[0]}`" 
+            :key="category[0]"
+            class="user_category"
+            @click="goSearchByCategory(`${ category[0] }`); onclickEvent(`${ category[0] }`)"
+          >
+            {{ category[0] }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import MypageUserLike from "../components/MypageUserLike"
 import { mapState, mapActions } from "vuex"
 
 export default {
-  // props: {
-  //   reviews: {}
-  // },
+  components: {
+    MypageUserLike
+  },
   data() {
     return {
       cates: {},
@@ -51,6 +63,7 @@ export default {
   computed: {
     ...mapState({
       reviews: state => state.data.reviewListForCate,
+      userLikeList: state => state.data.userLikeList
     })
   },
   watch: {
@@ -101,7 +114,7 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.user_name = localStorage.getItem("username")
     this.user_email = localStorage.getItem("email")
     this.user_gender = localStorage.getItem("gender")
@@ -111,10 +124,12 @@ export default {
       page_size: 1000
     };
     this.getReviewsForCate(params)
+    await this.userLikeStores()
   },
   methods: {
     ...mapActions("data", ["getReviewsForCate"]),
     ...mapActions("data", ["resetCategoryList"]),
+    ...mapActions("data", ["userLikeStores"]),
     goSearchByCategory(keyword) {
       // console.log(keyword)
       this.$emit("searchcate", keyword);
@@ -131,7 +146,10 @@ export default {
     onclickEvent(word) {
       var el = document.getElementById("user_categories")
       el.addEventListener("click", this.onclickState(word), false)
-    }
+    },
+    // likeStores() {
+    //   this.userLikeStores()
+    // }
   }
 }
 </script>
@@ -141,37 +159,47 @@ export default {
   width: 22%;
   float: left;
   text-align: center;
-  border: 1px solid black;
-  padding: 20px;
+  /* border: 1px solid black; */
+  /* padding: 20px; */
   /* position: fixed; */
-  background-color: rgba(255, 255, 255, 0.9);
+  /* background-color: rgba(255, 255, 255, 0.9); */
 }
-#user_img {
-  width: 10vw;
-  height: 10vw;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
-  margin-top: 30px;
+.my_sidebar_box {
+  background-color: white;
+  padding: 20px;
   margin-bottom: 20px;
+  font-family: "Do Hyeon", sans-serif;
 }
 #user_nickname {
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 10px;
 }
 #user_id {
-  font-size: 16px;
+  font-size: 20px;
   margin-bottom: 10px;
 }
 #user_gender_age {
-  font-size: 16px;
+  font-size: 20px;
   margin-bottom: 10px;
+}
+#user_like_store {
+  font-size: 20px;
+  height: 30px;
+  border: 1px solid black;
+  background-color: silver;
+  transition: all .5s;
+}
+#user_like_store:hover {
+  background-color: black;
+  color: white;
 }
 #user_categories {
   /* display: flex; */
+  font-size: 20px;
 }
 .user_category {
   /* display: flex; */
-  font-size: 16px;
+  font-size: 20px;
   margin: 10px;
   border: 1px solid black;
   padding: 5px;
@@ -181,8 +209,7 @@ export default {
 .user_category:hover,
 .user_category_all:hover {
   background-color: black;
-  color: whitesmoke;
-  
+  color: white;
 }
 .user_category_all {
   font-size: 16px;
@@ -193,6 +220,36 @@ export default {
   transition: all .5s;
   display: block;
   width: 90%;
+}
+
+@media screen and (max-width: 600px) {
+  #my_sidebar {
+    width: 100%;
+    float: none;
+  }
+  .my_sidebar_box {
+    padding: 0px;
+    background-color: rgb(255, 255, 255);
+  }
+  #user_nickname {
+    font-size: 18px;
+    margin-bottom: 0px;
+  }
+  #user_id {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  #user_gender_age {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  #user_categories {
+    padding: 5px;
+  }
+  .user_category {
+    font-size: 14px;
+    margin: 5px;
+  }
 }
 
 </style>
