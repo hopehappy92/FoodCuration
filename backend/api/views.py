@@ -80,7 +80,7 @@ def get_cluster(age, gender):
 get_image_dict = dict()
 
 # 자동으로 크롤링 시작할 get_image_dict 길이
-start_crawling_length = 100
+start_crawling_length = 1000
 
 all_store = Store.objects.all()
 all_review = Review.objects.all()
