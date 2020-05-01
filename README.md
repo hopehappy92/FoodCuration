@@ -41,29 +41,11 @@
 
 ## How to Run
 
-이 프로젝트는 pm2를 사용하여 서버를 관리하고 nginx를 사용하여 ssl 적용 및 프록시 제어를 하고 있습니다.
+이 프로젝트는 nginx를 활용해 frontend 정적파일 배포 및 backend uwsgi upstream 적용하였으며, Lets encrypt SSL 이용하여 받아온 인증서를 사용하여 사이트 보안 접속을 추가하였습니다.
 
-nginx의 경우 아래와 같은 설정으로 80포트로 들어오면 8080포트로 넘겨주게 설정되어 있으며
 
-```
-server {
-        listen 80;
-        server_name i02d106.p.ssafy.io;
-        location / {
-                proxy_pass http://127.0.0.1:8080;
-        }
-}
-```
 
-인증서는 아래의 경로에 보관되어 잇습니다.
-
-```
-/etd/nginx/ssl/server.crt
-/etd/nginx/ssl/server.csr
-/etd/nginx/ssl/server.key
-```
-
-pm2에서는 frontend와 backend의 스크립트파일을 통해 frontend서버와 backend서버를 구동할 수 있습니다.
+pm2에서는 frontend와 backend의 스크립트파일을 통해 frontend서버와 backend서버를 구동해 볼 수도 있습니다.
 
 ```
 pm2 start frontend/dps.json
